@@ -1,5 +1,9 @@
 import { getItemColor } from '../utils/color.js';
-import { dataProcess, styleProcess } from '../utils/utils.js';
+import {
+  dataProcess,
+  styleProcess,
+  toScientificNotation
+} from '../utils/utils.js';
 import defaultConfig from '../utils/defaultConfig.js';
 let { defaultText, defaultFormat, fontColor } = defaultConfig;
 class Geometry {
@@ -42,6 +46,9 @@ class Geometry {
       return;
     }
     let list = this.config.tooltipList;
+    if (list.length === 0) {
+      return;
+    }
     // let { width, height } = this.config;
     let tooltipWrap;
     let style = `
@@ -75,32 +82,11 @@ class Geometry {
       d3.select('body').selectAll('.dc-tooltip').attr('style', curStyle);
     });
 
-    this.geometry.on('touchstart', (d) => {
-      if (list.length === 0) {
-        return;
-      }
-      tooltipContentProcess(d);
-    });
-
-    this.geometry.on('touchmove', () => {
-      // this.container.selectAll('.dc-tooltip').remove();
-      d3.select('body').selectAll('.dc-tooltip').remove();
-    });
-
-    this.geometry.on('touchend', () => {
-      let { left, top, translateX } = retLeftTop();
-      let curStyle =
-        style +
-        ` left:${left}px;top:${top}px;transform:translateX(${translateX}`;
-      // this.container.selectAll('.dc-tooltip').attr('style', curStyle);
-      d3.select('body').selectAll('.dc-tooltip').attr('style', curStyle);
-    });
-
     function retLeftTop () {
       let { clientWidth: tempWidth, clientHeight: tempHeight } = document.body;
       let translateX = 0;
-      let left = event.offsetX + 20;
-      let top = event.offsetY + 20;
+      let left = event.x + 20;
+      let top = event.y + 20;
 
       if (top + list.length * 30 > tempHeight) {
         top = top - list.length > 0 ? top - list.length * 30 : 0;
@@ -163,9 +149,10 @@ class Geometry {
     let that = this;
     this.geometry.on(eventType, function (d) {
       // 待修改
-      // d3.select(this).transition().duration(500).attr('opacity', 0.2);
+      that.geometry.selectAll(`.${that.className}`).attr('opacity', 1 * 0.2);
+      d3.select(this).transition().duration(500).attr('opacity', 1);
       typeof that.config.data_click === 'function' && that.config.data_click(d);
-    });
+    }, false);
   }
 
   /**
@@ -186,6 +173,13 @@ class Geometry {
       let sortData = this.data.sort((a, b) => a[feature] - b[feature]);
       min = sortData[0][feature];
       max = sortData[sortData.length - 1][feature];
+      if (this.data.length === 1) {
+        if (min > 0) {
+          min = 0;
+        } else {
+          max = 0;
+        }
+      }
     }
 
     return getItemColor(
@@ -194,8 +188,67 @@ class Geometry {
       this.config.colorFeature.type,
       min,
       max,
-      curVal
+      curVal,
+      feature
     );
+  }
+
+  update (type, data) {
+    let updateFun = {
+      tooltip: () => {
+        this.config.tooltipList = data;
+        this.tooltipConfig();
+      },
+      labels: () => {
+        this.config.labelsList = data;
+        this.labelsConfig();
+      }
+    };
+
+    if (typeof updateFun[type] === 'function') {
+      updateFun[type]();
+    }
+  }
+
+  getColorList () {
+    let { colorFeature, colorOpacity } = this.config;
+    if (!colorFeature.feature) {
+      return [];
+    }
+    if (!this.colorList || this.colorList.length === 0) {
+      return [];
+    }
+    let colorList = [];
+    let obj = {};
+    obj.key = colorFeature;
+    obj.opacity = colorOpacity;
+    obj.list = [];
+    obj.name = colorFeature.feature;
+    obj.colored_type = colorFeature.type;
+    /**
+     * 处理数据 取最大值和最小值
+     */
+    if (colorFeature.type === 'linear') {
+      let sortList = this.colorList.filter(i => typeof i.val !== 'undefined').sort((a, b) => a.val - b.val);
+      let minObj = sortList[0];
+      minObj.rangeType = 'min';
+      minObj.originalVal = minObj.val;
+      minObj.val = toScientificNotation(minObj.val);
+      minObj.color = this.getItemColor(0, minObj.val);
+      let maxObj = JSON.parse(JSON.stringify(sortList[0]));
+      if (sortList.length > 1) {
+        maxObj.originalVal = sortList[sortList.length - 1].val;
+      }
+      maxObj.color = this.getItemColor(1, maxObj.originalVal);
+      maxObj.rangeType = 'max';
+      maxObj.val = toScientificNotation(maxObj.originalVal);
+
+      obj.list = [minObj, maxObj];
+    } else {
+      obj.list = this.colorList;
+    }
+    colorList.push(obj);
+    return colorList;
   }
 }
 

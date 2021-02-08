@@ -8,6 +8,7 @@ class Bubble extends Geometry {
   constructor (data, config) {
     super(data, config);
     this.init();
+    this.colorList = [];
   }
 
   init () {
@@ -16,6 +17,10 @@ class Bubble extends Geometry {
 
   labelsConfig () {
     let list = this.config.labelsList;
+    if (list.length === 0) {
+      return;
+    }
+    this.geometry.selectAll('.bubble-labels').remove();
     let textDom = this.geometry
       .append('text')
       .attr('class', 'bubble-labels')
@@ -63,7 +68,7 @@ class Bubble extends Geometry {
   }
 
   draw () {
-    let { size, width, height } = this.config;
+    let { size, width, height, colorFeature, orderStyle } = this.config;
     let pack = d3.pack().size([width * size, height * size]);
     let root = d3
       .hierarchy({
@@ -72,22 +77,38 @@ class Bubble extends Geometry {
       .sum((d) => {
         return d[this.config.sizeFeature.feature];
       });
-
+    if (orderStyle === -1) {
+      root.sort((a, b) => b.value - a.value);
+    } else if (orderStyle === 1) {
+      root.sort((a, b) => a.value - b.value);
+    } else {
+      root.sort(() => Math.random() * 2 - 1);
+    }
+    let colorList = [];
     var nodes = pack(root)
       .leaves()
       .map((d, idx) => {
+        let color = this.getItemColor(idx, d.value);
+        if (colorFeature.feature) {
+          colorList.push({
+            val: d.data[colorFeature.feature],
+            color
+          });
+        }
+
         return {
           x: d.x,
           y: d.y,
           r: d.r,
-          color: this.getItemColor(idx, d.value),
+          color,
           id: 'bubble-circle' + idx,
           radius: d.r,
           value: d.value,
           ...d.data
         };
       });
-
+    this.colorList = colorList;
+    this.className = 'bubble-circle';
     this.geometry = this.svg
       .append('g')
       .attr('class', 'bubble-wrap')

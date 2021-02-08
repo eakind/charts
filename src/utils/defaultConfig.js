@@ -44,5 +44,14 @@ export default {
     suffix: '',
     zone: 'CN',
     useThousandMark: true
+  },
+  defaultLineStyle: {
+    lineWidth: 1,
+    fontColor: '#c2c9d1',
+    opacity: 1,
+    lineDash: [0, 0],
+    fontSize: 12,
+    fontWeight: 'normal',
+    fontStyle: 'normal'
   }
 };

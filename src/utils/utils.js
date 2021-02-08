@@ -4,6 +4,9 @@ const getTextLegend = (text, fontSize) => {
 };
 
 let dataProcess = function (val, format) {
+  if (!val) {
+    return;
+  }
   let ret = val;
   if (format.decimal) {
     if (format.isPercent) {
@@ -88,12 +91,15 @@ let styleProcess = function (styleObj) {
 };
 
 let toScientificNotation = function (val) {
-  let ret = val;
-  if (ret.length < 4) {
+  if (!val) {
+    return;
+  }
+  let ret = val.toString();
+  if (ret.length <= 4) {
     return ret;
-  } else if (ret < 6) {
+  } else if (ret.length <= 6) {
     return (ret / 1000).toFixed(2) + 'k';
-  } else if (ret < 9) {
+  } else if (ret.length <= 9) {
     return (ret / 1000000).toFixed(2) + 'm';
   } else {
     return (ret / 1000000000).toFixed(2) + 'g';

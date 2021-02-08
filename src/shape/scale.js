@@ -1,18 +1,18 @@
 const scaleLinear = (maxValue, height) => {
   let scale = d3.scaleLinear()
-    .domain([0, maxValue])
-    .range([(height - 30), 0]);
+    .domain([0, maxValue * 1.1])
+    .range([(height || 600 - 30), 0]);
   return scale;
 };
 
-const scaleOrdinal = (data, barWidth) => {
-  let scale = d3.scaleOrdinal()
+const scaleBand = (data, barWidth) => {
+  let scale = d3.scaleBand()
     .domain(data)
-    .range(data.map((item, index) => barWidth * index / (data.length - 1)));
+    .range([0, barWidth]);
   return scale;
 };
 
 export {
   scaleLinear,
-  scaleOrdinal
+  scaleBand
 };
