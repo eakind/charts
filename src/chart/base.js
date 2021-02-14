@@ -21,8 +21,9 @@ export default class Base {
     }
     if (this.config.xAxis) {
       let xAxisList = getKeyDataList(this.data, this.config.xAxis.key);
+      console.log(xAxisList);
       this.scaleX = scaleBand(xAxisList, this.width + 200);
-      initXAxis(this.middle, this.scaleX, this.width + 200);
+      initXAxis(this.middle, this.scaleX, this.width + 200, this.scaleX.bandwidth());
     }
   }
 

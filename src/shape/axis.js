@@ -4,13 +4,13 @@ const initXAxis = (middle, scaleX, width) => {
   let axis = getAxisX(scaleX, 'bottom');
   let axisPanel = setAxisX(middle, axis, 'bottom');
   setAxisLine(axisPanel);
-  // setAxisXtitle(middle, '哈哈哈', tipTpl);
-  // setAxisLabel(axisPanel, 'bottom', 0, tipTpl);
+  setAxisLabel(axisPanel, 'bottom', 0, scaleX.bandwidth(), tipTpl);
+  setAxisXtitle(axisPanel, '哈哈哈', 800);
 };
 
 const initYAxis = (axisYContainer, scaleY, option, tipTpl, position) => {
   if (position === 'left') {
-    setAxisYTitle(axisYContainer, '哈哈哈', 600);
+    setAxisYTitle(axisYContainer, '哈哈哈', 800);
   }
   let axis = getAxisY(scaleY, position);
   let axisPanel = setAxisY(axisYContainer, axis, position);
@@ -34,15 +34,13 @@ const getAxisX = (scale, position) => {
 };
 
 const setAxisX = (axisPanel, axis, position) => {
-  let scalePanel = axisPanel.append('svg');
-  scalePanel.attr('width', 800)
-    .attr('height', 60)
-    .append('g')
+  let axisX = axisPanel.append('g').attr('width', 800)
+    .attr('height', 100)
     .attr('transform', () => {
-      return `translate(${0},520)`;
-    })
-    .call(axis);
-  return scalePanel;
+      return `translate(${0},500)`;
+    });
+  axisX.call(axis);
+  return axisX;
 };
 
 const getAxisY = (scale, position) => {
@@ -67,7 +65,7 @@ const setAxisY = (axisPanel, axis, position) => {
       if (position === 'right') {
         translateX = 0;
       }
-      return `translate(${translateX},10)`;
+      return `translate(${translateX},0)`;
     })
     .call(axis);
   return scalePanel;
@@ -82,6 +80,18 @@ const setAxisYTitle = (axisPanel, name, height) => {
     .attr('fill', 'blue') // 标题颜色
     .attr('font-size', 18) // 标题大小
     .text(name) // 标题名称
+    .attr('title', name);
+};
+
+const setAxisXtitle = (axisPanel, name, width) => {
+  axisPanel.append('g')
+    .attr('height', 30)
+    .attr('width', width)
+    .append('text')
+    .attr('transform', 'translate(5,5)')
+    .attr('fill', 'blue')
+    .attr('font-size', 18)
+    .text(name)
     .attr('title', name);
 };
 
@@ -100,7 +110,6 @@ const setAxisLabel = (scalePanel, position, rotate, width, textTip) => {
     .attr('opacity', 1) // 标签文本透明度
     .text((d, index, node, a) => {
       if (position === 'bottom') {
-        console.log(width);
         let len = getTxtWidth(d, 18);
         if (len < width) {
           return d;

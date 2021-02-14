@@ -8,7 +8,7 @@ const initGrid = (middle, width, height, scaleY) => {
     .attr('height', height)
     .attr('width', width + 100)
     .append('g')
-    .attr('transform', `translate(${0},10)`)
+    .attr('transform', `translate(${0},0)`)
     .call(axis);
   grid.select('path').attr('opacity', 0);
   grid.selectAll('text')

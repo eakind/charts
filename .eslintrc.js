@@ -12,7 +12,8 @@ module.exports = {
   },
   globals: {
     d3: true,
-    chart: true
+    chart: true,
+    L7: true
   },
   rules: {
     'no-console': 'off',
