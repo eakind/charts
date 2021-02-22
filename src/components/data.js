@@ -13,7 +13,7 @@ const getKeyDataList = (data, key) => {
   for (let i = 0, len = data.length; i < len; i++) {
     list.push(data[i][key]);
   }
-  return list;
+  return [...new Set(list)];
 };
 
 export {

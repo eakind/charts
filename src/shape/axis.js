@@ -1,113 +1,117 @@
 import { tipTpl } from './tip';
 
-const initXAxis = (middle, scaleX, width) => {
-  let axis = getAxisX(scaleX, 'bottom');
-  let axisPanel = setAxisX(middle, axis, 'bottom');
-  setAxisLine(axisPanel);
-  setAxisLabel(axisPanel, 'bottom', 0, scaleX.bandwidth(), tipTpl);
-  setAxisXtitle(axisPanel, '哈哈哈', 800);
+// 初始化X轴
+const initXAxis = (middle, scaleX, width, height, option) => {
+  let position = option.position;
+  let axis = getAxis(scaleX, position, 0);
+  let axisPanel = setAxisX(middle, axis, width, height, position);
+  setAxisLine(axisPanel, option.line.style);
+  setAxisLabel(axisPanel, option.label, scaleX.bandwidth(), tipTpl);
+  setAxisXtitle(axisPanel, option.title, width);
 };
 
-const initYAxis = (axisYContainer, scaleY, option, tipTpl, position) => {
-  if (position === 'left') {
-    setAxisYTitle(axisYContainer, '哈哈哈', 800);
-  }
-  let axis = getAxisY(scaleY, position);
-  let axisPanel = setAxisY(axisYContainer, axis, position);
-  setAxisLine(axisPanel);
-  if (position === 'right') {
-    setAxisYTitle(axisYContainer, '哈哈哈', 600);
+const setAxisX = (axisPanel, axis, width, height, position) => {
+  const posObj = {
+    bottom: height + 100,
+    top: 100
   };
-  setAxisLabel(axisPanel, position, 0, tipTpl);
-};
-
-const getAxisX = (scale, position) => {
-  const scaleObj = {
-    top: d3.axisTop(scale),
-    bottom: d3.axisBottom(scale)
-  };
-  let axis = scaleObj[position]
-    .tickPadding(6)
-    .tickSizeInner(0)
-    .tickSizeOuter(0);
-  return axis;
-};
-
-const setAxisX = (axisPanel, axis, position) => {
-  let axisX = axisPanel.append('g').attr('width', 800)
+  let axisX = axisPanel.append('g')
+    .attr('width', width)
     .attr('height', 100)
+    .append('g')
     .attr('transform', () => {
-      return `translate(${0},500)`;
+      return `translate(${0},${posObj[position]})`;
     });
   axisX.call(axis);
   return axisX;
 };
 
-const getAxisY = (scale, position) => {
-  const scaleObj = {
-    left: d3.axisLeft(scale),
-    right: d3.axisRight(scale)
+const initYAxis = (axisYContainer, scaleY, option, tipTpl, height, topAxisHeight) => {
+  let position = option.position;
+  if (position === 'left') {
+    setAxisYTitle(axisYContainer, option.title, height);
+  }
+  let axis = getAxis(scaleY, position, 0);
+  let axisPanel = setAxisY(axisYContainer, axis, position, topAxisHeight);
+  setAxisLine(axisPanel, option.line.style);
+  if (position === 'right') {
+    setAxisYTitle(axisYContainer, option.title, height);
   };
-  let axis = scaleObj[position]
-    .tickPadding(6)
-    .tickSizeInner(0)
-    .tickSizeOuter(0);
-  return axis;
+  setAxisLabel(axisPanel, option.label, tipTpl);
 };
 
-const setAxisY = (axisPanel, axis, position) => {
+const setAxisY = (axisPanel, axis, position, topAxisHeight) => {
   let scalePanel = axisPanel.append('svg');
   scalePanel.attr('width', 70)
-    .attr('height', 600)
     .append('g')
     .attr('transform', () => {
       let translateX = 69;
       if (position === 'right') {
         translateX = 0;
       }
-      return `translate(${translateX},0)`;
+      return `translate(${translateX},${topAxisHeight})`;
     })
     .call(axis);
   return scalePanel;
 };
 
-const setAxisYTitle = (axisPanel, name, height) => {
-  axisPanel.append('svg')
-    .attr('width', 30)
-    .attr('height', height)
-    .append('text')
-    .attr('transform', 'translate(5, 5) rotate(90)')
-    .attr('fill', 'blue') // 标题颜色
-    .attr('font-size', 18) // 标题大小
-    .text(name) // 标题名称
-    .attr('title', name);
+const getAxis = (scale, position, height) => {
+  const scaleObj = {
+    top: d3.axisTop(scale),
+    bottom: d3.axisBottom(scale),
+    left: d3.axisLeft(scale),
+    right: d3.axisRight(scale)
+  };
+  let axis = scaleObj[position]
+    .tickPadding(6)
+    .tickSizeInner(-height)
+    .tickSizeOuter(0);
+  return axis;
 };
 
-const setAxisXtitle = (axisPanel, name, width) => {
+const setAxisLine = (scalePanel, option) => {
+  scalePanel.select('path')
+    .attr('stroke-dasharray', option.lineDash.join(',')) // 虚实线
+    .attr('stroke', option.fontColor) // 坐标轴线颜色
+    .attr('stroke-width', option.lineWidth) // 坐标轴线宽度
+    .attr('opacity', option.opacity); // 坐标轴线透明度
+};
+
+const setAxisYTitle = (axisPanel, titleOption) => {
+  let titleStyle = titleOption.style;
+  axisPanel.append('svg')
+    .attr('width', 30)
+    .append('text')
+    .attr('transform', 'translate(5, 5) rotate(90)')
+    .attr('fill', titleStyle.fontColor) // 标题颜色
+    .attr('font-size', titleStyle.fontSize) // 标题大小
+    .text(titleOption.value) // 标题名称
+    .attr('title', titleOption.value);
+};
+
+const setAxisXtitle = (axisPanel, option, width) => {
+  let titleStyle = option.style;
   axisPanel.append('g')
     .attr('height', 30)
     .attr('width', width)
     .append('text')
-    .attr('transform', 'translate(5,5)')
-    .attr('fill', 'blue')
-    .attr('font-size', 18)
-    .text(name)
-    .attr('title', name);
+    .attr('transform', 'translate(700,60)')
+    .attr('fill', titleStyle.fontColor)
+    .attr('font-size', titleStyle.fontSize)
+    .text(option.value)
+    .attr('title', option.value);
 };
 
-const setAxisLine = (scalePanel) => {
-  scalePanel.select('path')
-    .attr('stroke', 'red') // 坐标轴线颜色
-    .attr('stroke-width', 1) // 坐标轴线宽度
-    .attr('opacity', 1); // 坐标轴线透明度
-};
-
-const setAxisLabel = (scalePanel, position, rotate, width, textTip) => {
+const setAxisLabel = (scalePanel, option, width, textTip) => {
+  let position = option.position;
+  let labelStyle = option.style;
+  let rotate = option.rotate;
   let allText = scalePanel.selectAll('text');
-  let fullLen = getTxtLen(width);
-  allText.attr('font-size', 18) // 标签文本大小
-    .attr('fill', 'red') // 标签文本颜色
-    .attr('opacity', 1) // 标签文本透明度
+  let fullLen = getTxtLen(width, labelStyle.fontSize);
+  allText.attr('font-size', labelStyle.fontSize) // 标签文本大小
+    .attr('fill', labelStyle.fontColor) // 标签文本颜色
+    .attr('opacity', labelStyle.opacity) // 标签文本透明度
+    .attr('lengthAdjust', 'spacingAndGlyphs')
     .text((d, index, node, a) => {
       if (position === 'bottom') {
         let len = getTxtWidth(d, 18);
@@ -141,8 +145,8 @@ const setAxisLabel = (scalePanel, position, rotate, width, textTip) => {
     });
   } else {
     if (rotate === 90) {
-      let offsetY = position === 'left' ? 18 : -18;
-      let offsetX = position === 'left' ? 6 : -6;
+      let offsetY = position === 'left' ? -28 : -18;
+      let offsetX = position === 'left' ? 8 : -8;
       allText.attr('x', offsetX)
         .attr('y', offsetY);
     }
@@ -163,10 +167,11 @@ const getTxtLen = (width, font) => {
     document.body.appendChild(textDom);
     if (textDom.scrollWidth >= width) {
       document.body.removeChild(textDom);
-      return i;
+      return { limit: i, space: 1 };
     };
     document.body.removeChild(textDom);
   }
+
   return -1;
 };
 
@@ -185,8 +190,8 @@ export {
   setAxisLine,
   setAxisYTitle,
   setAxisLabel,
-  getAxisY,
   setAxisY,
   initYAxis,
   initXAxis
+  // initXAxis1
 };

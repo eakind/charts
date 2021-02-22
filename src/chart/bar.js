@@ -6,22 +6,23 @@ export default class Bar extends Base {
     this.data = data;
     this.config = config;
     this.init();
-    this.drawBar();
+    // this.drawBar();
   };
 
   drawBar () {
     if (!this.config.yAxis) return;
-    let data = getKeyDataList(this.data, this.config.yAxis.key[0]);
+    let data = getKeyDataList(this.data, this.config.yAxis[0].key[0]);
     let barContainer = this.middle.append('g')
-      .attr('width', (this.width))
-      .attr('height', this.height - this.xAxisHeight);
+      .attr('width', this.shapeWidth)
+      .attr('height', this.shapeHeight)
+      .attr('transform', 'translate(0,10)');
     let bar = barContainer.selectAll('.bar').data(data);
     let druaction = this.scaleX.bandwidth();
     bar.enter()
       .append('rect')
       .attr('class', 'bar')
       .attr('x', (d, index) => {
-        return index * (this.scaleX.bandwidth()) + 16;
+        return index * (this.scaleX.bandwidth()) + (this.scaleX.bandwidth() / 10);
       })
       .attr('y', this.scaleY)
       .attr('width', druaction * 0.8)

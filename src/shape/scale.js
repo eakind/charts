@@ -1,7 +1,8 @@
 const scaleLinear = (maxValue, height) => {
   let scale = d3.scaleLinear()
     .domain([0, maxValue * 1.1])
-    .range([(height || 600 - 30), 0]);
+    .nice()
+    .range([height, 0]);
   return scale;
 };
 
