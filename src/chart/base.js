@@ -1,7 +1,7 @@
 import { initTip } from '../components/textTip';
 import { scaleLinear, scaleBand } from '../shape/scale.js';
 import { initYAxis, initXAxis } from '../shape/axis';
-import { initXGrid, initYGrid } from '../shape/grid';
+import { initXGrid, initYGrid, initYAxisGrid } from '../shape/grid';
 import { getMaxValue, getKeyDataList } from '../components/data.js';
 export default class Base {
   init () {
@@ -11,39 +11,12 @@ export default class Base {
     this.initContainer();
     // 初始化提示信息
     this.tipTpl = initTip();
+    // 生成多左轴信息
+    this.createYPart();
     // 生成Y轴
     this.createYAxis();
     // 生成X轴
     this.createXAxis();
-    // let yHeight = this.height - this.xAxisHeight;
-    // if (this.config.yAxis.length) {
-    //   let yAxis = this.config.yAxis;
-    //   for (let i = 0; i < yAxis.length; i++) {
-    //   }
-    //   this.yAxisMax = getMaxValue(this.data, this.config.yAxis.key);
-    //   this.scaleY = scaleLinear(this.yAxisMax, yHeight);
-    //   initYAxis(this.leftAxis, this.scaleY, this.config.yAxis, this.tipTpl, yHeight);
-    //   initYGrid(this.middle, this.width - 200, yHeight, this.scaleY);
-    // }
-    // if (this.config.yAxis1) {
-    //   this.yAxis1Max = getMaxValue(this.data, this.config.yAxis1.key);
-    //   this.scaleY1 = scaleLinear(this.yAxis1Max, yHeight);
-    //   initYAxis(this.rightAxis, this.scaleY1, this.config.yAxis1, this.tipTpl, yHeight);
-    // }
-    // if (this.config.xAxis.length) {
-    //   let xAxis = this.config.xAxis;
-    //   let xAxisList = getKeyDataList(this.data, this.config.xAxis.key);
-    //   for (let i = 0; i < xAxis.length; i++) {
-    //     let width = xAxisList.length * 50;
-    //     let allWidth = this.width - 200;
-    //     let xAxisWidth = width;
-    //     if (width < allWidth) {
-    //       xAxisWidth = allWidth;
-    //     }
-    //     this.scaleX = scaleBand(xAxisList, xAxisWidth);
-    //     initXAxis(this.middle, this.scaleX, xAxisWidth, yHeight + 10, this.config.xAxis);
-    //   };
-    // }
   }
 
   render () {
@@ -64,7 +37,10 @@ export default class Base {
     // 左侧坐标轴容器
     this.leftAxis = this.container.append('div').attr('class', 'left-axis')
       .style('display', 'flex')
-      .style('max-width', '100px');
+      .style('flex-direction', 'row-reverse')
+      .append('svg')
+      .attr('width', this.leftAxisWidth)
+      .attr('height', this.height);
     // 中间画图部分
     this.middle = this.container.append('div').attr('class', 'middle')
       .style('flex', 1)
@@ -76,7 +52,9 @@ export default class Base {
     // 右侧坐标轴容器
     this.rightAxis = this.container.append('div').attr('class', 'right-axis')
       .style('display', 'flex')
-      .style('max-width', '100px');
+      .append('svg')
+      .attr('width', this.rightAxisWidth)
+      .attr('height', this.height);
   }
 
   initConfig () {
@@ -93,7 +71,7 @@ export default class Base {
       dom.style.height = `${height}px`;
     }
     /* 左边坐标轴宽度 */
-    this.leftAxisWidth = 100;
+    this.leftAxisWidth = 300;
     /* 右边坐标轴宽度  */
     this.rightAxisWidth = 100;
     /* 底部坐标轴高度 */
@@ -104,6 +82,8 @@ export default class Base {
     this.shapeHeight = this.height - 200;
     /* 画布内容的宽度 */
     this.shapeWidth = this.width - 200;
+    /* Y坐标轴的高度 */
+    this.yAxisHeight = this.shapeHeight;
   }
 
   createXAxis () {
@@ -115,9 +95,11 @@ export default class Base {
       let scaleX = scaleBand(xAxisList, this.shapeWidth);
       if (xAxis[i].position === 'top') {
         let topAxis = topAxisIndex * 30;
-        initXGrid(this.middle, this.shapeWidth, this.shapeHeight, scaleX, this.topAxisHeight, topAxis);
+        initXGrid(this.middle, this.shapeWidth, this.shapeHeight, this.xAixsKey, this.topAxisHeight, topAxis, this.scaleX.bandwidth(), this.data, xAxisList);
         topAxisIndex++;
       } else {
+        this.scaleX = scaleBand(xAxisList, this.shapeWidth);
+        this.xAixsKey = xAxis[i].key;
         initXAxis(this.middle, scaleX, this.shapeWidth, this.shapeHeight, xAxis[i]);
       }
     }
@@ -129,11 +111,27 @@ export default class Base {
     for (let i = 0; i < yAxis.length; i++) {
       let position = yAxis[i].position;
       let yAxisMax = getMaxValue(this.data, yAxis[i].key);
-      let scaleY = scaleLinear(yAxisMax, this.shapeHeight);
-      initYAxis(this[`${position}Axis`], scaleY, yAxis[i], this.tipTpl, this.shapeHeight, this.topAxisHeight);
+      let scaleY = scaleLinear(yAxisMax, this.yAxisHeight);
+      initYAxis(this[`${position}Axis`], scaleY, yAxis[i], this.tipTpl, this.yAxisHeight, this.topAxisHeight, this[`${position}AxisWidth`]);
       if (position === 'left') {
-        initYGrid(this.middle, this.shapeWidth, this.shapeHeight, scaleY, this.topAxisHeight);
+        initYGrid(this.middle, this.shapeWidth, this.yAxisHeight, scaleY, this.topAxisHeight);
       }
     }
+  }
+
+  createYPart () {
+    let yAxisPart = this.config.yAxisPart;
+    if (!yAxisPart.length) return;
+    for (let i = 0; i < yAxisPart.length; i++) {
+      let yAxisPartList = getKeyDataList(this.data, yAxisPart[i].key);
+      let uniquePartList = [...new Set(yAxisPartList)];
+      if (i === 0) {
+        this.yAxisHeight = this.shapeHeight / uniquePartList.length;
+      }
+      initYAxisGrid(this.leftAxis, this.yAxisHeight, uniquePartList, this.leftAxisWidth);
+      console.log(uniquePartList);
+      // debugger;
+    }
+    console.log(this.yAxisHeight);
   }
 };

@@ -1,5 +1,5 @@
 import { tipTpl } from './tip';
-
+import { getTxtLen, getTxtWidth } from '../utils/utils';
 // 初始化X轴
 const initXAxis = (middle, scaleX, width, height, option) => {
   let position = option.position;
@@ -26,31 +26,30 @@ const setAxisX = (axisPanel, axis, width, height, position) => {
   return axisX;
 };
 
-const initYAxis = (axisYContainer, scaleY, option, tipTpl, height, topAxisHeight) => {
+const initYAxis = (axisYContainer, scaleY, option, tipTpl, height, topAxisHeight, width) => {
   let position = option.position;
-  if (position === 'left') {
-    setAxisYTitle(axisYContainer, option.title, height);
-  }
-  let axis = getAxis(scaleY, position, 0);
-  let axisPanel = setAxisY(axisYContainer, axis, position, topAxisHeight);
-  setAxisLine(axisPanel, option.line.style);
-  if (position === 'right') {
-    setAxisYTitle(axisYContainer, option.title, height);
+  // if (position === 'left') {
+  //   setAxisYTitle(axisYContainer, option.title, height);
+  // }
+  if (position === 'left-part') {
+
+  } else {
+    let axis = getAxis(scaleY, position, 0);
+    let axisPanel = setAxisY(axisYContainer, axis, position, topAxisHeight, width);
+    setAxisLine(axisPanel, option.line.style);
+    setAxisYTitle(axisYContainer, option.title, position, width);
+    setAxisLabel(axisPanel, option.label, tipTpl);
   };
-  setAxisLabel(axisPanel, option.label, tipTpl);
 };
 
-const setAxisY = (axisPanel, axis, position, topAxisHeight) => {
-  let scalePanel = axisPanel.append('svg');
-  scalePanel.attr('width', 70)
-    .append('g')
-    .attr('transform', () => {
-      let translateX = 69;
-      if (position === 'right') {
-        translateX = 0;
-      }
-      return `translate(${translateX},${topAxisHeight})`;
-    })
+const setAxisY = (axisPanel, axis, position, topAxisHeight, translateX) => {
+  let scalePanel = axisPanel.append('g');
+  scalePanel.attr('transform', () => {
+    if (position === 'right') {
+      translateX = 1;
+    }
+    return `translate(${translateX - 1},${topAxisHeight})`;
+  })
     .call(axis);
   return scalePanel;
 };
@@ -77,16 +76,22 @@ const setAxisLine = (scalePanel, option) => {
     .attr('opacity', option.opacity); // 坐标轴线透明度
 };
 
-const setAxisYTitle = (axisPanel, titleOption) => {
+const setAxisYTitle = (axisPanel, titleOption, position, width) => {
   let titleStyle = titleOption.style;
-  axisPanel.append('svg')
-    .attr('width', 30)
+  axisPanel.append('g')
+    .attr('transform', () => {
+      let translateX = width - 60;
+      if (position === 'right') {
+        translateX = 50;
+      }
+      return `translate(${translateX}, 28)`;
+    })
     .append('text')
-    .attr('transform', 'translate(5, 5) rotate(90)')
     .attr('fill', titleStyle.fontColor) // 标题颜色
     .attr('font-size', titleStyle.fontSize) // 标题大小
     .text(titleOption.value) // 标题名称
-    .attr('title', titleOption.value);
+    .attr('title', titleOption.value)
+    .attr('transform', 'rotate(90)');
 };
 
 const setAxisXtitle = (axisPanel, option, width) => {
@@ -152,38 +157,6 @@ const setAxisLabel = (scalePanel, option, width, textTip) => {
     }
     allText.attr('transform', `rotate(${rotate})`);
   }
-};
-
-const getTxtLen = (width, font) => {
-  let textDom = document.createElement('div');
-  textDom.style.width = width + 'px';
-  textDom.style.fontSize = font + 'px';
-  textDom.style.overflowX = 'auto';
-  textDom.style.whiteSpace = 'nowrap';
-  let txt = '';
-  for (let i = 0; i < width; i++) {
-    txt = txt + '哈';
-    textDom.innerText = txt;
-    document.body.appendChild(textDom);
-    if (textDom.scrollWidth >= width) {
-      document.body.removeChild(textDom);
-      return { limit: i, space: 1 };
-    };
-    document.body.removeChild(textDom);
-  }
-
-  return -1;
-};
-
-const getTxtWidth = (text, font) => {
-  let textDom = document.createElement('span');
-  textDom.innerText = text;
-  textDom.style.fontSize = font + 'px';
-  textDom.style.position = 'fixed';
-  document.body.appendChild(textDom);
-  let width = textDom.clientWidth;
-  document.body.removeChild(textDom);
-  return width;
 };
 
 export {

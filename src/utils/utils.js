@@ -135,11 +135,100 @@ let fontSizeLineHeightPair = {
   72: 88
 };
 
+const hasValue = (arr, key, value) => {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i][key] === value) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const uniqueKeyArr = (key, list) => {
+  let arr = [];
+  for (let i = 0; i < list.length; i++) {
+    if (!hasValue(arr, key, list[i][key])) {
+      arr.push(list[i]);
+    }
+  }
+  return arr;
+};
+
+const setTextPos = (width, text, data, axisKey) => {
+  let num = 0;
+  let start = 0;
+  let arr = uniqueKeyArr(axisKey, data);
+  for (let i = 0; i < arr.length; i++) {
+    for (let key in arr[i]) {
+      if (arr[i][key] === text) {
+        if (num === 0) {
+          start = i;
+        }
+        num++;
+      }
+    }
+  }
+  return (width * start) + ((width * num - getTxtWidth(text, 14)) / 2);
+};
+
+const setLinePos = (width, text, data, axisKey) => {
+  let num = 0;
+  let start = 0;
+  let arr = uniqueKeyArr(axisKey, data);
+  for (let i = 0; i < arr.length; i++) {
+    for (let key in arr[i]) {
+      if (arr[i][key] === text) {
+        if (num === 0) {
+          start = i;
+        }
+        num++;
+      }
+    }
+  }
+  return (width * start) + (width * num);
+};
+
+const getTxtLen = (width, font) => {
+  let textDom = document.createElement('div');
+  textDom.style.width = width + 'px';
+  textDom.style.fontSize = font + 'px';
+  textDom.style.overflowX = 'auto';
+  textDom.style.whiteSpace = 'nowrap';
+  let txt = '';
+  for (let i = 0; i < width; i++) {
+    txt = txt + '哈';
+    textDom.innerText = txt;
+    document.body.appendChild(textDom);
+    if (textDom.scrollWidth >= width) {
+      document.body.removeChild(textDom);
+      return { limit: i, space: 1 };
+    };
+    document.body.removeChild(textDom);
+  }
+
+  return -1;
+};
+
+const getTxtWidth = (text, font) => {
+  let textDom = document.createElement('span');
+  textDom.innerText = text;
+  textDom.style.fontSize = font + 'px';
+  textDom.style.position = 'fixed';
+  document.body.appendChild(textDom);
+  let width = textDom.clientWidth;
+  document.body.removeChild(textDom);
+  return width;
+};
+
 export {
   getTextLegend,
   dataProcess,
   styleProcess,
   toScientificNotation,
   getTextWidth,
-  fontSizeLineHeightPair
+  fontSizeLineHeightPair,
+  setTextPos,
+  setLinePos,
+  getTxtLen,
+  getTxtWidth
 };
