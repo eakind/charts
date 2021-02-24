@@ -1,19 +1,19 @@
 import { tipTpl } from './tip';
 import { getTxtLen, getTxtWidth } from '../utils/utils';
 // 初始化X轴
-const initXAxis = (middle, scaleX, width, height, option) => {
+const initXAxis = (middle, scaleX, width, height, option, topAxisHeight, bottomAxisHeight) => {
   let position = option.position;
   let axis = getAxis(scaleX, position, 0);
-  let axisPanel = setAxisX(middle, axis, width, height, position);
+  let axisPanel = setAxisX(middle, axis, width, height, position, topAxisHeight, bottomAxisHeight);
   setAxisLine(axisPanel, option.line.style);
   setAxisLabel(axisPanel, option.label, scaleX.bandwidth(), tipTpl);
   setAxisXtitle(axisPanel, option.title, width);
 };
 
-const setAxisX = (axisPanel, axis, width, height, position) => {
+const setAxisX = (axisPanel, axis, width, height, position, topAxisHeight, bottomAxisHeight) => {
   const posObj = {
-    bottom: height + 100,
-    top: 100
+    bottom: height + topAxisHeight,
+    top: topAxisHeight
   };
   let axisX = axisPanel.append('g')
     .attr('width', width)
@@ -26,29 +26,22 @@ const setAxisX = (axisPanel, axis, width, height, position) => {
   return axisX;
 };
 
-const initYAxis = (axisYContainer, scaleY, option, tipTpl, height, topAxisHeight, width) => {
+const initYAxis = (axisYContainer, scaleY, option, tipTpl, height, topAxisHeight, width, index) => {
   let position = option.position;
-  // if (position === 'left') {
-  //   setAxisYTitle(axisYContainer, option.title, height);
-  // }
-  if (position === 'left-part') {
-
-  } else {
-    let axis = getAxis(scaleY, position, 0);
-    let axisPanel = setAxisY(axisYContainer, axis, position, topAxisHeight, width);
-    setAxisLine(axisPanel, option.line.style);
-    setAxisYTitle(axisYContainer, option.title, position, width);
-    setAxisLabel(axisPanel, option.label, tipTpl);
-  };
+  let axis = getAxis(scaleY, position, 0);
+  let axisPanel = setAxisY(axisYContainer, axis, position, topAxisHeight, width, index, height);
+  setAxisLine(axisPanel, option.line.style);
+  setAxisYTitle(axisYContainer, option.title, position, width, topAxisHeight, height, index);
+  setAxisLabel(axisPanel, option.label, tipTpl, index);
 };
 
-const setAxisY = (axisPanel, axis, position, topAxisHeight, translateX) => {
+const setAxisY = (axisPanel, axis, position, topAxisHeight, translateX, index, height) => {
   let scalePanel = axisPanel.append('g');
   scalePanel.attr('transform', () => {
     if (position === 'right') {
       translateX = 1;
     }
-    return `translate(${translateX - 1},${topAxisHeight})`;
+    return `translate(${translateX - 1},${topAxisHeight + (height * index)})`;
   })
     .call(axis);
   return scalePanel;
@@ -76,7 +69,7 @@ const setAxisLine = (scalePanel, option) => {
     .attr('opacity', option.opacity); // 坐标轴线透明度
 };
 
-const setAxisYTitle = (axisPanel, titleOption, position, width) => {
+const setAxisYTitle = (axisPanel, titleOption, position, width, topAxisHeight, height, index) => {
   let titleStyle = titleOption.style;
   axisPanel.append('g')
     .attr('transform', () => {
@@ -84,7 +77,7 @@ const setAxisYTitle = (axisPanel, titleOption, position, width) => {
       if (position === 'right') {
         translateX = 50;
       }
-      return `translate(${translateX}, 28)`;
+      return `translate(${translateX}, ${topAxisHeight + height * index})`;
     })
     .append('text')
     .attr('fill', titleStyle.fontColor) // 标题颜色

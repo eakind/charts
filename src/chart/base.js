@@ -1,7 +1,7 @@
 import { initTip } from '../components/textTip';
 import { scaleLinear, scaleBand } from '../shape/scale.js';
 import { initYAxis, initXAxis } from '../shape/axis';
-import { initXGrid, initYGrid, initYAxisGrid } from '../shape/grid';
+import { initXGrid, initYGrid, initYAxisGrid, initMiddleGrid } from '../shape/grid';
 import { getMaxValue, getKeyDataList } from '../components/data.js';
 export default class Base {
   init () {
@@ -14,7 +14,6 @@ export default class Base {
     // 生成多左轴信息
     this.createYPart();
     // 生成Y轴
-    this.createYAxis();
     // 生成X轴
     this.createXAxis();
   }
@@ -71,7 +70,7 @@ export default class Base {
       dom.style.height = `${height}px`;
     }
     /* 左边坐标轴宽度 */
-    this.leftAxisWidth = 300;
+    this.leftAxisWidth = 80;
     /* 右边坐标轴宽度  */
     this.rightAxisWidth = 100;
     /* 底部坐标轴高度 */
@@ -81,7 +80,7 @@ export default class Base {
     /* 画布内容高度 */
     this.shapeHeight = this.height - 200;
     /* 画布内容的宽度 */
-    this.shapeWidth = this.width - 200;
+    this.shapeWidth = this.width - (this.leftAxisWidth + this.rightAxisWidth);
     /* Y坐标轴的高度 */
     this.yAxisHeight = this.shapeHeight;
   }
@@ -100,38 +99,43 @@ export default class Base {
       } else {
         this.scaleX = scaleBand(xAxisList, this.shapeWidth);
         this.xAixsKey = xAxis[i].key;
-        initXAxis(this.middle, scaleX, this.shapeWidth, this.shapeHeight, xAxis[i]);
+        initXAxis(this.middle, scaleX, this.shapeWidth, this.shapeHeight, xAxis[i], this.topAxisHeight, this.bottomAxisHeight);
       }
     }
   }
 
-  createYAxis () {
+  createYAxis (list) {
     let yAxis = this.config.yAxis;
     if (!yAxis.length) return;
-    for (let i = 0; i < yAxis.length; i++) {
-      let position = yAxis[i].position;
-      let yAxisMax = getMaxValue(this.data, yAxis[i].key);
-      let scaleY = scaleLinear(yAxisMax, this.yAxisHeight);
-      initYAxis(this[`${position}Axis`], scaleY, yAxis[i], this.tipTpl, this.yAxisHeight, this.topAxisHeight, this[`${position}AxisWidth`]);
-      if (position === 'left') {
-        initYGrid(this.middle, this.shapeWidth, this.yAxisHeight, scaleY, this.topAxisHeight);
+    for (let i = 0, len = list.length; i < len; i++) {
+      for (let j = 0; j < yAxis.length; j++) {
+        let position = yAxis[j].position;
+        let yAxisMax = getMaxValue(this.data, yAxis[j].key);
+        let scaleY = scaleLinear(yAxisMax, this.yAxisHeight);
+        initYAxis(this[`${position}Axis`], scaleY, yAxis[j], this.tipTpl, this.yAxisHeight, this.topAxisHeight, this[`${position}AxisWidth`], i);
+        if (position === 'left') {
+          this.scaleY = scaleY;
+          initYGrid(this.middle, this.shapeWidth, this.yAxisHeight, scaleY, this.topAxisHeight, i);
+        }
       }
-    }
+    };
   }
 
   createYPart () {
     let yAxisPart = this.config.yAxisPart;
-    if (!yAxisPart.length) return;
-    for (let i = 0; i < yAxisPart.length; i++) {
-      let yAxisPartList = getKeyDataList(this.data, yAxisPart[i].key);
-      let uniquePartList = [...new Set(yAxisPartList)];
-      if (i === 0) {
-        this.yAxisHeight = this.shapeHeight / uniquePartList.length;
+    if (!yAxisPart || !yAxisPart.length) {
+      this.createYAxis(['']);
+    } else {
+      for (let i = 0, len = yAxisPart.length; i < len; i++) {
+        let yAxisPartList = getKeyDataList(this.data, yAxisPart[i].key);
+        let uniquePartList = [...new Set(yAxisPartList)];
+        if (i === 0) {
+          this.yAxisHeight = this.shapeHeight / uniquePartList.length;
+          this.createYAxis(uniquePartList);
+          initMiddleGrid(this.middle, this.yAxisHeight, uniquePartList, this.shapeWidth);
+        }
+        initYAxisGrid(this.leftAxis, this.yAxisHeight, uniquePartList, this.leftAxisWidth, (len - i - 1));
       }
-      initYAxisGrid(this.leftAxis, this.yAxisHeight, uniquePartList, this.leftAxisWidth);
-      console.log(uniquePartList);
-      // debugger;
-    }
-    console.log(this.yAxisHeight);
+    };
   }
 };
