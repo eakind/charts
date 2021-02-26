@@ -1,13 +1,13 @@
 import { tipTpl } from './tip';
 import { getTxtLen, getTxtWidth } from '../utils/utils';
 // 初始化X轴
-const initXAxis = (middle, scaleX, width, height, option, topAxisHeight, bottomAxisHeight) => {
+const initXAxis = (middle, scaleX, width, height, option, topAxisHeight, bottomAxisHeight, labelHeight) => {
   let position = option.position;
   let axis = getAxis(scaleX, position, 0);
   let axisPanel = setAxisX(middle, axis, width, height, position, topAxisHeight, bottomAxisHeight);
   setAxisLine(axisPanel, option.line.style);
-  setAxisLabel(axisPanel, option.label, scaleX.bandwidth(), tipTpl);
-  setAxisXtitle(axisPanel, option.title, width);
+  setAxisLabel(axisPanel, option.label, scaleX.bandwidth(), tipTpl, position);
+  setAxisXtitle(axisPanel, option.title, width, labelHeight);
 };
 
 const setAxisX = (axisPanel, axis, width, height, position, topAxisHeight, bottomAxisHeight) => {
@@ -16,9 +16,6 @@ const setAxisX = (axisPanel, axis, width, height, position, topAxisHeight, botto
     top: topAxisHeight
   };
   let axisX = axisPanel.append('g')
-    .attr('width', width)
-    .attr('height', 100)
-    .append('g')
     .attr('transform', () => {
       return `translate(${0},${posObj[position]})`;
     });
@@ -32,7 +29,7 @@ const initYAxis = (axisYContainer, scaleY, option, tipTpl, height, topAxisHeight
   let axisPanel = setAxisY(axisYContainer, axis, position, topAxisHeight, width, index, height);
   setAxisLine(axisPanel, option.line.style);
   setAxisYTitle(axisYContainer, option.title, position, width, topAxisHeight, height, index);
-  setAxisLabel(axisPanel, option.label, tipTpl, index);
+  setAxisLabel(axisPanel, option.label, width, tipTpl, position);
 };
 
 const setAxisY = (axisPanel, axis, position, topAxisHeight, translateX, index, height) => {
@@ -56,6 +53,7 @@ const getAxis = (scale, position, height) => {
   };
   let axis = scaleObj[position]
     .tickPadding(6)
+    .ticks(5)
     .tickSizeInner(-height)
     .tickSizeOuter(0);
   return axis;
@@ -77,31 +75,30 @@ const setAxisYTitle = (axisPanel, titleOption, position, width, topAxisHeight, h
       if (position === 'right') {
         translateX = 50;
       }
-      return `translate(${translateX}, ${topAxisHeight + height * index})`;
+      return `translate(${translateX}, ${topAxisHeight + (height * index)})`;
     })
     .append('text')
+    .attr('text-anchor', 'start')
     .attr('fill', titleStyle.fontColor) // 标题颜色
     .attr('font-size', titleStyle.fontSize) // 标题大小
     .text(titleOption.value) // 标题名称
     .attr('title', titleOption.value)
-    .attr('transform', 'rotate(90)');
+    .style('writing-mode', 'tb');
 };
 
-const setAxisXtitle = (axisPanel, option, width) => {
+const setAxisXtitle = (axisPanel, option, width, labelHeight) => {
   let titleStyle = option.style;
   axisPanel.append('g')
-    .attr('height', 30)
-    .attr('width', width)
     .append('text')
-    .attr('transform', 'translate(700,60)')
+    .attr('text-anchor', 'end')
+    .attr('transform', `translate(${width},${labelHeight || 40})`)
     .attr('fill', titleStyle.fontColor)
     .attr('font-size', titleStyle.fontSize)
     .text(option.value)
     .attr('title', option.value);
 };
 
-const setAxisLabel = (scalePanel, option, width, textTip) => {
-  let position = option.position;
+const setAxisLabel = (scalePanel, option, width, textTip, position) => {
   let labelStyle = option.style;
   let rotate = option.rotate;
   let allText = scalePanel.selectAll('text');
@@ -109,10 +106,20 @@ const setAxisLabel = (scalePanel, option, width, textTip) => {
   allText.attr('font-size', labelStyle.fontSize) // 标签文本大小
     .attr('fill', labelStyle.fontColor) // 标签文本颜色
     .attr('opacity', labelStyle.opacity) // 标签文本透明度
-    .attr('lengthAdjust', 'spacingAndGlyphs')
+    .attr('text-anchor', () => {
+      if (position === 'bottom') {
+        let obj = {
+          90: 'end',
+          0: 'middle',
+          45: 'end',
+          '-45': 'start'
+        };
+        return obj[rotate];
+      }
+    })
     .text((d, index, node, a) => {
       if (position === 'bottom') {
-        let len = getTxtWidth(d, 18);
+        let len = getTxtWidth(d, labelStyle.fontSize);
         if (len < width) {
           return d;
         } else {
@@ -122,7 +129,7 @@ const setAxisLabel = (scalePanel, option, width, textTip) => {
       return d;
     })
     .on('mouseenter', (d) => {
-      let len = getTxtWidth(d, 18);
+      let len = getTxtWidth(d, labelStyle.fontSize);
       if (len > width) {
         tipTpl(d, true, textTip);
       }
@@ -132,22 +139,23 @@ const setAxisLabel = (scalePanel, option, width, textTip) => {
     });
   if (position === 'bottom') {
     allText.attr('transform', (d) => {
-      let len = String(d).length;
+      let len = getTxtWidth(d, labelStyle.fontSize) + 4;
       const transfromObj = {
-        45: `translate(0, ${6 * len}) rotate(45)`,
-        '-45': `translate(0, ${6 * len}) rotate(-45)`,
-        90: `translate(0, ${10 * len}) rotate(90)`,
+        45: `translate(0, ${len}) rotate(45)`,
+        '-45': `translate(0, ${len}) rotate(-45)`,
+        90: `translate(0, ${len}) rotate(90)`,
         0: 'translate(0, 5)'
       };
       return transfromObj[rotate];
     });
   } else {
     if (rotate === 90) {
-      let offsetY = position === 'left' ? -28 : -18;
+      let offsetY = position === 'left' ? -28 : -28;
       let offsetX = position === 'left' ? 8 : -8;
       allText.attr('x', offsetX)
         .attr('y', offsetY);
     }
+    allText.attr('text-anchor', position === 'right' ? 'start' : '');
     allText.attr('transform', `rotate(${rotate})`);
   }
 };

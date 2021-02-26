@@ -13,7 +13,7 @@ export default class Line extends Base {
 
   drawLine () {
     // d3提供的symbols，如果用户没有提供默认为圆点
-    // let symbol = d3.symbolCircle;
+    let symbol = d3.symbolCircle;
     // let rotated = 0;
     // const symbols = {
     //   cross: d3.symbolCross,
@@ -29,7 +29,7 @@ export default class Line extends Base {
     //   cross45: 45,
     //   triangle180: 180
     // };
-    // let arc = d3.symbol().type(symbol).size(2 * 25);
+    let arc = d3.symbol().type(symbol).size(2 * 25);
     if (!this.config.yAxis) return;
     let yAxis = this.config.yAxis;
     let len = yAxis.length;
@@ -51,25 +51,25 @@ export default class Line extends Base {
         let lineContainer = this.middle.append('g')
           .attr('transform', `translate(0,${this.topAxisHeight})`);
         lineContainer.append('path')
-          .transition().duration(600)
           .attr('d', valueLine(data))
           .attr('fill', 'none')
           .attr('stroke-width', 2)
-          .attr('stroke', '#424242')
+          .attr('stroke', '#4284f5')
           .attr('opacity', 1);
 
-        // lineContainer.append('g')
-        //   .data(data)
-        //   .enter()
-        //   .selectAll('path')
-        //   .attr('d', d => arc(d))
-        //   .attr('fill', 'none')
-        //   .attr('opacity', 1)
-        //   .attr('transform', (d, index) => {
-        //     let x = brandWidth * index + brandWidth / 2;
-        //     let y = scaleY(d[1] - Math.max(d[0], 0));
-        //     return `translate(${x}, ${y})rotate(${rotated})`;
-        //   });
+        let pointer = lineContainer.selectAll('.point-group')
+          .data(data)
+          .enter()
+          .append('g');
+
+        pointer.append('path')
+          .attr('d', arc)
+          .attr('transform', (d, index) => {
+            let x = brandWidth * index + brandWidth / 2;
+            let y = scaleY(d);
+            return `translate(${x}, ${y})`;
+          })
+          .attr('fill', '#4284f5');
       };
     };
   }

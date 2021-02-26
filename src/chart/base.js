@@ -1,8 +1,9 @@
 import { initTip } from '../components/textTip';
 import { scaleLinear, scaleBand } from '../shape/scale.js';
 import { initYAxis, initXAxis } from '../shape/axis';
-import { initXGrid, initYGrid, initYAxisGrid, initMiddleGrid } from '../shape/grid';
+import { initXGrid, initYGrid, initYAxisGrid, initMiddleGrid, initYAxisLine } from '../shape/grid';
 import { getMaxValue, getKeyDataList } from '../components/data.js';
+import { getTopAxisHeight, setAsideWidth, setBottomLabelHeight } from '../utils/utils.js';
 export default class Base {
   init () {
     // 初始化各个部分的空间
@@ -13,7 +14,6 @@ export default class Base {
     this.tipTpl = initTip();
     // 生成多左轴信息
     this.createYPart();
-    // 生成Y轴
     // 生成X轴
     this.createXAxis();
   }
@@ -32,7 +32,12 @@ export default class Base {
 
   initContainer () {
     // 图表容器
-    this.container = d3.select(`#${this.config.id}`).attr('class', 'chart-container');
+    this.container = d3.select(`#${this.config.id}`).attr('class', 'chart-container')
+      .style('display', 'flex')
+      .style('position', 'relative')
+      .style('box-sizing', 'border-box')
+      .style('width', '100%')
+      .style('height', '100%');
     // 左侧坐标轴容器
     this.leftAxis = this.container.append('div').attr('class', 'left-axis')
       .style('display', 'flex')
@@ -70,15 +75,17 @@ export default class Base {
       dom.style.height = `${height}px`;
     }
     /* 左边坐标轴宽度 */
-    this.leftAxisWidth = 80;
+    this.leftAxisWidth = setAsideWidth(this.config.yAxis.filter(item => item.position === 'left')[0], this.data, this.config.yAxisPart);
     /* 右边坐标轴宽度  */
-    this.rightAxisWidth = 100;
+    this.rightAxisWidth = setAsideWidth(this.config.yAxis.filter(item => item.position === 'right')[0], this.data);
+    /* X轴坐标标签的高度 */
+    this.labelHeight = setBottomLabelHeight(this.config.xAxis[0], this.data);
     /* 底部坐标轴高度 */
-    this.bottomAxisHeight = 100;
+    this.bottomAxisHeight = this.labelHeight + 10;
     /* 顶部坐标轴高度 */
-    this.topAxisHeight = 100;
+    this.topAxisHeight = getTopAxisHeight(this.config.xAxis);
     /* 画布内容高度 */
-    this.shapeHeight = this.height - 200;
+    this.shapeHeight = this.height - (this.bottomAxisHeight + this.topAxisHeight);
     /* 画布内容的宽度 */
     this.shapeWidth = this.width - (this.leftAxisWidth + this.rightAxisWidth);
     /* Y坐标轴的高度 */
@@ -94,12 +101,13 @@ export default class Base {
       let scaleX = scaleBand(xAxisList, this.shapeWidth);
       if (xAxis[i].position === 'top') {
         let topAxis = topAxisIndex * 30;
-        initXGrid(this.middle, this.shapeWidth, this.shapeHeight, this.xAixsKey, this.topAxisHeight, topAxis, this.scaleX.bandwidth(), this.data, xAxisList);
+        let title = xAxis[i].title.value;
+        initXGrid(this.middle, this.shapeWidth, this.shapeHeight, this.xAixsKey, this.topAxisHeight, topAxis, this.scaleX.bandwidth(), this.data, xAxisList, title);
         topAxisIndex++;
       } else {
         this.scaleX = scaleBand(xAxisList, this.shapeWidth);
         this.xAixsKey = xAxis[i].key;
-        initXAxis(this.middle, scaleX, this.shapeWidth, this.shapeHeight, xAxis[i], this.topAxisHeight, this.bottomAxisHeight);
+        initXAxis(this.middle, scaleX, this.shapeWidth, this.shapeHeight, xAxis[i], this.topAxisHeight, this.bottomAxisHeight, this.labelHeight);
       }
     }
   }
@@ -132,9 +140,11 @@ export default class Base {
         if (i === 0) {
           this.yAxisHeight = this.shapeHeight / uniquePartList.length;
           this.createYAxis(uniquePartList);
-          initMiddleGrid(this.middle, this.yAxisHeight, uniquePartList, this.shapeWidth);
+          initMiddleGrid(this.middle, this.yAxisHeight, uniquePartList, this.shapeWidth, this.topAxisHeight);
+        } else {
+          initYAxisLine(this.leftAxis, this.topAxisHeight, this.shapeHeight, i);
         }
-        initYAxisGrid(this.leftAxis, this.yAxisHeight, uniquePartList, this.leftAxisWidth, (len - i - 1));
+        initYAxisGrid(this.leftAxis, this.yAxisHeight, uniquePartList, this.leftAxisWidth, (len - i - 1), this.topAxisHeight, yAxisPart[0].key, this.data, i);
       }
     };
   }

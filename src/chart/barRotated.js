@@ -14,16 +14,11 @@ export default class Bar extends Base {
   drawBar () {
     if (!this.config.yAxis) return;
     let yAxis = this.config.yAxis;
-    let yAxisPart = this.config.yAxisPart;
     let len = yAxis.length;
-    console.log(yAxisPart);
-    debugger;
     for (let i = 0; i < len; i++) {
       let key = yAxis[i].key;
       let yAxisMax = getMaxValue(this.data, yAxis[i].key);
-      let keyLen = key.length;
-      let leftLen = yAxis[0].key.length;
-      for (let j = 0; j < keyLen; j++) {
+      for (let j = 0; j < key.length; j++) {
         let data = getKeyDataList(this.data, yAxis[i].key[j]);
         let scaleY = scaleLinear(yAxisMax, this.yAxisHeight);
         let barContainer = this.middle.append('g')
@@ -31,21 +26,15 @@ export default class Bar extends Base {
           .attr('height', this.shapeHeight)
           .attr('transform', `translate(0,${this.topAxisHeight})`);
         let bar = barContainer.selectAll('.bar').data(data);
-        let bandwidth = this.scaleX.bandwidth();
-        let barWidth = bandwidth / (leftLen + keyLen + 1);
-        let barGap = barWidth / (leftLen + keyLen);
-        let barIndex = i + j;
-        if (i !== 0) {
-          barIndex = leftLen + j;
-        }
+        let druaction = this.scaleX.bandwidth();
         bar.enter()
           .append('rect')
           .attr('class', 'bar')
           .attr('x', (d, index) => {
-            return (index * bandwidth) + (barIndex * (barWidth + 2)) + barGap;
+            return (index * druaction) + ((i + j) * druaction / 4) + (druaction / 6);
           })
           .attr('y', scaleY)
-          .attr('width', barWidth)
+          .attr('width', druaction * 0.2)
           .attr('height', 0)
           .attr('fill', (d, index) => {
             return this.colorList[index];
