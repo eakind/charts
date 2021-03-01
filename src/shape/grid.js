@@ -2,6 +2,7 @@ import { setTextPos, setLinePos, getTxtWidth, setUnitHeight } from '../utils/uti
 const initYGrid = (middle, width, height, scaleY, topAxisHeight, index) => {
   let axis = d3.axisLeft(scaleY)
     .tickPadding(6)
+    .ticks(5)
     .tickSizeInner(-(width))
     .tickSizeOuter(0);
   let grid = middle.append('g')
@@ -78,7 +79,7 @@ const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxis
       let x = xIndex * 45 + 30;
       let isUnit = i === 0;
       let height = setUnitHeight(yAxisHeight, d, data, key, isUnit, index);
-      let y = height;
+      let y = height - 50;
       return `translate(${x}, ${y})`;
     })
     .attr('font-size', 14)
@@ -87,7 +88,7 @@ const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxis
     .text(d => d);
   yGridGroup.append('line')
     .attr('x1', (d, index) => {
-      return 0;
+      return i * 50;
     })
     .attr('y1', (d, index) => {
       return index * yAxisHeight;
@@ -97,7 +98,8 @@ const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxis
       return index * yAxisHeight;
     })
     .attr('opacity', (d, index) => {
-      return lineLen === index ? 0 : 1;
+      let opacity = lineLen === index ? 0 : 1;
+      return opacity;
     })
     .attr('stroke-width', 1)
     .attr('stroke', '#c2c9d1');

@@ -170,8 +170,6 @@ const setUnitHeight = (height, text, data, axisKey, isUnit, index) => {
       }
     }
   }
-  if (!isUnit) {
-  }
   return isUnit ? num * height * index : (height * start) + (num * height - getTxtWidth(text, 14)) / 2;
 };
 
