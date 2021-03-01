@@ -9,15 +9,26 @@ export default class Bar extends Base {
     this.colorList = config.colorList;
     this.init();
     // this.drawBar();
+    this.drawMultBar();
+  };
+
+  drawMultBar () {
+    if (!this.config.yAxis) return;
+    let yAxis = this.config.yAxis;
+    let yAxisPart = this.config.yAxisPart;
+    let len = yAxis.length;
+    let partLen = yAxisPart.length;
+    for (let i = 0; i < len; i++) {
+
+    }
+    console.log(partLen);
   };
 
   drawBar () {
     if (!this.config.yAxis) return;
     let yAxis = this.config.yAxis;
-    let yAxisPart = this.config.yAxisPart;
+    // let yAxisPart = this.config.yAxisPart;
     let len = yAxis.length;
-    console.log(yAxisPart);
-    debugger;
     for (let i = 0; i < len; i++) {
       let key = yAxis[i].key;
       let yAxisMax = getMaxValue(this.data, yAxis[i].key);

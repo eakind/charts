@@ -90,6 +90,8 @@ export default class Base {
     this.shapeWidth = this.width - (this.leftAxisWidth + this.rightAxisWidth);
     /* Y坐标轴的高度 */
     this.yAxisHeight = this.shapeHeight;
+    this.yAxisbandHeight = 100;
+    this.xAxisBandwidth = 100;
   }
 
   createXAxis () {
