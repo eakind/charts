@@ -15,7 +15,13 @@ let getItemColor = function (
         if (!feature) {
           return colorSet.category[0];
         }
-        colorList = colorList && colorList.length > 0 ? colorList : colorSet.category;
+        if (colorList && colorList.length > 0) {
+          let match = colorList.find(i => i.val === curVal);
+          if (match) {
+            return match.color;
+          }
+        }
+        colorList = colorSet.category;
         if (colorList.length <= index) {
           return colorList[index % colorList.length];
         }

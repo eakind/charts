@@ -23,14 +23,17 @@ class Geometry {
       .select(`#${id}`)
       .append('div')
       .attr('class', 'chart-container')
-      .attr('style', `width:${width}px;height:${height}px;position:relative`);
+      .attr(
+        'style',
+        `width:${width}px;height:${height}px;position:relative;display:inline-block;vertical-align:middle`
+      );
 
     // 待补充
     this.svg = this.container
       .append('svg')
       .attr('width', width)
-      .attr('height', height)
-      .attr('transform', 'translate(10,10)');
+      .attr('height', height);
+    // .attr('transform', 'translate(10,10)');
   }
 
   /**
@@ -147,12 +150,33 @@ class Geometry {
       return;
     }
     let that = this;
-    this.geometry.on(eventType, function (d) {
-      // 待修改
-      that.geometry.selectAll(`.${that.className}`).attr('opacity', 1 * 0.2);
-      d3.select(this).transition().duration(500).attr('opacity', 1);
-      typeof that.config.data_click === 'function' && that.config.data_click(d);
-    }, false);
+    this.geometry.on(
+      eventType,
+      function (d) {
+        // 待修改selectAll(`.${that.className}`)
+        d3.event.stopPropagation();
+        that.geometry.attr('opacity', that.config.opacity * 0.2);
+        d3.select(this).transition().duration(500).attr('opacity', 1);
+        that.config.clkFlag = true;
+        typeof that.config.data_click === 'function' &&
+          that.config.data_click(d);
+      },
+      false
+    );
+
+    this.container.on(
+      eventType,
+      function (d) {
+        // 待修改selectAll(`.${that.className}`)
+        that.geometry.attr('opacity', that.config.opacity);
+        if (that.config.clkFlag) {
+          typeof that.config.data_click === 'function' &&
+            that.config.data_click();
+          that.config.clkFlag = false;
+        }
+      },
+      false
+    );
   }
 
   /**
@@ -229,7 +253,9 @@ class Geometry {
      * 处理数据 取最大值和最小值
      */
     if (colorFeature.type === 'linear') {
-      let sortList = this.colorList.filter(i => typeof i.val !== 'undefined').sort((a, b) => a.val - b.val);
+      let sortList = this.colorList
+        .filter((i) => typeof i.val !== 'undefined')
+        .sort((a, b) => a.val - b.val);
       let minObj = sortList[0];
       minObj.rangeType = 'min';
       minObj.originalVal = minObj.val;
