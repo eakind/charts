@@ -23,12 +23,12 @@ const setAxisX = (axisPanel, axis, width, height, position, topAxisHeight, botto
   return axisX;
 };
 
-const initYAxis = (axisYContainer, scaleY, option, tipTpl, height, topAxisHeight, width, index) => {
+const initYAxis = (axisYContainer, scaleY, option, tipTpl, height, topAxisHeight, width, index, yAxisMax) => {
   let position = option.position;
   let axis = getAxis(scaleY, position, 0);
   let axisPanel = setAxisY(axisYContainer, axis, position, topAxisHeight, width, index, height);
   setAxisLine(axisPanel, option.line.style);
-  setAxisYTitle(axisYContainer, option.title, position, width, topAxisHeight, height, index);
+  setAxisYTitle(axisYContainer, option.title, position, width, topAxisHeight, height, index, yAxisMax);
   setAxisLabel(axisPanel, option.label, width, tipTpl, position);
 };
 
@@ -67,11 +67,12 @@ const setAxisLine = (scalePanel, option) => {
     .attr('opacity', option.opacity); // 坐标轴线透明度
 };
 
-const setAxisYTitle = (axisPanel, titleOption, position, width, topAxisHeight, height, index) => {
+const setAxisYTitle = (axisPanel, titleOption, position, width, topAxisHeight, height, index, yAxisMax) => {
   let titleStyle = titleOption.style;
   axisPanel.append('g')
     .attr('transform', () => {
-      let translateX = width - 60;
+      let labelWidth = getTxtWidth(String(yAxisMax), titleStyle.fontSize) + 10;
+      let translateX = width - labelWidth;
       if (position === 'right') {
         translateX = 50;
       }

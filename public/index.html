@@ -7,6 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
     <title>图表库</title>
     <script src="./d3.v5.min.js"></script>
+    <script src="./l7.js"></script>
     <!-- <script src="./chart.js"></script> -->
     <style>
       html, body {
@@ -15,25 +16,27 @@
         margin: 0px;
         padding: 0px;
       }
-      #bar_0{
+      .container{
         width: 100%;
         height: 100%;
       }
-      .chart-container{
+      #mc_bar {
         width: 100%;
         height: 100%;
-        box-sizing: border-box;
-        position: relative;
-        display: flex;
       }
     </style>
   </head>
   <body>
-    <div id="bar_0"></div>
+    <div class="container">
+      <div id="mc_pie_53dd28945f7f11eba51b0242ac120007"></div>
+      <div id="mc_map" style="width: 600px; height: 400px; position: relative; display: none;"></div>
+      <div id="mc_bar"></div>
+    </div>
     <script src="./chart.js"></script>
-    <script src="./index.js"></script>
     <!-- <script src="./bubble.js"></script> -->
     <!-- <script src="./scatter.js"></script> -->
+    <!-- <script src="./map.js"></script> -->
+    <script src="./bar.js"></script>
   </body>
 
 </html>

@@ -170,8 +170,6 @@ const setUnitHeight = (height, text, data, axisKey, isUnit, index) => {
       }
     }
   }
-  if (!isUnit) {
-  }
   return isUnit ? num * height * index : (height * start) + (num * height - getTxtWidth(text, 14)) / 2;
 };
 
@@ -231,7 +229,7 @@ const getTxtLen = (width, font) => {
 };
 
 const getTxtWidth = (text, font) => {
-  let textDom = document.createElement('span');
+  let textDom = document.createElement('text');
   textDom.innerText = text;
   textDom.style.fontSize = font + 'px';
   textDom.style.position = 'fixed';
@@ -249,7 +247,7 @@ const getTopAxisHeight = (xAxis) => {
 const setAsideWidth = (yAxis, data, yAxisPart) => {
   if (!yAxis) return 16;
   let maxValue = getMaxValue(data, yAxis.key);
-  let txtLen = getTxtWidth(String(maxValue), 14) + 20;
+  let txtLen = getTxtWidth(String(maxValue), 14) + 24;
   let titleLen = getTxtWidth('哈', 16);
   if (!yAxisPart) return txtLen + titleLen;
   return yAxisPart.length * 50 + txtLen + titleLen;

@@ -20,7 +20,6 @@ export default class Chart extends ChartOption {
       dom.style.width = `${width}px`;
       dom.style.height = `${height}px`;
     }
-    debugger;
     this.container = d3.select(`#${id}`)
       .append('div')
       .attr('class', 'chart-container');

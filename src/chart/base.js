@@ -122,10 +122,12 @@ export default class Base {
         let position = yAxis[j].position;
         let yAxisMax = getMaxValue(this.data, yAxis[j].key);
         let scaleY = scaleLinear(yAxisMax, this.yAxisHeight);
-        initYAxis(this[`${position}Axis`], scaleY, yAxis[j], this.tipTpl, this.yAxisHeight, this.topAxisHeight, this[`${position}AxisWidth`], i);
+        initYAxis(this[`${position}Axis`], scaleY, yAxis[j], this.tipTpl, this.yAxisHeight, this.topAxisHeight, this[`${position}AxisWidth`], i, yAxisMax);
         if (position === 'left') {
-          this.scaleY = scaleY;
+          this.leftScaleY = scaleY;
           initYGrid(this.middle, this.shapeWidth, this.yAxisHeight, scaleY, this.topAxisHeight, i);
+        } else {
+          this.rightScaleY = scaleY;
         }
       }
     };
@@ -141,6 +143,7 @@ export default class Base {
         let uniquePartList = [...new Set(yAxisPartList)];
         if (i === 0) {
           this.yAxisHeight = this.shapeHeight / uniquePartList.length;
+          this.uniquePartList = uniquePartList;
           this.createYAxis(uniquePartList);
           initMiddleGrid(this.middle, this.yAxisHeight, uniquePartList, this.shapeWidth, this.topAxisHeight);
         } else {
