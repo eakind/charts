@@ -71,10 +71,9 @@ const setAxisYTitle = (axisPanel, titleOption, position, width, topAxisHeight, h
   let titleStyle = titleOption.style;
   axisPanel.append('g')
     .attr('transform', () => {
-      let labelWidth = getTxtWidth(String(yAxisMax), titleStyle.fontSize) + 10;
-      let translateX = width - labelWidth;
+      let translateX = 16;
       if (position === 'right') {
-        translateX = 50;
+        translateX = width - 16;
       }
       return `translate(${translateX}, ${topAxisHeight + (height * index)})`;
     })

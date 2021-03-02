@@ -152,5 +152,35 @@ export default class Base {
         initYAxisGrid(this.leftAxis, this.yAxisHeight, uniquePartList, this.leftAxisWidth, (len - i - 1), this.topAxisHeight, yAxisPart[0].key, this.data, i);
       }
     };
+  };
+
+  createLabel () {
+    let labelList = this.config.labelsList;
+    if (!labelList || !labelList.length) return;
+    for (let i = 0; i < labelList.length; i++) {
+      let key = labelList[i].key;
+      let title = labelList[i].title;
+      // let format = labelList[i].format;
+      // let textStyle = labelList[i].text;
+      this.addLabel(this.middle, key, title, this.data, this.scaleX, this.leftScaleY, this.shapeHeight);
+    };
+  }
+
+  addLabel (middle, key, title, data, scaleX, scaleY, height) {
+    let bandwidth = scaleX.bandwidth();
+    let textGroup = middle.append('g').selectAll('.label-text');
+    textGroup.data(data)
+      .enter()
+      .append('text')
+      .attr('x', (d, index) => {
+        return index * bandwidth + bandwidth / 2;
+      })
+      .attr('y', (d, index) => {
+        return scaleY(d[title]);
+      })
+      .attr('text-anchor', 'middle')
+      .text((d) => {
+        return d[key];
+      });
   }
 };

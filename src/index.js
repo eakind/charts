@@ -18,20 +18,6 @@ let drawClasses = {
 
 let GeometryDrawingProcess = function ({ config, data, chartType }) {
   let instance = new drawClasses[chartType](data, config);
-  let timer = null;
-  window.addEventListener('resize', () => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-    }
-    timer = setTimeout(() => {
-      if (instance) {
-        instance = null;
-        document.querySelector(`#${config.id}`).innerHTML = '';
-      }
-      instance = new drawClasses[chartType](data, config);
-    }, 300);
-  });
   return {
     draw: () => {
       instance.render();

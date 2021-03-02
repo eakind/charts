@@ -261,7 +261,7 @@ const setBottomLabelHeight = (xAxis, data) => {
   if (rotate !== 0) {
     return txtLen;
   }
-  return 50;
+  return 42;
 };
 
 export {

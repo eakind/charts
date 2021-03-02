@@ -20,6 +20,7 @@ class Bubble extends Geometry {
     if (list.length === 0) {
       return;
     }
+    let dpr = this.config.dpr || 1;
     this.geometry.selectAll('.bubble-labels').remove();
     let textDom = this.geometry
       .append('text')
@@ -49,7 +50,7 @@ class Bubble extends Geometry {
               formatVal: dataProcess(d[l.key], format)
             };
           })
-          .filter((f) => getTextWidth(f.formatVal) < d.radius * 2 * 0.7);
+          .filter((f) => getTextWidth(f.formatVal, f.text.fontSize + 'px') * dpr < d.radius * 2 * 0.7);
         let totalHeight = tempList.reduce((a, b) => {
           return a + b.text.lineHeight;
         }, 0);
@@ -88,7 +89,9 @@ class Bubble extends Geometry {
     var nodes = pack(root)
       .leaves()
       .map((d, idx) => {
-        let color = this.getItemColor(idx, d.value);
+        let colorVal = colorFeature.feature;
+        let val = colorFeature.type === 'ordinal' ? d.data[colorVal] : d.value;
+        let color = this.getItemColor(idx, val);
         if (colorFeature.feature) {
           colorList.push({
             val: d.data[colorFeature.feature],
