@@ -1,9 +1,9 @@
 import { tipTpl } from './tip';
 import { getTxtLen, getTxtWidth } from '../utils/utils';
 // 初始化X轴
-const initXAxis = (middle, scaleX, width, height, option, topAxisHeight, bottomAxisHeight, labelHeight) => {
+const initXAxis = (middle, scaleX, width, height, option, topAxisHeight, bottomAxisHeight, labelHeight, xAxisList) => {
   let position = option.position;
-  let axis = getAxis(scaleX, position, 0);
+  let axis = getAxis(scaleX, position, 0, xAxisList);
   let axisPanel = setAxisX(middle, axis, width, height, position, topAxisHeight, bottomAxisHeight);
   setAxisLine(axisPanel, option.line.style);
   setAxisLabel(axisPanel, option.label, scaleX.bandwidth(), tipTpl, position);
@@ -44,7 +44,7 @@ const setAxisY = (axisPanel, axis, position, topAxisHeight, translateX, index, h
   return scalePanel;
 };
 
-const getAxis = (scale, position, height) => {
+const getAxis = (scale, position, height, xAxisList) => {
   const scaleObj = {
     top: d3.axisTop(scale),
     bottom: d3.axisBottom(scale),
@@ -119,19 +119,21 @@ const setAxisLabel = (scalePanel, option, width, textTip, position) => {
     })
     .text((d, index, node, a) => {
       if (position === 'bottom') {
-        let len = getTxtWidth(d, labelStyle.fontSize);
+        let txt = d.split('|~|')[0];
+        let len = getTxtWidth(txt, labelStyle.fontSize);
         if (len < width) {
-          return d;
+          return txt;
         } else {
-          return rotate !== 90 ? d.slice(0, fullLen) + '...' : d;
+          return rotate !== 90 ? txt.slice(0, fullLen) + '...' : txt;
         }
       }
       return d;
     })
     .on('mouseenter', (d) => {
-      let len = getTxtWidth(d, labelStyle.fontSize);
+      let txt = d.split('|~|')[0];
+      let len = getTxtWidth(txt, labelStyle.fontSize);
       if (len > width) {
-        tipTpl(d, true, textTip);
+        tipTpl(txt, true, textTip);
       }
     })
     .on('mouseout', () => {

@@ -102,12 +102,12 @@ export default class Base {
       if (xAxis[i].position === 'top') {
         let topAxis = topAxisIndex * 30;
         let title = xAxis[i].title.value;
-        initXGrid(this.middle, this.shapeWidth, this.shapeHeight, this.xAixsKey, this.topAxisHeight, topAxis, this.scaleX.bandwidth(), this.data, xAxisList, title);
+        initXGrid(this.middle, this.shapeWidth, this.shapeHeight, this.topAxisHeight, topAxis, this.scaleX.bandwidth(), xAxisList, title);
         topAxisIndex++;
       } else {
         this.scaleX = scaleBand(xAxisList, this.shapeWidth);
         this.xAixsKey = xAxis[i].key;
-        initXAxis(this.middle, scaleX, this.shapeWidth, this.shapeHeight, xAxis[i], this.topAxisHeight, this.bottomAxisHeight, this.labelHeight);
+        initXAxis(this.middle, scaleX, this.shapeWidth, this.shapeHeight, xAxis[i], this.topAxisHeight, this.bottomAxisHeight, this.labelHeight, xAxisList);
       }
     }
   }

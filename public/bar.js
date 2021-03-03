@@ -21,7 +21,6 @@ const config = {
     label: {
       style: {
         fontColor: 'blue',
-        fontStyle: 'normal',
         fontSize: 14,
         fontWeight: 'normal',
         opacity: 1
@@ -30,6 +29,45 @@ const config = {
     },
     title: {
       value: 'X轴哈哈哈',
+      style: {
+        fontColor: 'blue',
+        fontSize: 16,
+        fontStyle: 'normal'
+      }
+    },
+    grid: {
+      line: {
+        style: {
+          fontColor: '#c2c9d1',
+          opacity: 0,
+          lineDash: [0, 0], // [3,3]
+          lineWidth: 1
+        }
+      }
+    }
+  }, {
+    position: 'top',
+    key: '省',
+    line: {
+      style: {
+        lineWidth: 1,
+        fontColor: '#c2c9d1',
+        opacity: 1,
+        lineDash: [0, 0]
+      }
+    },
+    label: {
+      style: {
+        fontColor: 'blue',
+        fontStyle: 'normal',
+        fontSize: 14,
+        fontWeight: 'normal',
+        opacity: 1
+      },
+      rotate: 0
+    },
+    title: {
+      // value: '市',
       style: {
         fontColor: 'blue',
         fontSize: 16,
@@ -47,86 +85,46 @@ const config = {
         }
       }
     }
-  // }, {
-  //   position: 'top',
-  //   key: '市',
-  //   line: {
-  //     style: {
-  //       lineWidth: 1,
-  //       fontColor: '#c2c9d1',
-  //       opacity: 1,
-  //       lineDash: [0, 0]
-  //     }
-  //   },
-  //   label: {
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontStyle: 'normal',
-  //       fontSize: 14,
-  //       fontWeight: 'normal',
-  //       opacity: 1
-  //     },
-  //     rotate: 0
-  //   },
-  //   title: {
-  //     // value: 'Top轴哈哈哈',
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontSize: 16,
-  //       fontWeight: 'normal',
-  //       fontStyle: 'normal'
-  //     }
-  //   },
-  //   grid: {
-  //     line: {
-  //       style: {
-  //         fontColor: '#c2c9d1',
-  //         opacity: 0,
-  //         lineDash: [0, 0], // [3,3]
-  //         lineWidth: 1
-  //       }
-  //     }
-  //   }
-  // }, {
-  //   position: 'top',
-  //   key: '省',
-  //   line: {
-  //     style: {
-  //       lineWidth: 1,
-  //       fontColor: '#c2c9d1',
-  //       opacity: 1,
-  //       lineDash: [0, 0]
-  //     }
-  //   },
-  //   label: {
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontStyle: 'normal',
-  //       fontSize: 14,
-  //       fontWeight: 'normal',
-  //       opacity: 1
-  //     },
-  //     rotate: 0
-  //   },
-  //   title: {
-  //     // value: 'Top轴哈哈哈',
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontSize: 16,
-  //       fontWeight: 'normal',
-  //       fontStyle: 'normal'
-  //     }
-  //   },
-  //   grid: {
-  //     line: {
-  //       style: {
-  //         fontColor: '#c2c9d1',
-  //         opacity: 0,
-  //         lineDash: [0, 0], // [3,3]
-  //         lineWidth: 1
-  //       }
-  //     }
-  //   }
+  }, {
+    position: 'top',
+    key: '市',
+    line: {
+      style: {
+        lineWidth: 1,
+        fontColor: '#c2c9d1',
+        opacity: 1,
+        lineDash: [0, 0]
+      }
+    },
+    label: {
+      style: {
+        fontColor: 'blue',
+        fontStyle: 'normal',
+        fontSize: 14,
+        fontWeight: 'normal',
+        opacity: 1
+      },
+      rotate: 0
+    },
+    title: {
+      value: '市/省',
+      style: {
+        fontColor: 'blue',
+        fontSize: 16,
+        fontWeight: 'normal',
+        fontStyle: 'normal'
+      }
+    },
+    grid: {
+      line: {
+        style: {
+          fontColor: '#c2c9d1',
+          opacity: 0,
+          lineDash: [0, 0], // [3,3]
+          lineWidth: 1
+        }
+      }
+    }
   // }, {
   //   position: 'top',
   //   key: '区域',
@@ -170,6 +168,27 @@ const config = {
   }],
   // yAxisPart: [{
   //   position: 'left-part',
+  //   key: ['省'],
+  //   line: {
+  //     style: {
+  //       lineWidth: 1,
+  //       fontColor: '#c2c9d1',
+  //       opacity: 1,
+  //       lineDash: [0, 0]
+  //     }
+  //   },
+  //   label: {
+  //     style: {
+  //       fontColor: 'blue',
+  //       fontStyle: 'normal',
+  //       fontSize: 14,
+  //       fontWeight: 'normal',
+  //       opacity: 1
+  //     },
+  //     rotate: 0
+  //   }
+  // }, {
+  //   position: 'left-part',
   //   key: ['市'],
   //   line: {
   //     style: {
@@ -190,70 +209,49 @@ const config = {
   //     rotate: 0
   //   }
   // }, {
-  // //   position: 'left-part',
-  // //   key: ['省'],
-  // //   line: {
-  // //     style: {
-  // //       lineWidth: 1,
-  // //       fontColor: '#c2c9d1',
-  // //       opacity: 1,
-  // //       lineDash: [0, 0]
-  // //     }
-  // //   },
-  // //   label: {
-  // //     style: {
-  // //       fontColor: 'blue',
-  // //       fontStyle: 'normal',
-  // //       fontSize: 14,
-  // //       fontWeight: 'normal',
-  // //       opacity: 1
-  // //     },
-  // //     rotate: 0
-  // //   }
-  // // }, {
-  // //   position: 'left-part',
-  // //   key: ['区域'],
-  // //   line: {
-  // //     style: {
-  // //       lineWidth: 1,
-  // //       fontColor: '#c2c9d1',
-  // //       opacity: 1,
-  // //       lineDash: [0, 0]
-  // //     }
-  // //   },
-  // //   label: {
-  // //     style: {
-  // //       fontColor: 'blue',
-  // //       fontStyle: 'normal',
-  // //       fontSize: 14,
-  // //       fontWeight: 'normal',
-  // //       opacity: 1
-  // //     },
-  // //     rotate: 0,
-  // //     formatter: (text, item, index) => {
-  // //       return text;
-  // //     }
-  // //   },
-  // //   title: {
-  // //     value: '区域',
-  // //     style: {
-  // //       fontColor: 'blue',
-  // //       fontSize: 16,
-  // //       fontWeight: 'normal',
-  // //       fontStyle: 'normal'
-  // //     }
-  // //   },
-  // //   grid: {
-  // //     line: {
-  // //       style: {
-  // //         fontColor: '#c2c9d1',
-  // //         opacity: 0,
-  // //         lineDash: [0, 0], // [3,3]
-  // //         lineWidth: 1
-  // //       }
-  // //     }
-  // //   },
-  // //   limitLength: 100
+  //   position: 'left-part',
+  //   key: ['区域'],
+  //   line: {
+  //     style: {
+  //       lineWidth: 1,
+  //       fontColor: '#c2c9d1',
+  //       opacity: 1,
+  //       lineDash: [0, 0]
+  //     }
+  //   },
+  //   label: {
+  //     style: {
+  //       fontColor: 'blue',
+  //       fontStyle: 'normal',
+  //       fontSize: 14,
+  //       fontWeight: 'normal',
+  //       opacity: 1
+  //     },
+  //     rotate: 0,
+  //     formatter: (text, item, index) => {
+  //       return text;
+  //     }
+  //   },
+  //   title: {
+  //     value: '区域',
+  //     style: {
+  //       fontColor: 'blue',
+  //       fontSize: 16,
+  //       fontWeight: 'normal',
+  //       fontStyle: 'normal'
+  //     }
+  //   },
+  //   grid: {
+  //     line: {
+  //       style: {
+  //         fontColor: '#c2c9d1',
+  //         opacity: 0,
+  //         lineDash: [0, 0], // [3,3]
+  //         lineWidth: 1
+  //       }
+  //     }
+  //   },
+  //   limitLength: 100
   // }],
   yAxis: [{
     position: 'left',
@@ -298,8 +296,7 @@ const config = {
           lineWidth: 1
         }
       }
-    },
-    limitLength: 100
+    }
   // }, {
   //   position: 'right',
   //   type: ['line'], // 组合图需要
@@ -518,18 +515,21 @@ const data = [
   // { 'sum(客户编号)': 2065, 'sum(平均售价)': 1900, 'sum(销售金额)': 2320, 'sum(销售数量)': 5200, 省: '湖南省', 市: '长沙市', 区域: '华南', 产品主类: '护理' },
   // { 'sum(客户编号)': 1265, 'sum(平均售价)': 1800, 'sum(销售金额)': 2320, 'sum(销售数量)': 3100, 省: '湖南省', 市: '长沙市', 区域: '华南', 产品主类: '护肤' },
   // { 'sum(客户编号)': 1865, 'sum(平均售价)': 1900, 'sum(销售金额)': 2320, 'sum(销售数量)': 3200, 省: '湖南省', 市: '长沙市', 区域: '华南', 产品主类: '化妆' },
-  // { 'sum(客户编号)': 1665, 'sum(平均售价)': 2300, 'sum(销售金额)': 2320, 'sum(销售数量)': 3300, 省: '湖北省', 市: '武汉市', 区域: '华中', 产品主类: '护理' },
-  // { 'sum(客户编号)': 1865, 'sum(平均售价)': 2300, 'sum(销售金额)': 2320, 'sum(销售数量)': 3400, 省: '湖北省', 市: '武汉市', 区域: '华中', 产品主类: '护肤' },
-  // { 'sum(客户编号)': 1265, 'sum(平均售价)': 2400, 'sum(销售金额)': 2320, 'sum(销售数量)': 3500, 省: '湖北省', 市: '武汉市', 区域: '华中', 产品主类: '化妆' },
-  // { 'sum(客户编号)': 2865, 'sum(平均售价)': 1500, 'sum(销售金额)': 2320, 'sum(销售数量)': 3600, 省: '河南省', 市: '郑州市', 区域: '华中', 产品主类: '护理' },
-  // { 'sum(客户编号)': 1865, 'sum(平均售价)': 1600, 'sum(销售金额)': 2320, 'sum(销售数量)': 3700, 省: '河南省', 市: '郑州市', 区域: '华中', 产品主类: '护肤' },
-  // { 'sum(客户编号)': 1965, 'sum(平均售价)': 1800, 'sum(销售金额)': 2320, 'sum(销售数量)': 3800, 省: '河南省', 市: '郑州市', 区域: '华中', 产品主类: '化妆' },
-  // { 'sum(客户编号)': 1065, 'sum(平均售价)': 1190, 'sum(销售金额)': 2320, 'sum(销售数量)': 3900, 省: '福建省', 市: '厦门市', 区域: '华东', 产品主类: '护理' },
-  // { 'sum(客户编号)': 2065, 'sum(平均售价)': 1300, 'sum(销售金额)': 2320, 'sum(销售数量)': 4000, 省: '福建省', 市: '厦门市', 区域: '华东', 产品主类: '护肤' },
-  // { 'sum(客户编号)': 1865, 'sum(平均售价)': 1200, 'sum(销售金额)': 2320, 'sum(销售数量)': 3100, 省: '福建省', 市: '厦门市', 区域: '华东', 产品主类: '化妆' },
-  { 'sum(客户编号)': 1065, 'sum(平均售价)': 1100, 'sum(销售金额)': 2320, 'sum(销售数量)': 3200, 省: '福建省', 市: '泉州市', 区域: '华东', 产品主类: '护理' },
-  { 'sum(客户编号)': 1765, 'sum(平均售价)': 1000, 'sum(销售金额)': 2320, 'sum(销售数量)': 3300, 省: '福建省', 市: '泉州市', 区域: '华东', 产品主类: '护肤' },
-  { 'sum(客户编号)': 2065, 'sum(平均售价)': 1300, 'sum(销售金额)': 2320, 'sum(销售数量)': 3400, 省: '福建省', 市: '泉州市', 区域: '华东', 产品主类: '化妆' }];
+  { 'sum(客户编号)': 1665, 'sum(平均售价)': 2300, 'sum(销售金额)': 2320, 'sum(销售数量)': 3300, 省: '湖北省', 市: '武汉市', 区域: '华中', 产品主类: '护理' },
+  { 'sum(客户编号)': 1865, 'sum(平均售价)': 2300, 'sum(销售金额)': 2320, 'sum(销售数量)': 3400, 省: '湖北省', 市: '武汉市', 区域: '华中', 产品主类: '护肤' },
+  { 'sum(客户编号)': 1265, 'sum(平均售价)': 2400, 'sum(销售金额)': 2320, 'sum(销售数量)': 3500, 省: '湖北省', 市: '武汉市', 区域: '华中', 产品主类: '化妆' },
+  { 'sum(客户编号)': 2865, 'sum(平均售价)': 1500, 'sum(销售金额)': 2320, 'sum(销售数量)': 3600, 省: '河南省', 市: '郑州市', 区域: '华中', 产品主类: '护理' },
+  { 'sum(客户编号)': 1865, 'sum(平均售价)': 1600, 'sum(销售金额)': 2320, 'sum(销售数量)': 3700, 省: '河南省', 市: '郑州市', 区域: '华中', 产品主类: '护肤' },
+  { 'sum(客户编号)': 1965, 'sum(平均售价)': 1800, 'sum(销售金额)': 2320, 'sum(销售数量)': 3800, 省: '河南省', 市: '郑州市', 区域: '华中', 产品主类: '化妆' },
+  { 'sum(客户编号)': 1065, 'sum(平均售价)': 1190, 'sum(销售金额)': 2320, 'sum(销售数量)': 3900, 省: '福建省', 市: '厦门市', 区域: '华东', 产品主类: '护理' },
+  { 'sum(客户编号)': 2065, 'sum(平均售价)': 1300, 'sum(销售金额)': 2320, 'sum(销售数量)': 4000, 省: '福建省', 市: '厦门市', 区域: '华东', 产品主类: '护肤' },
+  { 'sum(客户编号)': 1865, 'sum(平均售价)': 1200, 'sum(销售金额)': 2320, 'sum(销售数量)': 3100, 省: '福建省', 市: '厦门市', 区域: '华东', 产品主类: '化妆' },
+  { 'sum(客户编号)': 1165, 'sum(平均售价)': 1290, 'sum(销售金额)': 2120, 'sum(销售数量)': 3900, 省: '福建省', 市: '福州市', 区域: '华东', 产品主类: '护理' },
+  { 'sum(客户编号)': 2165, 'sum(平均售价)': 1200, 'sum(销售金额)': 2120, 'sum(销售数量)': 4000, 省: '福建省', 市: '福州市', 区域: '华东', 产品主类: '护肤' },
+  // { 'sum(客户编号)': 1265, 'sum(平均售价)': 1100, 'sum(销售金额)': 2120, 'sum(销售数量)': 3100, 省: '福建省', 市: '福州市', 区域: '华东', 产品主类: '化妆' },
+  { 'sum(客户编号)': 1065, 'sum(平均售价)': 1100, 'sum(销售金额)': 2020, 'sum(销售数量)': 3200, 省: '福建省', 市: '泉州市', 区域: '华东', 产品主类: '护理' },
+  { 'sum(客户编号)': 1765, 'sum(平均售价)': 1000, 'sum(销售金额)': 2020, 'sum(销售数量)': 3300, 省: '福建省', 市: '泉州市', 区域: '华东', 产品主类: '护肤' },
+  { 'sum(客户编号)': 2065, 'sum(平均售价)': 1300, 'sum(销售金额)': 2020, 'sum(销售数量)': 3400, 省: '福建省', 市: '泉州市', 区域: '华东', 产品主类: '化妆' }];
 
 // const data = [
 //   { 'sum(客户编号)': 3500, 市: '广州市', 'sum(平均售价)': 1200, 'sum(销售金额)': 1320 },
@@ -541,6 +541,13 @@ const data = [
 //   { 'sum(客户编号)': 1920, 市: '杭州市', 'sum(平均售价)': 1400, 'sum(销售金额)': 1400 },
 //   { 'sum(客户编号)': 2020, 市: '厦门市', 'sum(平均售价)': 1500, 'sum(销售金额)': 1500 },
 //   { 'sum(客户编号)': 5500, 市: '武汉市', 'sum(平均售价)': 1100, 'sum(销售金额)': 2100 }
+// ];
+
+// const data = [
+//   { 'sum(客户编号)': 3100, 产品主类: '化妆品' },
+//   { 'sum(客户编号)': 3200, 产品主类: '化妆品' },
+//   { 'sum(客户编号)': 2500, 产品主类: '化妆品' },
+//   { 'sum(客户编号)': 3500, 产品主类: '化妆品' }
 // ];
 
 let test = chart.GeometryDrawingProcess({ data, config, chartType: 'bar' });

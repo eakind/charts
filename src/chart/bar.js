@@ -9,7 +9,7 @@ export default class Bar extends Base {
     this.colorList = config.colorList;
     this.init();
     this.drawMultBar();
-    this.createLabel();
+    // this.createLabel();
   };
 
   drawMultBar () {
