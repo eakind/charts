@@ -240,8 +240,8 @@ const getTxtWidth = (text, font) => {
 };
 
 const getTopAxisHeight = (xAxis) => {
-  if (xAxis.length === 1) return 16;
-  else return (xAxis.length - 1) * 32 + 16;
+  if (xAxis.length === 0) return 16;
+  else return (xAxis.length) * 32 + 16;
 };
 
 const setAsideWidth = (yAxis, data, yAxisPart) => {

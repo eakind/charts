@@ -7,85 +7,7 @@ const config = {
     '#E88F00', '#DE2393', '#91BA38', '#99B4BF', '#216A58', '#AB9438', '#F4999B', '#C9BFE1',
     '#055166', '#1F135A', '#43140A', '#96005A', '#8D8D8D'
   ],
-  xAxis: [{
-    position: 'bottom',
-    key: '产品主类',
-    line: {
-      style: {
-        lineWidth: 1,
-        fontColor: '#c2c9d1',
-        opacity: 1,
-        lineDash: [0, 0]
-      }
-    },
-    label: {
-      style: {
-        fontColor: 'blue',
-        fontSize: 14,
-        fontWeight: 'normal',
-        opacity: 1
-      },
-      rotate: 0
-    },
-    title: {
-      value: 'X轴哈哈哈',
-      style: {
-        fontColor: 'blue',
-        fontSize: 16,
-        fontStyle: 'normal'
-      }
-    },
-    grid: {
-      line: {
-        style: {
-          fontColor: '#c2c9d1',
-          opacity: 0,
-          lineDash: [0, 0], // [3,3]
-          lineWidth: 1
-        }
-      }
-    }
-  }, {
-    position: 'top',
-    key: '省',
-    line: {
-      style: {
-        lineWidth: 1,
-        fontColor: '#c2c9d1',
-        opacity: 1,
-        lineDash: [0, 0]
-      }
-    },
-    label: {
-      style: {
-        fontColor: 'blue',
-        fontStyle: 'normal',
-        fontSize: 14,
-        fontWeight: 'normal',
-        opacity: 1
-      },
-      rotate: 0
-    },
-    title: {
-      // value: '市',
-      style: {
-        fontColor: 'blue',
-        fontSize: 16,
-        fontWeight: 'normal',
-        fontStyle: 'normal'
-      }
-    },
-    grid: {
-      line: {
-        style: {
-          fontColor: '#c2c9d1',
-          opacity: 0,
-          lineDash: [0, 0], // [3,3]
-          lineWidth: 1
-        }
-      }
-    }
-  }, {
+  xAxisPart: [{
     position: 'top',
     key: '市',
     line: {
@@ -125,46 +47,123 @@ const config = {
         }
       }
     }
+  }, {
+    position: 'top',
+    key: '省',
+    line: {
+      style: {
+        lineWidth: 1,
+        fontColor: '#c2c9d1',
+        opacity: 1,
+        lineDash: [0, 0]
+      }
+    },
+    label: {
+      style: {
+        fontColor: 'blue',
+        fontStyle: 'normal',
+        fontSize: 14,
+        fontWeight: 'normal',
+        opacity: 1
+      },
+      rotate: 0
+    },
+    title: {
+      style: {
+        fontColor: 'blue',
+        fontSize: 16,
+        fontWeight: 'normal',
+        fontStyle: 'normal'
+      }
+    },
+    grid: {
+      line: {
+        style: {
+          fontColor: '#c2c9d1',
+          opacity: 0,
+          lineDash: [0, 0], // [3,3]
+          lineWidth: 1
+        }
+      }
+    }
   // }, {
-  //   position: 'top',
-  //   key: '区域',
-  //   line: {
-  //     style: {
-  //       lineWidth: 1,
-  //       fontColor: '#c2c9d1',
-  //       opacity: 1,
-  //       lineDash: [0, 0]
-  //     }
-  //   },
-  //   label: {
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontStyle: 'normal',
-  //       fontSize: 14,
-  //       fontWeight: 'normal',
-  //       opacity: 1
-  //     },
-  //     rotate: 0
-  //   },
-  //   title: {
-  //     value: 'Top轴哈哈哈',
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontSize: 16,
-  //       fontWeight: 'normal',
-  //       fontStyle: 'normal'
-  //     }
-  //   },
-  //   grid: {
-  //     line: {
-  //       style: {
-  //         fontColor: '#c2c9d1',
-  //         opacity: 0,
-  //         lineDash: [0, 0], // [3,3]
-  //         lineWidth: 1
-  //       }
-  //     }
-  //   }
+    //   position: 'top',
+    //   key: '区域',
+    //   line: {
+    //     style: {
+    //       lineWidth: 1,
+    //       fontColor: '#c2c9d1',
+    //       opacity: 1,
+    //       lineDash: [0, 0]
+    //     }
+    //   },
+    //   label: {
+    //     style: {
+    //       fontColor: 'blue',
+    //       fontStyle: 'normal',
+    //       fontSize: 14,
+    //       fontWeight: 'normal',
+    //       opacity: 1
+    //     },
+    //     rotate: 0
+    //   },
+    //   title: {
+    //     value: 'Top轴哈哈哈',
+    //     style: {
+    //       fontColor: 'blue',
+    //       fontSize: 16,
+    //       fontWeight: 'normal',
+    //       fontStyle: 'normal'
+    //     }
+    //   },
+    //   grid: {
+    //     line: {
+    //       style: {
+    //         fontColor: '#c2c9d1',
+    //         opacity: 0,
+    //         lineDash: [0, 0], // [3,3]
+    //         lineWidth: 1
+    //       }
+    //     }
+  }],
+  xAxis: [{
+    position: 'bottom',
+    key: '产品主类',
+    line: {
+      style: {
+        lineWidth: 1,
+        fontColor: '#c2c9d1',
+        opacity: 1,
+        lineDash: [0, 0]
+      }
+    },
+    label: {
+      style: {
+        fontColor: 'blue',
+        fontSize: 14,
+        fontWeight: 'normal',
+        opacity: 1
+      },
+      rotate: 0
+    },
+    title: {
+      value: 'X轴哈哈哈',
+      style: {
+        fontColor: 'blue',
+        fontSize: 16,
+        fontStyle: 'normal'
+      }
+    },
+    grid: {
+      line: {
+        style: {
+          fontColor: '#c2c9d1',
+          opacity: 0,
+          lineDash: [0, 0], // [3,3]
+          lineWidth: 1
+        }
+      }
+    }
   }],
   // yAxisPart: [{
   //   position: 'left-part',

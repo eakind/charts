@@ -4,13 +4,13 @@ import { getTxtLen, getTxtWidth } from '../utils/utils';
 const initXAxis = (middle, scaleX, width, height, option, topAxisHeight, bottomAxisHeight, labelHeight, xAxisList) => {
   let position = option.position;
   let axis = getAxis(scaleX, position, 0, xAxisList);
-  let axisPanel = setAxisX(middle, axis, width, height, position, topAxisHeight, bottomAxisHeight);
+  let axisPanel = setAxisX(middle, axis, width, height, position, topAxisHeight);
   setAxisLine(axisPanel, option.line.style);
   setAxisLabel(axisPanel, option.label, scaleX.bandwidth(), tipTpl, position);
   setAxisXtitle(axisPanel, option.title, width, labelHeight);
 };
 
-const setAxisX = (axisPanel, axis, width, height, position, topAxisHeight, bottomAxisHeight) => {
+const setAxisX = (axisPanel, axis, width, height, position, topAxisHeight) => {
   const posObj = {
     bottom: height + topAxisHeight,
     top: topAxisHeight
@@ -25,7 +25,7 @@ const setAxisX = (axisPanel, axis, width, height, position, topAxisHeight, botto
 
 const initYAxis = (axisYContainer, scaleY, option, tipTpl, height, topAxisHeight, width, index) => {
   let position = option.position;
-  let axis = getAxis(scaleY, position, 0);
+  let axis = getAxis(scaleY, position, 0, [], scaleY);
   let axisPanel = setAxisY(axisYContainer, axis, position, topAxisHeight, width, index, height);
   setAxisLine(axisPanel, option.line.style);
   setAxisYTitle(axisYContainer, option.title, position, width, topAxisHeight, height, index);
@@ -44,7 +44,16 @@ const setAxisY = (axisPanel, axis, position, topAxisHeight, translateX, index, h
   return scalePanel;
 };
 
-const getAxis = (scale, position, height, xAxisList) => {
+const setTickValues = (domain, counts) => {
+  let tickArray = [];
+  let gap = Math.floor((domain[1] - domain[0]) / counts);
+  for (let i = 0; i <= counts; i++) {
+    tickArray.push(domain[0] + gap * i);
+  }
+  return tickArray;
+};
+
+const getAxis = (scale, position, height, xAxisList, scaleY) => {
   const scaleObj = {
     top: d3.axisTop(scale),
     bottom: d3.axisBottom(scale),
@@ -53,9 +62,12 @@ const getAxis = (scale, position, height, xAxisList) => {
   };
   let axis = scaleObj[position]
     .tickPadding(6)
-    .ticks(5)
     .tickSizeInner(-height)
     .tickSizeOuter(0);
+  if (position === 'left') {
+    let arr = setTickValues(scaleY.domain(), 10);
+    axis.tickValues(arr);
+  }
   return axis;
 };
 

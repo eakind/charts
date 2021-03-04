@@ -36,12 +36,68 @@ const getTextNum = (value, list) => {
   return { num, start };
 };
 
-const initXGrid = (middle, width, height, topAxisHeight, topAxis, bandwidth, xAxisList, title) => {
+const setUniqueForKey = (perKey, key, data) => {
+  let len = data.length;
+  let arr = [];
+  let uniqueValue = '';
+  for (let i = 0; i < len; i++) {
+    if (uniqueValue !== data[i][perKey]) {
+      arr.push(data[i][key]);
+      uniqueValue = data[i][perKey];
+    } else {
+      if (!arr.includes(data[i][key])) {
+        arr.push(data[i][key]);
+      }
+    }
+  }
+  return arr;
+};
+
+const setGap = (perKey, perIndex, perList, data, d, key) => {
+  // perList = [...new Set(perList)];
+  // let perLen = perList.length;
+  // let arr = [];
+  let keyDataList = data.filter(item => item[key] === d);
+  let len = keyDataList.length;
+  debugger;
+  let arr = [];
+  let index = 1;
+  for (let i = 0; i < len; i++) {
+    if (!arr.includes(keyDataList[perKey])) {
+      arr.push(keyDataList[perKey]);
+      if (index === perIndex) {
+        return keyDataList;
+      }
+    } else {
+      keyDataList.splice(i, 1);
+    }
+  }
+  console.log(keyDataList);
+  debugger;
+  // for (let i = 0; i < perLen; i++) {
+  //   let perData = keyDataList.filter((item) => item[perKey] === perList[i]);
+  //   let len = perData.length;
+  //   console.log(len);
+  //   debugger;
+  // }
+  // console.log(d);
+  // console.log(arr);
+  // debugger;
+  // return [];
+};
+
+const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, title, perKey, perList, key) => {
   let grid = middle.append('g')
-    .attr('transform', `translate(${0}, ${topAxisHeight - topAxis})`);
-  let uniqueData = [...new Set(xAxisList)];
+    .attr('transform', `translate(${0}, ${topAxis})`);
+  let uniqueData = [];
+  if (!perKey) {
+    uniqueData = [...new Set(xAxisList)];
+  } else {
+    uniqueData = setUniqueForKey(perKey, key, data);
+  }
   let lineLen = uniqueData.length - 1;
   let textGroup = grid.append('g').attr('class', 'top-axis-text');
+  // 添加title
   textGroup.append('g').append('text')
     .text(title)
     .attr('font-size', 14)
@@ -49,17 +105,35 @@ const initXGrid = (middle, width, height, topAxisHeight, topAxis, bandwidth, xAx
       let translateX = (width - getTxtWidth(title, 14)) / 2;
       return `translate(${translateX}, -32)`;
     });
+  // 添加文本
+  let perIndex = 1;
+  let perValue = '';
   let xGridGroup = textGroup.selectAll('top-axis-text')
     .data(uniqueData)
     .enter();
   xGridGroup.append('text')
     .attr('transform', (d) => {
       let { num, start } = getTextNum(d, xAxisList);
-      let translateX = (bandwidth * start) + (bandwidth * num) / 2;
+      let gap = bandwidth * num;
+      let startGap = bandwidth * start;
+      let txtGap = getTxtWidth(d, 14) / 2;
+      let translateX = startGap + gap / 2 - txtGap;
+      if (perKey) {
+        if (perValue === d) {
+          perIndex++;
+        } else {
+          perValue = d;
+          perIndex = 1;
+        }
+        console.log(perIndex);
+        translateX = setGap(perKey, perIndex, perList, data, d, key);
+      }
       return `translate(${translateX}, ${-12}) rotate(${0})`;
     })
     .attr('font-size', 14)
     .text(d => d);
+
+  // 添加线
   xGridGroup.append('line')
     .attr('x1', (d) => {
       let { num, start } = getTextNum(d, xAxisList);
