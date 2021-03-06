@@ -8,7 +8,9 @@ const scaleLinear = (maxValue, height) => {
 
 const scaleBand = (data, barWidth) => {
   let scale = d3.scaleBand()
-    .domain(data)
+    .domain(data.map((d, index) => {
+      return `${d}|~|${index}`;
+    }))
     .range([0, barWidth]);
   return scale;
 };

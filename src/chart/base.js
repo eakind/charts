@@ -16,6 +16,8 @@ export default class Base {
     this.createYPart();
     // 生成X轴
     this.createXAxis();
+    // 生成顶部X轴
+    this.createXPart();
   }
 
   render () {
@@ -83,7 +85,7 @@ export default class Base {
     /* 底部坐标轴高度 */
     this.bottomAxisHeight = this.labelHeight + 10;
     /* 顶部坐标轴高度 */
-    this.topAxisHeight = getTopAxisHeight(this.config.xAxis);
+    this.topAxisHeight = getTopAxisHeight(this.config.xAxisPart);
     /* 画布内容高度 */
     this.shapeHeight = this.height - (this.bottomAxisHeight + this.topAxisHeight);
     /* 画布内容的宽度 */
@@ -96,21 +98,30 @@ export default class Base {
 
   createXAxis () {
     let xAxis = this.config.xAxis;
-    if (!xAxis.length) return;
-    let topAxisIndex = 0;
+    if (!xAxis || !xAxis.length) return;
     for (let i = 0; i < xAxis.length; i++) {
       let xAxisList = getKeyDataList(this.data, xAxis[i].key);
-      let scaleX = scaleBand(xAxisList, this.shapeWidth);
-      if (xAxis[i].position === 'top') {
-        let topAxis = topAxisIndex * 30;
-        let title = xAxis[i].title.value;
-        initXGrid(this.middle, this.shapeWidth, this.shapeHeight, this.xAixsKey, this.topAxisHeight, topAxis, this.scaleX.bandwidth(), this.data, xAxisList, title);
-        topAxisIndex++;
-      } else {
-        this.scaleX = scaleBand(xAxisList, this.shapeWidth);
-        this.xAixsKey = xAxis[i].key;
-        initXAxis(this.middle, scaleX, this.shapeWidth, this.shapeHeight, xAxis[i], this.topAxisHeight, this.bottomAxisHeight, this.labelHeight);
-      }
+      this.scaleX = scaleBand(xAxisList, this.shapeWidth);
+      initXAxis(this.middle, this.scaleX, this.shapeWidth, this.shapeHeight, xAxis[i], this.topAxisHeight, this.bottomAxisHeight, this.labelHeight, xAxisList);
+    };
+  };
+
+  createXPart () {
+    let partList = this.config.xAxisPart;
+    if (!partList || !partList.length) return;
+    let len = partList.length;
+    let topAxisIndex = 0;
+    let perKey = null;
+    let perList = [];
+    for (let i = 0; i < len; i++) {
+      let xAxisList = getKeyDataList(this.data, partList[i].key);
+      let topAxis = topAxisIndex * 30 + 52;
+      let title = partList[i].title.value;
+      let key = partList[i].key;
+      initXGrid(this.middle, this.shapeWidth, this.shapeHeight, topAxis, this.scaleX.bandwidth(), xAxisList, this.data, title, perKey, perList, key);
+      perKey = partList[i].key;
+      perList = xAxisList;
+      topAxisIndex++;
     }
   }
 

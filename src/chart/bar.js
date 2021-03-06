@@ -10,7 +10,7 @@ export default class Bar extends Base {
     // getTxtWidth(String(100), 12);
     this.init();
     this.drawMultBar();
-    this.createLabel();
+    // this.createLabel();
   };
 
   drawMultBar () {
