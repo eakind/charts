@@ -47,84 +47,84 @@ const config = {
         }
       }
     }
-  }, {
-    position: 'top',
-    key: '省',
-    line: {
-      style: {
-        lineWidth: 1,
-        fontColor: '#c2c9d1',
-        opacity: 1,
-        lineDash: [0, 0]
-      }
-    },
-    label: {
-      style: {
-        fontColor: 'blue',
-        fontStyle: 'normal',
-        fontSize: 14,
-        fontWeight: 'normal',
-        opacity: 1
-      },
-      rotate: 0
-    },
-    title: {
-      style: {
-        fontColor: 'blue',
-        fontSize: 16,
-        fontWeight: 'normal',
-        fontStyle: 'normal'
-      }
-    },
-    grid: {
-      line: {
-        style: {
-          fontColor: '#c2c9d1',
-          opacity: 0,
-          lineDash: [0, 0], // [3,3]
-          lineWidth: 1
-        }
-      }
-    }
   // }, {
-    //   position: 'top',
-    //   key: '区域',
-    //   line: {
-    //     style: {
-    //       lineWidth: 1,
-    //       fontColor: '#c2c9d1',
-    //       opacity: 1,
-    //       lineDash: [0, 0]
-    //     }
-    //   },
-    //   label: {
-    //     style: {
-    //       fontColor: 'blue',
-    //       fontStyle: 'normal',
-    //       fontSize: 14,
-    //       fontWeight: 'normal',
-    //       opacity: 1
-    //     },
-    //     rotate: 0
-    //   },
-    //   title: {
-    //     value: 'Top轴哈哈哈',
-    //     style: {
-    //       fontColor: 'blue',
-    //       fontSize: 16,
-    //       fontWeight: 'normal',
-    //       fontStyle: 'normal'
-    //     }
-    //   },
-    //   grid: {
-    //     line: {
-    //       style: {
-    //         fontColor: '#c2c9d1',
-    //         opacity: 0,
-    //         lineDash: [0, 0], // [3,3]
-    //         lineWidth: 1
-    //       }
-    //     }
+  //   position: 'top',
+  //   key: '省',
+  //   line: {
+  //     style: {
+  //       lineWidth: 1,
+  //       fontColor: '#c2c9d1',
+  //       opacity: 1,
+  //       lineDash: [0, 0]
+  //     }
+  //   },
+  //   label: {
+  //     style: {
+  //       fontColor: 'blue',
+  //       fontStyle: 'normal',
+  //       fontSize: 14,
+  //       fontWeight: 'normal',
+  //       opacity: 1
+  //     },
+  //     rotate: 0
+  //   },
+  //   title: {
+  //     style: {
+  //       fontColor: 'blue',
+  //       fontSize: 16,
+  //       fontWeight: 'normal',
+  //       fontStyle: 'normal'
+  //     }
+  //   },
+  //   grid: {
+  //     line: {
+  //       style: {
+  //         fontColor: '#c2c9d1',
+  //         opacity: 0,
+  //         lineDash: [0, 0], // [3,3]
+  //         lineWidth: 1
+  //       }
+  //     }
+  //   }
+  // }, {
+  //   position: 'top',
+  //   key: '市',
+  //   line: {
+  //     style: {
+  //       lineWidth: 1,
+  //       fontColor: '#c2c9d1',
+  //       opacity: 1,
+  //       lineDash: [0, 0]
+  //     }
+  //   },
+  //   label: {
+  //     style: {
+  //       fontColor: 'blue',
+  //       fontStyle: 'normal',
+  //       fontSize: 14,
+  //       fontWeight: 'normal',
+  //       opacity: 1
+  //     },
+  //     rotate: 0
+  //   },
+  //   title: {
+  //     style: {
+  //       fontColor: 'blue',
+  //       fontSize: 16,
+  //       fontWeight: 'normal',
+  //       fontStyle: 'normal'
+  //     }
+  //   },
+  //   grid: {
+  //     line: {
+  //       style: {
+  //         fontColor: '#c2c9d1',
+  //         opacity: 0,
+  //         lineDash: [0, 0], // [3,3]
+  //         lineWidth: 1
+  //       }
+  //     }
+  //   }
   }],
   xAxis: [{
     position: 'bottom',
@@ -165,48 +165,48 @@ const config = {
       }
     }
   }],
-  // yAxisPart: [{
-  //   position: 'left-part',
-  //   key: ['省'],
-  //   line: {
-  //     style: {
-  //       lineWidth: 1,
-  //       fontColor: '#c2c9d1',
-  //       opacity: 1,
-  //       lineDash: [0, 0]
-  //     }
-  //   },
-  //   label: {
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontStyle: 'normal',
-  //       fontSize: 14,
-  //       fontWeight: 'normal',
-  //       opacity: 1
-  //     },
-  //     rotate: 0
-  //   }
-  // }, {
-  //   position: 'left-part',
-  //   key: ['市'],
-  //   line: {
-  //     style: {
-  //       lineWidth: 1,
-  //       fontColor: '#c2c9d1',
-  //       opacity: 1,
-  //       lineDash: [0, 0]
-  //     }
-  //   },
-  //   label: {
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontStyle: 'normal',
-  //       fontSize: 14,
-  //       fontWeight: 'normal',
-  //       opacity: 1
-  //     },
-  //     rotate: 0
-  //   }
+  yAxisPart: [{
+    position: 'left-part',
+    key: ['省'],
+    line: {
+      style: {
+        lineWidth: 1,
+        fontColor: '#c2c9d1',
+        opacity: 1,
+        lineDash: [0, 0]
+      }
+    },
+    label: {
+      style: {
+        fontColor: 'blue',
+        fontStyle: 'normal',
+        fontSize: 14,
+        fontWeight: 'normal',
+        opacity: 1
+      },
+      rotate: 0
+    }
+  }, {
+    position: 'left-part',
+    key: ['区域'],
+    line: {
+      style: {
+        lineWidth: 1,
+        fontColor: '#c2c9d1',
+        opacity: 1,
+        lineDash: [0, 0]
+      }
+    },
+    label: {
+      style: {
+        fontColor: 'blue',
+        fontStyle: 'normal',
+        fontSize: 14,
+        fontWeight: 'normal',
+        opacity: 1
+      },
+      rotate: 0
+    }
   // }, {
   //   position: 'left-part',
   //   key: ['区域'],
@@ -249,9 +249,8 @@ const config = {
   //         lineWidth: 1
   //       }
   //     }
-  //   },
-  //   limitLength: 100
-  // }],
+  //   }
+  }],
   yAxis: [{
     position: 'left',
     type: ['bar'],

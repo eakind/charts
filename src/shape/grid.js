@@ -20,7 +20,7 @@ const initYGrid = (middle, width, height, scaleY, topAxisHeight, index) => {
   grid.selectAll('line')
     .attr('stroke-dasharray', '5, 5')
     .attr('stroke', '#c2c9d1')
-    .attr('opacity', 1)
+    .attr('opacity', 0)
     .attr('stroke-width', 1);
 };
 
@@ -53,39 +53,6 @@ const setUniqueForKey = (perKey, key, data) => {
   return arr;
 };
 
-const setGap = (perKey, perIndex, perList, data, d, key) => {
-  // perList = [...new Set(perList)];
-  // let perLen = perList.length;
-  // let arr = [];
-  let keyDataList = data.filter(item => item[key] === d);
-  let len = keyDataList.length;
-  debugger;
-  let arr = [];
-  let index = 1;
-  for (let i = 0; i < len; i++) {
-    if (!arr.includes(keyDataList[perKey])) {
-      arr.push(keyDataList[perKey]);
-      if (index === perIndex) {
-        return keyDataList;
-      }
-    } else {
-      keyDataList.splice(i, 1);
-    }
-  }
-  console.log(keyDataList);
-  debugger;
-  // for (let i = 0; i < perLen; i++) {
-  //   let perData = keyDataList.filter((item) => item[perKey] === perList[i]);
-  //   let len = perData.length;
-  //   console.log(len);
-  //   debugger;
-  // }
-  // console.log(d);
-  // console.log(arr);
-  // debugger;
-  // return [];
-};
-
 const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, title, perKey, perList, key) => {
   let grid = middle.append('g')
     .attr('transform', `translate(${0}, ${topAxis})`);
@@ -96,6 +63,7 @@ const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, t
     uniqueData = setUniqueForKey(perKey, key, data);
   }
   let lineLen = uniqueData.length - 1;
+  console.log(lineLen);
   let textGroup = grid.append('g').attr('class', 'top-axis-text');
   // 添加title
   textGroup.append('g').append('text')
@@ -106,13 +74,13 @@ const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, t
       return `translate(${translateX}, -32)`;
     });
   // 添加文本
-  let perIndex = 1;
   let perValue = '';
+  let perIndex = '';
   let xGridGroup = textGroup.selectAll('top-axis-text')
     .data(uniqueData)
     .enter();
   xGridGroup.append('text')
-    .attr('transform', (d) => {
+    .attr('transform', (d, index) => {
       let { num, start } = getTextNum(d, xAxisList);
       let gap = bandwidth * num;
       let startGap = bandwidth * start;
@@ -125,14 +93,14 @@ const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, t
           perValue = d;
           perIndex = 1;
         }
-        console.log(perIndex);
-        translateX = setGap(perKey, perIndex, perList, data, d, key);
+        let total = uniqueData.filter(item => item === d).length;
+        gap = gap / total;
+        translateX = startGap + gap / 2 + gap * (perIndex - 1) - txtGap;
       }
       return `translate(${translateX}, ${-12}) rotate(${0})`;
     })
     .attr('font-size', 14)
     .text(d => d);
-
   // 添加线
   xGridGroup.append('line')
     .attr('x1', (d) => {
@@ -155,6 +123,7 @@ const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, t
 };
 
 const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxisHeight, key, data, i) => {
+  debugger;
   let grid = leftAxis.append('g')
     .attr('transform', `translate(${0}, ${yAxisHeight + topAxisHeight})`);
   let lineGroup = grid.append('g').attr('class', 'top-axis-line');

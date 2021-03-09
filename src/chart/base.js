@@ -116,8 +116,8 @@ export default class Base {
       let topAxis = topAxisIndex * 30 + 52;
       let title = partList[i].title.value;
       let key = partList[i].key;
-      initXGrid(this.middle, this.shapeWidth, this.shapeHeight, topAxis, this.scaleX.bandwidth(), xAxisList, this.data, title, perKey, perList, key);
-      perKey = partList[i].key;
+      initXGrid(this.middle, this.shapeWidth, perKey ? this.shapeHeight : this.shapeHeight + 30 * (i + len - 1), topAxis, this.scaleX.bandwidth(), xAxisList, this.data, title, perKey, perList, key);
+      perKey = partList[0].key;
       perList = xAxisList;
       topAxisIndex++;
     }
@@ -169,8 +169,6 @@ export default class Base {
     for (let i = 0; i < labelList.length; i++) {
       let key = labelList[i].key;
       let title = labelList[i].title;
-      // let format = labelList[i].format;
-      // let textStyle = labelList[i].text;
       this.addLabel(this.middle, key, title, this.data, this.scaleX, this.leftScaleY, this.shapeHeight);
     };
   }

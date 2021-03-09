@@ -83,11 +83,11 @@ const setAxisYTitle = (axisPanel, titleOption, position, width, topAxisHeight, h
   let titleStyle = titleOption.style;
   axisPanel.append('g')
     .attr('transform', () => {
-      let translateX = 16;
+      let translateX = width - 60;
       if (position === 'right') {
         translateX = width - 16;
       }
-      return `translate(${translateX}, ${topAxisHeight + (height * index)})`;
+      return `translate(${translateX}, ${topAxisHeight + (height * index) + 8})`;
     })
     .append('text')
     .attr('text-anchor', 'start')
