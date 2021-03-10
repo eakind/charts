@@ -3,13 +3,9 @@ const config = {
   width: 600,
   height: 600,
   id: 'mc_bar',
-  colorList: ['#4284F5', '#efff45', '#3FAECC', '#FACC14', '#F5282D', '#8543E0', '#3110D0',
-    '#E88F00', '#DE2393', '#91BA38', '#99B4BF', '#216A58', '#AB9438', '#F4999B', '#C9BFE1',
-    '#055166', '#1F135A', '#43140A', '#96005A', '#8D8D8D'
-  ],
   xAxisPart: [{
     position: 'top',
-    key: '市',
+    key: '区域',
     line: {
       style: {
         lineWidth: 1,
@@ -47,84 +43,84 @@ const config = {
         }
       }
     }
-  // }, {
-  //   position: 'top',
-  //   key: '省',
-  //   line: {
-  //     style: {
-  //       lineWidth: 1,
-  //       fontColor: '#c2c9d1',
-  //       opacity: 1,
-  //       lineDash: [0, 0]
-  //     }
-  //   },
-  //   label: {
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontStyle: 'normal',
-  //       fontSize: 14,
-  //       fontWeight: 'normal',
-  //       opacity: 1
-  //     },
-  //     rotate: 0
-  //   },
-  //   title: {
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontSize: 16,
-  //       fontWeight: 'normal',
-  //       fontStyle: 'normal'
-  //     }
-  //   },
-  //   grid: {
-  //     line: {
-  //       style: {
-  //         fontColor: '#c2c9d1',
-  //         opacity: 0,
-  //         lineDash: [0, 0], // [3,3]
-  //         lineWidth: 1
-  //       }
-  //     }
-  //   }
-  // }, {
-  //   position: 'top',
-  //   key: '市',
-  //   line: {
-  //     style: {
-  //       lineWidth: 1,
-  //       fontColor: '#c2c9d1',
-  //       opacity: 1,
-  //       lineDash: [0, 0]
-  //     }
-  //   },
-  //   label: {
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontStyle: 'normal',
-  //       fontSize: 14,
-  //       fontWeight: 'normal',
-  //       opacity: 1
-  //     },
-  //     rotate: 0
-  //   },
-  //   title: {
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontSize: 16,
-  //       fontWeight: 'normal',
-  //       fontStyle: 'normal'
-  //     }
-  //   },
-  //   grid: {
-  //     line: {
-  //       style: {
-  //         fontColor: '#c2c9d1',
-  //         opacity: 0,
-  //         lineDash: [0, 0], // [3,3]
-  //         lineWidth: 1
-  //       }
-  //     }
-  //   }
+  }, {
+    position: 'top',
+    key: '省',
+    line: {
+      style: {
+        lineWidth: 1,
+        fontColor: '#c2c9d1',
+        opacity: 1,
+        lineDash: [0, 0]
+      }
+    },
+    label: {
+      style: {
+        fontColor: 'blue',
+        fontStyle: 'normal',
+        fontSize: 14,
+        fontWeight: 'normal',
+        opacity: 1
+      },
+      rotate: 0
+    },
+    title: {
+      style: {
+        fontColor: 'blue',
+        fontSize: 16,
+        fontWeight: 'normal',
+        fontStyle: 'normal'
+      }
+    },
+    grid: {
+      line: {
+        style: {
+          fontColor: '#c2c9d1',
+          opacity: 0,
+          lineDash: [0, 0], // [3,3]
+          lineWidth: 1
+        }
+      }
+    }
+  }, {
+    position: 'top',
+    key: '市',
+    line: {
+      style: {
+        lineWidth: 1,
+        fontColor: '#c2c9d1',
+        opacity: 1,
+        lineDash: [0, 0]
+      }
+    },
+    label: {
+      style: {
+        fontColor: 'blue',
+        fontStyle: 'normal',
+        fontSize: 14,
+        fontWeight: 'normal',
+        opacity: 1
+      },
+      rotate: 0
+    },
+    title: {
+      style: {
+        fontColor: 'blue',
+        fontSize: 16,
+        fontWeight: 'normal',
+        fontStyle: 'normal'
+      }
+    },
+    grid: {
+      line: {
+        style: {
+          fontColor: '#c2c9d1',
+          opacity: 0,
+          lineDash: [0, 0], // [3,3]
+          lineWidth: 1
+        }
+      }
+    }
   }],
   xAxis: [{
     position: 'bottom',
@@ -165,48 +161,48 @@ const config = {
       }
     }
   }],
-  yAxisPart: [{
-    position: 'left-part',
-    key: ['省'],
-    line: {
-      style: {
-        lineWidth: 1,
-        fontColor: '#c2c9d1',
-        opacity: 1,
-        lineDash: [0, 0]
-      }
-    },
-    label: {
-      style: {
-        fontColor: 'blue',
-        fontStyle: 'normal',
-        fontSize: 14,
-        fontWeight: 'normal',
-        opacity: 1
-      },
-      rotate: 0
-    }
-  }, {
-    position: 'left-part',
-    key: ['区域'],
-    line: {
-      style: {
-        lineWidth: 1,
-        fontColor: '#c2c9d1',
-        opacity: 1,
-        lineDash: [0, 0]
-      }
-    },
-    label: {
-      style: {
-        fontColor: 'blue',
-        fontStyle: 'normal',
-        fontSize: 14,
-        fontWeight: 'normal',
-        opacity: 1
-      },
-      rotate: 0
-    }
+  // yAxisPart: [{
+  //   position: 'left-part',
+  //   key: ['省'],
+  //   line: {
+  //     style: {
+  //       lineWidth: 1,
+  //       fontColor: '#c2c9d1',
+  //       opacity: 1,
+  //       lineDash: [0, 0]
+  //     }
+  //   },
+  //   label: {
+  //     style: {
+  //       fontColor: 'blue',
+  //       fontStyle: 'normal',
+  //       fontSize: 14,
+  //       fontWeight: 'normal',
+  //       opacity: 1
+  //     },
+  //     rotate: 0
+  //   }
+  // }, {
+  //   position: 'left-part',
+  //   key: ['区域'],
+  //   line: {
+  //     style: {
+  //       lineWidth: 1,
+  //       fontColor: '#c2c9d1',
+  //       opacity: 1,
+  //       lineDash: [0, 0]
+  //     }
+  //   },
+  //   label: {
+  //     style: {
+  //       fontColor: 'blue',
+  //       fontStyle: 'normal',
+  //       fontSize: 14,
+  //       fontWeight: 'normal',
+  //       opacity: 1
+  //     },
+  //     rotate: 0
+  //   }
   // }, {
   //   position: 'left-part',
   //   key: ['区域'],
@@ -250,7 +246,7 @@ const config = {
   //       }
   //     }
   //   }
-  }],
+  // }],
   yAxis: [{
     position: 'left',
     type: ['bar'],
@@ -339,66 +335,66 @@ const config = {
   //       }
   //     }
   //   }
-  }],
-  labelsList: [
-    {
-      type: 'linear',
-      key: 'sum(销售金额)',
-      title: 'sum(客户编号)',
-      display: 'auto',
-      format: {
-        selectFormat: -1,
-        decimal: 2,
-        negative: '-1',
-        unit: '',
-        prefix: '',
-        suffix: '',
-        zone: 'CN',
-        useThousandMark: true
-      },
-      text: {
-        fontColor: '#6b6b6b',
-        fontSize: 12,
-        textAlign: 'left',
-        lineHeight: 24,
-        display: 'auto'
-      }
-    }
-    // {
-    //   type: 'linear',
-    //   key: 'median(客户ID) percent',
-    //   title: 'median(客户ID) percent',
-    //   display: 'auto',
-    //   format: {
-    //     selectFormat: 'percent',
-    //     decimal: 2,
-    //     prefix: '',
-    //     suffix: '%',
-    //     isPercent: true
-    //   },
-    //   text: {
-    //     fontColor: '#6b6b6b',
-    //     fontSize: 12,
-    //     textAlign: 'left',
-    //     lineHeight: 24,
-    //     display: 'auto'
-    //   }
-    // },
-    // {
-    //   type: 'ordinal',
-    //   key: '区域',
-    //   title: '区域',
-    //   display: 'auto',
-    //   format: {},
-    //   text: {
-    //     fontColor: '#6b6b6b',
-    //     fontSize: 12,
-    //     textAlign: 'left',
-    //     lineHeight: 24,
-    //     display: 'auto'
-    //   }
-    // }
-  ]
+  }]
+  // labelsList: [
+  //   {
+  //     type: 'linear',
+  //     key: 'sum(销售金额)',
+  //     title: 'sum(客户编号)',
+  //     display: 'auto',
+  //     format: {
+  //       selectFormat: -1,
+  //       decimal: 2,
+  //       negative: '-1',
+  //       unit: '',
+  //       prefix: '',
+  //       suffix: '',
+  //       zone: 'CN',
+  //       useThousandMark: true
+  //     },
+  //     text: {
+  //       fontColor: '#6b6b6b',
+  //       fontSize: 12,
+  //       textAlign: 'left',
+  //       lineHeight: 24,
+  //       display: 'auto'
+  //     }
+  //   }
+  //   // {
+  //   //   type: 'linear',
+  //   //   key: 'median(客户ID) percent',
+  //   //   title: 'median(客户ID) percent',
+  //   //   display: 'auto',
+  //   //   format: {
+  //   //     selectFormat: 'percent',
+  //   //     decimal: 2,
+  //   //     prefix: '',
+  //   //     suffix: '%',
+  //   //     isPercent: true
+  //   //   },
+  //   //   text: {
+  //   //     fontColor: '#6b6b6b',
+  //   //     fontSize: 12,
+  //   //     textAlign: 'left',
+  //   //     lineHeight: 24,
+  //   //     display: 'auto'
+  //   //   }
+  //   // },
+  //   // {
+  //   //   type: 'ordinal',
+  //   //   key: '区域',
+  //   //   title: '区域',
+  //   //   display: 'auto',
+  //   //   format: {},
+  //   //   text: {
+  //   //     fontColor: '#6b6b6b',
+  //   //     fontSize: 12,
+  //   //     textAlign: 'left',
+  //   //     lineHeight: 24,
+  //   //     display: 'auto'
+  //   //   }
+  //   // }
+  // ]
   // tooltipList: [
   //   {
   //     type: 'linear',

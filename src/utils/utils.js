@@ -1,5 +1,3 @@
-import { getMaxValue, getKeyDataList } from '../components/data';
-
 const getTextLegend = (text, fontSize) => {
   let textLen = String(text).length;
   return (textLen * fontSize) / 2 + fontSize;
@@ -170,7 +168,14 @@ const setUnitHeight = (height, text, data, axisKey, isUnit, index) => {
       }
     }
   }
-  return isUnit ? num * height * index : (height * start) + (num * height - getTxtWidth(text, 14)) / 2;
+  console.log(start);
+  return num * height * index - (getTxtWidth(text, 14) / 2);
+  // return isUnit ? num * height * index : (height * start) + (num * height - getTxtWidth(text, 14)) / 2;
+};
+
+const setPartHeight = (yAxisHeight, d, data, key, index) => {
+  let width = 0;
+  return width;
 };
 
 const setTextPos = (width, text, data, axisKey) => {
@@ -239,24 +244,22 @@ const getTxtWidth = (text, font) => {
   return width;
 };
 
-const getTopAxisHeight = (xAxis) => {
-  if (xAxis.length === 0) return 16;
-  else return (xAxis.length) * 32 + 16;
+const getTopAxisHeight = (xAxisPart) => {
+  if (!xAxisPart || xAxisPart.length === 0) return 16;
+  else return (xAxisPart.length) * 32 + 16;
 };
 
-const setAsideWidth = (yAxis, data, yAxisPart) => {
+const setAsideWidth = (yAxis, maxValue, yAxisPart) => {
   if (!yAxis) return 16;
-  let maxValue = getMaxValue(data, yAxis.key);
   let txtLen = getTxtWidth(String(maxValue), 14) + 20;
   let titleLen = getTxtWidth('哈', 16);
   if (!yAxisPart) return txtLen + titleLen;
   return yAxisPart.length * 50 + txtLen + titleLen;
 };
 
-const setBottomLabelHeight = (xAxis, data) => {
-  let xData = getKeyDataList(data, xAxis.key);
-  let longest = xData.reduce((a, b) => a.length > b.length ? a : b);
-  let txtLen = getTxtWidth(longest) + 16;
+const setBottomLabelHeight = (xAxis, xData) => {
+  let longest = xData.reduce((a, b) => String(a).length > String(b).length ? a : b);
+  let txtLen = getTxtWidth(String(longest)) + 16;
   let rotate = xAxis.label.rotate;
   if (rotate !== 0) {
     return txtLen;
@@ -278,5 +281,6 @@ export {
   getTopAxisHeight,
   setAsideWidth,
   setBottomLabelHeight,
-  setUnitHeight
+  setUnitHeight,
+  setPartHeight
 };

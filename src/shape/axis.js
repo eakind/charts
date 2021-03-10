@@ -81,13 +81,14 @@ const setAxisLine = (scalePanel, option) => {
 
 const setAxisYTitle = (axisPanel, titleOption, position, width, topAxisHeight, height, index) => {
   let titleStyle = titleOption.style;
+  debugger;
   axisPanel.append('g')
     .attr('transform', () => {
       let translateX = width - 60;
       if (position === 'right') {
         translateX = width - 16;
       }
-      return `translate(${translateX}, ${topAxisHeight + (height * index) + 8})`;
+      return `translate(${translateX}, ${topAxisHeight + (height * index) + getTxtWidth(titleStyle.value, titleStyle.fontSize)})`;
     })
     .append('text')
     .attr('text-anchor', 'start')

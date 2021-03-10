@@ -1,4 +1,4 @@
-import { getTxtWidth, setUnitHeight } from '../utils/utils';
+import { getTxtWidth, setPartHeight } from '../utils/utils';
 const initYGrid = (middle, width, height, scaleY, topAxisHeight, index) => {
   let axis = d3.axisLeft(scaleY)
     .tickPadding(6)
@@ -22,18 +22,6 @@ const initYGrid = (middle, width, height, scaleY, topAxisHeight, index) => {
     .attr('stroke', '#c2c9d1')
     .attr('opacity', 0)
     .attr('stroke-width', 1);
-};
-
-const getTextNum = (value, list) => {
-  let num = 0;
-  let start = 0;
-  for (let i = 0, len = list.length; i < len; i++) {
-    if (list[i] === value) {
-      if (!num) start = i;
-      num++;
-    }
-  }
-  return { num, start };
 };
 
 const setUniqueForKey = (perKey, key, data) => {
@@ -63,7 +51,6 @@ const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, t
     uniqueData = setUniqueForKey(perKey, key, data);
   }
   let lineLen = uniqueData.length - 1;
-  console.log(lineLen);
   let textGroup = grid.append('g').attr('class', 'top-axis-text');
   // 添加title
   textGroup.append('g').append('text')
@@ -81,7 +68,8 @@ const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, t
     .enter();
   xGridGroup.append('text')
     .attr('transform', (d, index) => {
-      let { num, start } = getTextNum(d, xAxisList);
+      let num = xAxisList.filter(item => item === d).length;
+      let start = xAxisList.indexOf(d);
       let gap = bandwidth * num;
       let startGap = bandwidth * start;
       let txtGap = getTxtWidth(d, 14) / 2;
@@ -104,13 +92,15 @@ const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, t
   // 添加线
   xGridGroup.append('line')
     .attr('x1', (d) => {
-      let { num, start } = getTextNum(d, xAxisList);
+      let num = xAxisList.filter(item => item === d).length;
+      let start = xAxisList.indexOf(d);
       let width = (num + start) * bandwidth;
       return width;
     })
     .attr('y1', -30)
     .attr('x2', (d) => {
-      let { num, start } = getTextNum(d, xAxisList);
+      let num = xAxisList.filter(item => item === d).length;
+      let start = xAxisList.indexOf(d);
       let width = (num + start) * bandwidth;
       return width;
     })
@@ -123,20 +113,26 @@ const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, t
 };
 
 const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxisHeight, key, data, i) => {
-  debugger;
+  console.log(uniqueData);
+  console.log(topAxisHeight);
+  console.log(yAxisHeight);
   let grid = leftAxis.append('g')
-    .attr('transform', `translate(${0}, ${yAxisHeight + topAxisHeight})`);
+    .attr('transform', `translate(${0}, ${topAxisHeight * 2})`);
   let lineGroup = grid.append('g').attr('class', 'top-axis-line');
   let yGridGroup = lineGroup.selectAll('top-axis-line')
     .data(uniqueData)
     .enter();
-  let lineLen = uniqueData.length - 1;
+  // let lineLen = uniqueData.length - 1;
   yGridGroup.append('text')
     .attr('transform', (d, index) => {
       let x = xIndex * 45 + 30;
       let isUnit = i === 0;
-      let height = setUnitHeight(yAxisHeight, d, data, key, isUnit, index);
-      let y = height - 50;
+      let height = (index + 1) * yAxisHeight - yAxisHeight / 2; // setUnitHeight(yAxisHeight, d, data, key, isUnit, index);
+      if (!isUnit) {
+        height = setPartHeight(yAxisHeight, d, data, key, index);
+      }
+      let y = height;
+      console.log(y);
       return `translate(${x}, ${y})`;
     })
     .attr('font-size', 14)
@@ -155,7 +151,7 @@ const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxis
       return index * yAxisHeight;
     })
     .attr('opacity', (d, index) => {
-      let opacity = lineLen === index ? 0 : 1;
+      let opacity = index === 0 ? 0 : 1;
       return opacity;
     })
     .attr('stroke-width', 1)

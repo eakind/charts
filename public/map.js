@@ -3,6 +3,7 @@ let mapConfig = {
   width: '600',
   height: '400',
   bindto: '#map_1',
+  id: 'map_1',
   labelsList: [],
   tooltipList: [
     {

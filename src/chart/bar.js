@@ -1,5 +1,4 @@
-import { getKeyDataList, getKeyValueDataList } from '../components/data';
-// import { scaleLinear } from '../shape/scale.js';
+import { getKeyDataList, getKeyValueDataList } from '../utils/data';
 import Base from './base';
 export default class Bar extends Base {
   constructor (data, config) {
@@ -8,8 +7,7 @@ export default class Bar extends Base {
     this.config = config;
     this.colorList = config.colorList;
     this.init();
-    this.drawMultBar();
-    // this.createLabel();
+    // this.drawMultBar();
   };
 
   drawMultBar () {

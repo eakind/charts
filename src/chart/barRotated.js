@@ -1,4 +1,4 @@
-import { getKeyDataList, getMaxValue } from '../components/data';
+import { getKeyDataList, getMaxValue } from '../utils/data';
 import { scaleLinear } from '../shape/scale.js';
 import Base from './base';
 export default class Bar extends Base {

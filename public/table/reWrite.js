@@ -72,7 +72,7 @@ function createTooltip() {
                   letter-spacing: ${style.letterSpacing}px; 
                   background-color:'#fff';
                   line-height: ${style.lineHeight}px; display: ${style.display || 'auto'}">
-                  ${name}${name === '' ? '' : ': '}${context.formatNumberFunction.call(context, value, tooltipFormat)} 
+                  ${name}${name === '' ? '' : ': '}${context.formatNumberFunction(value, tooltipFormat)} 
                 </div>`;
       });
       eGui.style.padding = '8px';

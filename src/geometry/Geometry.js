@@ -276,6 +276,8 @@ class Geometry {
     colorList.push(obj);
     return colorList;
   }
+
+  getDomain () {}
 }
 
 export default Geometry;

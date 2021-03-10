@@ -1,49 +1,91 @@
-import Chart from '../Chart.js';
-import { extend, isDefined, isEmpty } from '../check.js';
-import CLASS from '../Classes.js';
+/* eslint-disable */
+// import Chart from '../Chart.js';
+import { extend, isDefined, isEmpty, isMobile } from '../utils/check.js';
+// import CLASS from '../Classes.js';
+import {
+  dataProcess
+} from '../utils/utils.js';
 
-const drawTable = function () {
+export default class Table {
+  constructor (data, config) {
+    this.data = data;
+    this.config =config;
+  };
+  render () {
+    let tableHandle = init(this.data, this.config);
+    tableHandle.drawTable();
+  }
+}
+
+const init = function (tableData, tableConfig) {
   const $$ = this;
-  const config = $$.config;
-  let colored_feature = config.data_colored_feature;
-  let colored_type = config.data_colored_type;
-  let data = [];
-  let keys = [];
+  const config = tableConfig;
+  let colored_feature = config.data.colored.feature,
+    colored_type = config.data.colored.type,
+    data = [],
+    keys = [];
 
-  let {
-    table_padding_left,
-    table_padding_right,
-    table_padding_top,
-    table_padding_bottom,
-    table_body_width,
-    table_body_height,
-    table_title: tableTitle
-  } = config;
-  let paddingLeft = Number(table_padding_left);
-  let paddingRight = Number(table_padding_right);
-  let paddingTop = Number(table_padding_top);
-  let paddingBottom = Number(table_padding_bottom);
+  let table_padding = config.table.padding;
+  let table_body = config.table.body;
+  let table_padding_left = table_padding.left,
+      table_padding_right = table_padding.right,
+      table_padding_top = table_padding.top,
+      table_padding_bottom = table_padding.bottom,
+      table_body_width = table_body.width,
+      table_body_height = table_body.height,
+      cellBorderWidth = config.table.inner.width,
+      headBorderWidth = config.table.outter.width,
+      outerBorderColor = config.table.outter.color,
+      innerBorderColor = config.table.inner.color,
+      tableTitle = config.table.title;
+
+  // let {
+  //   table_padding_left,
+  //   table_padding_right,
+  //   table_padding_top,
+  //   table_padding_bottom,
+  //   table_body_width,
+  //   table_body_height,
+  //   table_title: tableTitle,
+  // } = config;
+  let paddingLeft = Number(table_padding_left),
+    paddingRight = Number(table_padding_right),
+    paddingTop = Number(table_padding_top),
+    paddingBottom = Number(table_padding_bottom);
   let width = Number(table_body_width) + paddingLeft + paddingRight;
 
   let height = Number(table_body_height) + paddingTop + paddingBottom;
-  $$.color = $$.generateColor();
+  if (isMobile()) {
+    height = height * config.dpr;
+    width = width * config.dpr;
+  }
+  // $$.color = $$.generateColor();
 
-  let mode = config.table_mode;
+  let mode = config.table.mode;
 
   let maxHeight = d3.max(tableTitle, function (d) {
     return Math.max(Number(d.style['line-height']));
   });
 
-  let titleKey = config.data_column_categories.join(' / ');
+  let titleKey = config.data.column.categories.join(' / ');
   let titleMatch = tableTitle.find((i) => i.key === titleKey);
-  let titleStyle = JSON.parse(JSON.stringify(CLASS.text_format));
-  let titleShow = config.data_column_categories.length > 0;
+  let titleStyle = {
+		align: 'left',
+    fontSize: 12,
+    fontColor: '',
+    fontStyle: 'normal',
+    decoration: '',
+    letterSpacing: '',
+    lineHeight: '16.5',
+    display: 'auto'
+	};
+  let titleShow = config.data.column.categories.length > 0;
   if (titleMatch) {
     titleStyle = titleMatch.style;
     titleShow = titleMatch.show;
     titleStyle.color = titleStyle.fill;
   } else {
-    titleStyle.color = config.font_color;
+    titleStyle.color = config.font.color;
   }
   if (titleMatch) {
     titleStyle.lineHeight = Number(titleStyle['line-height']) + 16;
@@ -53,20 +95,21 @@ const drawTable = function () {
   let aggShow = false;
 
   let drawTable = function () {
-    // 获取标签样式
-    $$.getLabelStyleList();
+    //获取标签样式
+    // $$.getLabelStyleList();
 
     var minRowHeight = 30;
     var currentRowHeight = height;
-    let formatList = $$.label_format_list;
-    let tooltipText = config.tooltip_text;
-    let tooltipFormat = config.tooltip_format;
-    let rowAggression = isEmpty(config.data_row_aggressions)
-      ? isEmpty(config.data_labeled)
+    // let formatList = $$.label_format_list;
+    let formatList = [];
+    let tooltipText = config.tooltip.text;
+    let tooltipFormat = config.tooltip.format;
+    let rowAggression = isEmpty(config.data.row.aggressions)
+      ? isEmpty(config.data.labeled)
         ? []
-        : config.data_labeled
-      : config.data_row_aggressions;
-    let columnAggression = config.data_column_aggressions;
+        : config.data.labeled
+      : config.data.row.aggressions;
+    let columnAggression = config.data.column.aggressions;
 
     let aggMatchLen = 0;
     let singleHeadFlag = false;
@@ -80,34 +123,35 @@ const drawTable = function () {
       aggShow = aggMatchLen < rowAggression.length; // 说明会显示
     }
     let titleFlag =
-      isEmpty(config.data_row_categories) &&
-      isEmpty(config.data_column_categories) &&
-      isEmpty(config.data_column_aggressions);
+      isEmpty(config.data.row.categories) &&
+      isEmpty(config.data.column.categories) &&
+      isEmpty(config.data.column.aggressions);
 
-    // 将列和数据赋给gridOptions
-    let colorFeature = config.data_colored_feature;
+    //将列和数据赋给gridOptions
+    let colorFeature = config.data.colored.feature;
     let start = new Date().getTime();
     let columns = initColumns();
     let gridData = initData();
-    console.log('数据处理时间:', new Date().getTime() - start);
-    console.log(gridData);
-    console.log(columns);
+    // console.log('数据处理时间:', new Date().getTime() - start);
+    // console.log(gridData);
+    // console.log(columns);
     // let startRender = new Date().getTime();
     var gridOptions = initConfig();
 
     // var minRowHeight = 30;
     // var currentRowHeight;
     var eGridDiv = document.querySelector(config.bindto);
+    eGridDiv.innerHTML = '';
     if (!eGridDiv) {
       return;
     }
-    let dom = document.querySelectorAll('.dashboard_charts'); //  //
+    let dom = document.querySelectorAll(`.dc-chart`); //  //
     if (dom.length > 1) {
       dom = document.getElementById(config.bindto.slice(1));
     } else {
       dom = dom[0];
     }
-    let { background: bgColor, index } = config.table_background;
+    let { background: bgColor, index } = config.table.background;
 
     let { cHeight, cWidth } = setWidthHeight();
     eGridDiv.style.border = headBorderWidth + 'px solid ' + outerBorderColor;
@@ -117,7 +161,7 @@ const drawTable = function () {
       eGridDiv.style.background = 'inherit';
     } else {
       eGridDiv.style.background = bgColor;
-      eGridDiv.style.opacity = config.table_background.opacity || 1;
+      eGridDiv.style.opacity = config.table.background.opacity || 1;
     }
 
     eGridDiv.classList.add('ag-theme-balham');
@@ -145,17 +189,17 @@ const drawTable = function () {
     function setWidthHeight () {
       if (!dom) {
         return {
-          cWidth: config.size_width,
-          cHeight: config.size_height
+          cWidth: config.size.width,
+          cHeight: config.size.height,
         };
       }
       let cHeight = dom.clientHeight; // - 10;
       let cWidth = '100%';
       if (config.size_width) {
-        cWidth = config.size_width + 'px'; // - 10
+        cWidth = config.size.width + 'px'; //- 10
       }
-      if (config.size_height) {
-        cHeight = config.size_height; // - 10;
+      if (config.size.height) {
+        cHeight = config.size.height; // - 10;
       }
       return {
         cWidth,
@@ -222,7 +266,10 @@ const drawTable = function () {
     /**
      * 初始化config
      */
-    function initConfig () {
+    function initConfig() {
+      if (isMobile()) {
+        maxHeight = maxHeight * config.dpr;
+      }
       return {
         columnDefs: columns,
         // rowData: gridData,
@@ -240,7 +287,7 @@ const drawTable = function () {
             wrap.style.background = 'inherit';
           } else {
             wrap.style.background = bgColor;
-            wrap.style.opacity = config.table_background.opacity || 1;
+            wrap.style.opacity = config.table.background.opacity || 1;
           }
 
           let headDom = eGridDiv.querySelector('.ag-header');
@@ -337,6 +384,7 @@ const drawTable = function () {
                   headBorderWidth * 2 +
                   'px';
               }
+
               eGridDiv.querySelector('.ag-body-horizontal-scroll') &&
                 eGridDiv.querySelector('.ag-body-horizontal-scroll').remove();
             }
@@ -350,9 +398,14 @@ const drawTable = function () {
               eGridDiv.style.width = '100%';
             }
           }
+          if (isMobile()) {
+            let colsClass = eGridDiv.querySelector('.ag-center-cols-viewport').getAttribute('class') + ' ' + 'ag-center-mobile-cols-viewport';
+            eGridDiv.querySelector('.ag-center-cols-viewport').setAttribute('class', colsClass);
+            // eGridDiv.querySelector('.ag-center-cols-viewport').style.overflow = 'auto !important';
+          }
 
           gridOptions.api.setRowData(gridData);
-          console.log('数据加载时间:', new Date().getTime() - startRender);
+          // console.log('数据加载时间:', new Date().getTime() - startRender);
         },
         onFirstDataRendered: onFirstDataRendered,
         onGridSizeChanged: onGridSizeChanged,
@@ -446,7 +499,7 @@ const drawTable = function () {
           obj.columnStyle = returnColumnStyle(agg);
           obj1.columnStyle = obj.columnStyle;
           let match = formatList.find((i) => i.label_name === agg);
-          config.data_json.map((row) => {
+          tableData.map((row) => {
             if (row.hasOwnProperty(agg)) {
               Object.assign(obj, returnValue(row, agg, match));
               Object.assign(obj1, returnValue(row, agg, match));
@@ -467,7 +520,7 @@ const drawTable = function () {
 
     function returnColProp (i) {
       let prop = '';
-      config.data_column_categories.forEach((c) => {
+      config.data.column.categories.forEach((c) => {
         prop += i[c] + '-';
       });
       if (prop) {
@@ -478,7 +531,15 @@ const drawTable = function () {
 
     function returnColumnStyle (agg) {
       let match = formatList.find((i) => i.label_name === agg);
-      let style = CLASS.table_text_format;
+      let style = {
+        align: 'right',
+        fontSize: 12,
+        fontColor: '#6b6b6b',
+        fontStyle: 'normal',
+        decoration: '',
+        letterSpacing: '',
+        lineHeight: '24'
+      };
       if (match) {
         style = match.initLabelText.format;
       }
@@ -505,6 +566,9 @@ const drawTable = function () {
       } else {
         columnStyle.height =
           Number(style.lineHeight) + paddingBottom + paddingTop;
+        if (isMobile()) {
+          columnStyle.height = columnStyle.height * config.dpr;
+        }
         if (paddingBottom === 0 && paddingTop === 0) {
           columnStyle.lineHeight = columnStyle.height + 'px';
         }
@@ -548,7 +612,17 @@ const drawTable = function () {
         }
         if (i.hasOwnProperty(key)) {
           let flag = !!tooltipObj[key];
-          const ele = flag ? tooltipObj[key] : CLASS.text_format;
+          let textFormat = {
+            align: 'left',
+            fontSize: 12,
+            fontColor: '',
+            fontStyle: 'normal',
+            decoration: '',
+            letterSpacing: '',
+            lineHeight: '16.5',
+            display: 'auto'
+          };
+          const ele = flag ? tooltipObj[key] : textFormat;
           if (rowAggression.indexOf(key) > -1 && agg !== key) {
             continue;
           }
@@ -558,7 +632,17 @@ const drawTable = function () {
           labelObj.value = i[key];
           labelObj.style = ele;
           labelObj.display = ele.display ? ele.display : 'auto';
-          let format = flag ? tooltipFormat[key] : CLASS.number_format;
+          let tableNumFormat = {
+            selectFormat: 'digit',
+            decimal: '',
+            negative: '-1',
+            unit: '',
+            prefix: '',
+            suffix: '',
+            zone: 'CN',
+            useThousandMark: true
+          };
+          let format = flag ? tooltipFormat[key] : tableNumFormat;
           Object.assign(labelObj.tooltipFormat, format);
           if (flag) {
             // ele.display !== 'none' &&
@@ -587,7 +671,7 @@ const drawTable = function () {
       let tempData = [];
       getSpanProcess(catData, spanObj);
       let test = JSON.parse(JSON.stringify(spanObj));
-      console.log(test);
+      // console.log(test);
 
       function getSpanProcess (curData, obj) {
         curData.map((curRow) => {
@@ -706,7 +790,7 @@ const drawTable = function () {
                 let match = formatList.find((i) => i.label_name === agg);
                 row.values.forEach((i) => {
                   let key = i['MC-HIDDEN-KEY'];
-                  let propArr = key.split(CLASS.join_factor);
+                  let propArr = key.split('MC-SEPERATE-WORD');
                   if (i.hasOwnProperty(agg)) {
                     Object.assign(obj, returnValue(i, agg, match));
                   }
@@ -757,7 +841,7 @@ const drawTable = function () {
                 row.values.forEach((i) => {
                   obj.data_row_aggressions = matchAgg ? matchAgg.title : agg;
                   let key = i['MC-HIDDEN-KEY'];
-                  let propArr = key.split(CLASS.join_factor);
+                  let propArr = key.split('MC-SEPERATE-WORD');
                   if (i.hasOwnProperty(agg)) {
                     if (
                       (propArr.length > 1 &&
@@ -821,22 +905,31 @@ const drawTable = function () {
     /**
      * 开始初始化grid的column
      */
-    function initColumns () {
-      let colCategory = config.data_column_categories;
+    function initColumns() {
+      let colCategory = config.data.column.categories;
       let partColumn = getColumn(colCategory);
-      let temColumn = $$.config.data_row_categories;
+      let temColumn = config.data.row.categories;
       let resColumn = [];
 
       temColumn.forEach((i) => {
         let match = tableTitle.find((t) => t.key === i);
-        let style = CLASS.text_format;
+        let style = {
+          align: 'left',
+          fontSize: 12,
+          fontColor: '',
+          fontStyle: 'normal',
+          decoration: '',
+          letterSpacing: '',
+          lineHeight: '16.5',
+          display: 'auto'
+        };
         let show = true;
         if (match) {
           style = JSON.parse(JSON.stringify(match.style));
           style.color = style.fill;
           show = match.show;
         } else {
-          style.color = config.font_color;
+          style.color = config.font.color;
         }
         resColumn.push({
           headerName: match ? match.title : i,
@@ -857,8 +950,17 @@ const drawTable = function () {
           tooltipComponent: 'customTooltip',
           tooltipField: i,
           tooltipComponentParams: {
-            style: CLASS.text_format,
-            header: true
+            style: {
+              align: 'left',
+              fontSize: 12,
+              fontColor: '',
+              fontStyle: 'normal',
+              decoration: '',
+              letterSpacing: '',
+              lineHeight: '16.5',
+              display: 'auto'
+            },
+            header: true,
           },
           cellStyle: (params) => {
             if (params.value) {
@@ -889,8 +991,17 @@ const drawTable = function () {
         });
       });
       let flag = !aggShow && !titleShow; //
-      if (!flag && config.data_row_aggressions.length > 0) {
-        let curStyle = CLASS.text_format;
+      if (!flag && config.data.row.aggressions.length > 0) {
+        let curStyle = {
+          align: 'left',
+          fontSize: 12,
+          fontColor: '',
+          fontStyle: 'normal',
+          decoration: '',
+          letterSpacing: '',
+          lineHeight: '16.5',
+          display: 'auto'
+        };
         if (tableTitle.length > 0) {
           curStyle = tableTitle[0].style;
           curStyle.color = curStyle.fill;
@@ -898,7 +1009,7 @@ const drawTable = function () {
         resColumn.push({
           headerName: titleShow ? '' : titleMatch ? titleMatch.title : titleKey,
           field:
-            aggShow && !isEmpty(config.data_row_aggressions)
+            aggShow && !isEmpty(config.data.row.aggressions)
               ? 'data_row_aggressions'
               : '',
           headerTooltip: titleShow
@@ -912,8 +1023,17 @@ const drawTable = function () {
           lockPinned: true,
           cellClass: 'lock-pinned',
           tooltipComponentParams: {
-            style: CLASS.text_format,
-            header: true
+            style: {
+              align: 'left',
+              fontSize: 12,
+              fontColor: '',
+              fontStyle: 'normal',
+              decoration: '',
+              letterSpacing: '',
+              lineHeight: '16.5',
+              display: 'auto'
+            },
+            header: true,
           },
           headerComponentParams: {
             style: curStyle,
@@ -972,11 +1092,11 @@ const drawTable = function () {
       } else {
         curStyle.background = bgColor || '#fff';
       }
-      curStyle.opacity = config.table_background.opacity
-        ? (config.table_background.opacity * 100) / 100
+      curStyle.opacity = config.table.background.opacity
+        ? (config.table.background.opacity * 100) / 100
         : 1;
       curStyle.borderColor = innerBorderColor;
-      curStyle.color = config.font_color;
+      curStyle.color = config.font.color;
       if (params && params.value && params.value.rowSpan !== params.value.rowLen) {
         curStyle.display = 'none';
       }
@@ -986,11 +1106,11 @@ const drawTable = function () {
     function getGridColumn (column) {
       let resColumn = [];
 
-      let rowCat = isEmpty(config.data_row_aggressions)
+      let rowCat = isEmpty(config.data.row.aggressions)
         ? isEmpty(config.data_labeled)
           ? []
-          : config.data_labeled
-        : config.data_row_aggressions;
+          : config.data.labeled
+        : config.data.row.aggressions;
 
       maxHeight = maxHeight ? maxHeight + 16 : Number(titleStyle.lineHeight);
 
@@ -1023,7 +1143,7 @@ const drawTable = function () {
               borderTopShow: titleShow ? '0' : '1' // 无
             },
             tooltipComponentParams: {
-              context: $$
+              context: {dataProcess: dataProcess},
             },
             cellRenderer: (params) => {
               var eDiv = document.createElement('span');
@@ -1122,7 +1242,7 @@ const drawTable = function () {
               temColumnObj.tooltipField = 'singleHead';
               temColumnObj.headerComponentParams.show = false;
               singleHeadFlag =
-                !(config.data_row_categories.length > 0);
+                config.data.row.categories.length > 0 ? false : true;
               // temColumnObj.headerComponentParams.hasSpace = '1'
               temColumnObj.headerComponentParams.maxHeight = 0;
               target.push(temColumnObj);
@@ -1140,7 +1260,7 @@ const drawTable = function () {
           headerTooltip: titleMatch ? titleMatch.title : titleKey,
           children: resColumn,
           tooltipComponentParams: {
-            context: $$
+            context: {dataProcess: dataProcess},
           },
           headerGroupComponent: createHeaderGroupComponent(),
           headerGroupComponentParams: {
@@ -1161,7 +1281,16 @@ const drawTable = function () {
 
     function geneColumnAgg (useStyleFlag) {
       let colAggValues = [];
-      let curStyle = CLASS.text_format;
+      let curStyle = {
+        align: 'left',
+        fontSize: 12,
+        fontColor: '',
+        fontStyle: 'normal',
+        decoration: '',
+        letterSpacing: '',
+        lineHeight: '16.5',
+        display: 'auto'
+      };
       if (tableTitle.length > 0) {
         curStyle = tableTitle[0].style;
         curStyle.color = curStyle.fill;
@@ -1185,12 +1314,21 @@ const drawTable = function () {
       // colCategory = ['品牌', '产品主类']
       let nest = d3.nest();
       for (var i = 0; i < colCategory.length; i++) {
-        nest.key($$.createNestingFunction(colCategory[i]));
+        nest.key(createNestingFunction(colCategory[i]));
+        // nest.key((d)=> {
+        //   return d[colCategory[i]];
+        // });
       }
-      let resData = nest.entries(config.data_json);
+      let resData = nest.entries(tableData);
       return resData;
     }
-    /// //////////////////结束获取grid的column////////////////////////
+
+    function createNestingFunction(propertyName) {
+      return (d)=> {
+        return d[propertyName];
+      };
+    }
+    /////////////////////结束获取grid的column////////////////////////
   };
 
   function initData (values) {
@@ -1214,6 +1352,6 @@ const drawTable = function () {
     initData
   };
 };
-extend(Chart.prototype, {
-  drawTable
-});
+// extend(Chart.prototype, {
+//   drawTable,
+// });

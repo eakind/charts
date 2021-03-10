@@ -115,7 +115,7 @@ class Bubble extends Geometry {
     this.geometry = this.svg
       .append('g')
       .attr('class', 'bubble-wrap')
-      .attr('transform', 'translate(0,0)')
+      .attr('transform', `translate(${(width - width * size) / 2},${(height - height * size) / 2})`)
       .selectAll('bubble-circle')
       .data(nodes)
       .enter()

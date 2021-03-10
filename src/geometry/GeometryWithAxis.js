@@ -10,6 +10,7 @@ class GeometryWithAxis extends Geometry {
     this.yScale = null;
     this.xAxisG = null;
     this.yAxisG = null;
+    this.dpr = this.config.dpr || 1;
   }
 
   /**
@@ -23,9 +24,7 @@ class GeometryWithAxis extends Geometry {
   }
 
   yScaleConfig () {
-    this.yScale = d3
-      .scaleLinear()
-      .domain(this.getMinMaxData(this.config.yAxis.title.value)); // 待修改
+    this.ticksProcess();
     let {
       yTitleWidth,
       yLabelWidth,
@@ -64,6 +63,39 @@ class GeometryWithAxis extends Geometry {
     this.diagonalLineConfig();
   }
 
+  ticksProcess () {
+    let {
+      scopeObj: {
+        scale,
+        select,
+        tick_range: tickRange,
+        tick_counts: tickCounts
+      }
+    } = this.config;
+    let originalRange = this.getMinMaxData(this.config.yAxis.title.value);
+    if (scale === 1 || select === 0) {
+      this.yScale = d3.scaleLinear().domain(originalRange); // 待修改
+      return;
+    }
+    if (select === 3) {
+      this.yScale = d3.scaleLinear().domain(typeof tickRange[0] !== 'undefined' ? tickRange : originalRange).ticks(tickCounts);
+      return;
+    }
+    if (select === 1) {
+      let min =
+        typeof tickRange[0] !== 'undefined' ? tickRange[0] : originalRange[0];
+      let max =
+        typeof tickRange[0] !== 'undefined' ? tickRange[1] : originalRange[1];
+      if (scale < 1) {
+        let newMin = max - (max - min) / scale;
+        this.yScale = d3.scaleLinear().domain([newMin, max]).nice();
+      } else {
+        let newMax = scale * (max - min) + min;
+        this.yScale = d3.scaleLinear().domain([min, newMax]).nice();
+      }
+    }
+  }
+
   getMinMaxData (feature) {
     if (this.data.length === 1) {
       if (this.data[0][feature] > 0) {
@@ -95,9 +127,13 @@ class GeometryWithAxis extends Geometry {
     let yLabelWidth =
       getTextWidth(yMaxLabel, labelStyle.fontSize + 'px') *
       (this.config.dpr || 1);
+
     let xTicks = this.xScale.ticks();
     let xMaxLabel = xTicks[xTicks.length - 1];
-    let xLabelWidth = getTextWidth(xMaxLabel, labelStyle.fontSize + 'px');
+
+    let xLabelWidth =
+      getTextWidth(xMaxLabel, labelStyle.fontSize + 'px') *
+      (this.config.dpr || 1);
 
     if (hasUnit) {
       yLabelWidth = getTextWidth(
@@ -116,6 +152,10 @@ class GeometryWithAxis extends Geometry {
     if (labelStyle.rotate === -45) {
     } else if (labelStyle.rotate === 45) {
       labelHeight += yLabelWidth / 2;
+    }
+
+    if (label.style.rotate === -45 || label.style.rotate === 45) {
+      titleHeight += xLabelWidth / 2;
     }
     // titleHeight = titleHeight + titleHeight / 2;
 
@@ -194,7 +234,7 @@ class GeometryWithAxis extends Geometry {
       if (type === 'x') {
         transformValue += `translate(${
           rotate < 0 ? (-this.xLabelWidth * 2) / 3 : (this.xLabelWidth * 2) / 3
-        },0)`;
+        },${rotate > 0 ? -7 : 0})`;
       } else {
         transformValue += `translate(0,${
           rotate < 0 ? -this.yLabelWidth / 4 : this.yLabelWidth / 4
@@ -202,7 +242,7 @@ class GeometryWithAxis extends Geometry {
       }
     } else if (rotate === 90) {
       if (type === 'x') {
-        transformValue += `translate(${this.xLabelWidth / 2 + 7},-10)`;
+        transformValue += `translate(${this.xLabelWidth + 7},-10)`;
       } else {
         transformValue += `translate(${this.yLabelWidth},${this.yLabelWidth})`;
       }
@@ -236,33 +276,38 @@ class GeometryWithAxis extends Geometry {
       hasUnit,
       yAxis: {
         label: { style: labelStyle = {} }
-      }
+      },
+      scopeObj: { select }
     } = this.config;
-
-    let ticks = this.yScale.ticks();
-    let height =
-      getTextWidth(ticks[ticks.length - 1], labelStyle.fontSize + 'px') *
-      (this.config.dpr || 1);
-    if (labelStyle.rotate === 0) {
-      height = 48;
-    } else if (labelStyle.rotate === 45 || labelStyle.rotate === -45) {
-      height = height / 2;
-    }
-    let len = parseInt(
-      Math.round(ticks.length / (this.config.height / height))
-    );
-    len = len ? len + 1 : 1;
-    let yAxis = d3.axisLeft(this.yScale).tickFormat((d, idx) => {
-      if (idx % len === 0) {
-        let val = d;
-        if (hasUnit) {
-          val = d3.format('~s')(d);
-        }
-        return val;
-      } else {
-        return '';
+    let yAxis = null;
+    if (select !== 3) {
+      let ticks = this.yScale.ticks();
+      let height =
+        getTextWidth(ticks[ticks.length - 1], labelStyle.fontSize + 'px') *
+        (this.config.dpr || 1);
+      if (labelStyle.rotate === 0) {
+        height = 48;
+      } else if (labelStyle.rotate === 45 || labelStyle.rotate === -45) {
+        height = height / 2;
       }
-    });
+      let len = parseInt(
+        Math.round(ticks.length / (this.config.height / height))
+      );
+      len = len ? len + 1 : 1;
+      yAxis = d3.axisLeft(this.yScale).tickFormat((d, idx) => {
+        if (idx % len === 0) {
+          let val = d;
+          if (hasUnit) {
+            val = d3.format('~s')(d);
+          }
+          return val;
+        } else {
+          return '';
+        }
+      });
+    } else {
+      yAxis = d3.axisLeft(this.yScale);
+    }
 
     // let yAxis = d3.axisLeft(this.yScale).tickFormat((d) => {
     //   if (hasUnit) {
@@ -293,7 +338,7 @@ class GeometryWithAxis extends Geometry {
     if (!showTitle) {
       return;
     }
-    let xTitleWidth = getTextWidth(value, style.fontSize + 'px');
+    let xTitleWidth = getTextWidth(value, style.fontSize + 'px') * this.dpr;
 
     this.xAxisG
       .append('text')
