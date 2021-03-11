@@ -1,0 +1,35 @@
+/deep/ .el-select.no-border {
+  border: none;
+  border-radius: 0;
+  .el-input__inner {
+    border: none;
+    border-bottom: 1px solid hsl(0, 0%, 88.2%);
+  }
+}
+
+/deep/ .el-select {
+  width: 120px;
+  height: 32px;
+  // background: hsl(0, 0%, 100%);
+  .el-input__inner {
+    height: 32px;
+    line-height: 1;
+  }
+  .el-input__icon {
+    line-height: 1;
+  }
+  .el-icon-arrow-up:before {
+    content: '\e78f';
+  }
+}
+
+/deep/ .el-select.no-border {
+  flex: 1;
+  .el-input__inner {
+    border-radius: 0;
+  }
+}
+
+/deep/ .el-select.common-box {
+  width: calc(100% - 2em);
+}

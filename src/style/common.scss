@@ -1,0 +1,120 @@
+@import './index.css';
+@import './icon//iconfont.css';
+@import './resetElement.scss';
+@font-face {
+  font-family: 'siyuanheiti';
+  src: url('./font/SourceHanSansCN-Normal.eot?t=1590027367289');
+  src: url('./font/SourceHanSansCN-Normal.eot?#iefix')
+      format('embedded-opentype'),
+    url('./font/SourceHanSansCN-Normal.woff2?t=1590027367289') format('woff2'),
+    url('./font/SourceHanSansCN-Normal.woff?t=1590027367289') format('woff'),
+    url('./font/SourceHanSansCN-Normal.ttf?t=1590027367289') format('truetype');
+}
+
+input {
+  font-family: 'siyuanheiti';
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  background-color: #f6f6f6;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 5px;
+  background-color: #f6f6f6;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: #dedede;
+}
+
+.mc {
+  .mc-middle {
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+  }
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body,
+html {
+  @include wh100;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: 'siyuanheiti', 'Helvetica Neue', Helvetica, Arial,
+    // en
+      'Microsoft Yahei',
+    'PingFang SC', 'Hiragino Sans GB', 'Heiti SC', 'WenQuanYi Micro Hei',
+    // ch
+      sans-serif; // 兼容
+  background-color: #eaeaea;
+  color: #424242;
+  min-width: 1366px;
+  .element-active {
+    box-shadow: 0 0 0 2px #4284f5, 0 0 0 2px#4284f5 !important;
+  }
+  .canvas-item {
+    border: none !important;
+  }
+  .drag-item-hide {
+    display: none !important;
+  }
+  .drag-mirror {
+    z-index: 100000;
+  }
+  .gu-mirror {
+    position: fixed !important;
+    margin: 0 !important;
+    z-index: 9999 !important;
+    opacity: 0.8;
+    -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)';
+    filter: alpha(opacity=80);
+  }
+  .gu-hide {
+    display: none !important;
+  }
+  .gu-unselectable {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+  }
+  .gu-transit {
+    opacity: 0;
+    -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
+    filter: alpha(opacity=0);
+  }
+  .canvasDrag {
+    width: 160px;
+    height: 30px;
+    margin: 5px 0px;
+    padding: 0px 20px;
+    line-height: 30px;
+    border-radius: 50px;
+    border: 1px solid #dddddd;
+    background-color: #eaeaea;
+    @include ellipsis;
+  }
+  .feature-width {
+    width: 180px !important;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}

@@ -1,0 +1,86 @@
+.list-item{
+  width: 160px;
+  cursor: pointer;
+  display: block;
+  box-sizing: border-box;
+  position: relative;
+  .item-down{
+    border-radius: 4px 4px 0px 0px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    color: #424242;
+    padding: 0px 3px;
+    box-sizing: border-box;
+    font-weight: bold;
+    padding: 0 8px;
+    position: relative;
+    // border-left: 1px solid #e1e1e1;
+    @include ellipsis;
+    &:after{
+      content: "";
+      height: 26px;
+      width: 1px;
+      left: 0;
+      top: 4px;
+      background-color: #e1e1e1;
+      position: absolute;
+    }
+  }
+  // .item-handle{
+  //   z-index: 10000;
+  //   position: fixed;
+  // }
+  .icon-db_menuDot{
+    display: inline-block;
+    transform: rotate(90deg);
+    position: absolute;
+    z-index: 10;
+    top: 36px;
+    right: 8px;
+    color: rgba($color: #ffffff, $alpha: 1);
+  }
+  &:hover {
+    position: relative;
+    &::after{
+      content: '';
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      top: 30px;
+      right: 0px;
+      background-color: rgba($color: #424242, $alpha: 0.8);
+      position: absolute;
+      border-radius: 4px 4px 0px 0px;
+      // z-index: 99;
+    }
+  }
+}
+.item-up{
+  position: relative;
+  height: 30px;
+  line-height: 30px;
+  display: flex;
+  align-items: center;
+  padding-left: 5px;
+  color: #A4A4A4;
+  font-size: 12px;
+}
+.worksheet-type {
+  margin-left: -3px;
+}
+.item-active {
+  color: #fff !important;
+  background-color: #4284F5;
+  .item-down{
+    color: white;
+  }
+  .item-up {
+    .chart-type {
+      color: rgba($color: #ffffff, $alpha: 0.5)
+    }
+  }
+  &:after {
+    display: none;
+  }
+}

@@ -1,0 +1,34 @@
+.fun-color {
+    color: #052b71;
+    font-weight: bold;
+  }
+  .cat-color {
+    font-weight: bold;
+    color: #03b98c;
+  }
+  .operator-color {
+    color: #424242;
+  }
+  .condition-color {
+    font-weight: bold;
+    color: #424242;
+  }
+  .string-color {
+    font-weight: bold;
+    color: #f59e28;
+  }
+  .agg-color {
+    font-weight: bold;
+    color: #4284f5;
+  }
+  .regular-color {
+    color: #424242;
+  }
+  a.regular-color,
+  span {
+    display: inline;
+    text-decoration: none;
+    appearance: none;
+    padding: 0;
+    margin: 0;
+  }

@@ -1,0 +1,40 @@
+.error-tip {
+    top: 50%;
+    left: 50%;
+    color: white;
+    z-index: 999999999;
+    font-size: 12px;
+    width: 400px;
+    height: 150px;
+    position: fixed;
+    border-radius: 4px;
+    padding: 10px 20px;
+    text-align: center;
+    pointer-events: visible!important;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0,0,0,0.8);
+    .iconfont{
+      display: inline-block;
+      padding: 40px 0px 15px;
+      font-size: 24px;  
+      color: #F59E28;
+    }
+    .error-tip-txt{
+      color:white;
+      font-size: 16px;
+      top: -3px;
+      left: 5px;
+      font-weight: bold;
+      position: relative;
+    }
+
+    .error-close-btn{
+      margin-left: 15px;
+      display: block;
+      cursor: pointer;
+      font-size: 14px;
+      color: #4284F5;
+      text-decoration: underline;
+    }
+  }
+  
