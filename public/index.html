@@ -4,30 +4,44 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!-- <meta name="viewport" content="width=device-width,initial-scale=0.5,maximum-scale=0.5,minimum-scale=0.5,user-scalable=no"> -->
     <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-    <title>dc-bi</title>
-    <link rel="icon" href="<%= BASE_URL %>icon.png">
-    <script src="./ag-grid-community.min.js"></script>
-    <script src="./reWrite.js"></script>
-    <link rel="stylesheet" href="./ag-grid.css">
-    <link rel="stylesheet" href="./reWrite.css">
-    <link rel="stylesheet" href="./leaflet.css">
+    <title>图表库</title>
     <script src="./d3.v5.min.js"></script>
-    <script src="./leaflet.js" ></script>
-    <script src="./leaflet-provider.js"></script>
     <script src="./l7.js"></script>
-    <!-- <script src="iconfont.js"></script> -->
+    <script src="./table/ag-grid-community.min.js"></script>
+    <script src="./table/reWrite.js"></script>
+    <link rel="stylesheet" href="./table/ag-grid.css">
+    <link rel="stylesheet" href="./table/reWrite.css">
+    <!-- <script src="./chart.js"></script> -->
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+      }
+      .container{
+        width: 100%;
+        height: 100%;
+      }
+      #mc_bar {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
   </head>
   <body>
-    <noscript>
-      <strong>We're sorry but dc-bi doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-    <script src='./chart.js'></script>
-    <script src='./mc.js'></script>
-    <script src='./ai.js'></script>
-    <!-- <script src="https://cdn.polyfill.io/v3/polyfill.min.js" preload></script> -->
+    <div class="container">
+      <div id="mc_pie_53dd28945f7f11eba51b0242ac120007"></div>
+      <div id="mc_map" style="width: 600px; height: 400px; position: relative; display: none;"></div>
+      <div id="mc_bar"></div>
+    </div>
+    <script src="./chart.js"></script>
+    <!-- <script src="./bubble.js"></script> -->
+    <!-- <script src="./scatter.js"></script> -->
+    <!-- <script src="./map.js"></script> -->
+    <script src="./bar1.js"></script>
   </body>
 
 </html>
