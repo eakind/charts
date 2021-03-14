@@ -1,67 +1,98 @@
-import { getKeyDataList, getKeyValueDataList } from '../components/data';
-// import { scaleLinear } from '../shape/scale.js';
+/* eslint-disable no-unreachable */
+import { getKeyDataList, getKeyValueDataList } from '../utils/data';
+import defaultConfig from '../utils/defaultConfig';
 import Base from './base';
 export default class Bar extends Base {
   constructor (data, config) {
     super(data, config);
     this.data = data;
     this.config = config;
-    this.colorList = config.colorList;
-    // getTxtWidth(String(100), 12);
     this.init();
-    this.drawMultBar();
-    // this.createLabel();
   };
 
-  drawMultBar () {
-    if (!this.config.yAxis) return;
-    if (!this.config.yAxisPart || !this.config.yAxisPart.length) {
-      this.drawBar();
+  drawCanvas (list, index, yAxisChild) {
+    if (!list) {
+      this.drawBar(yAxisChild, index);
       return;
     }
-    let yAxis = this.config.yAxis;
-    let partList = this.uniquePartList;
     let key = this.config.yAxisPart[0].key[0];
-    let total = this.getToTalBar(yAxis);
     let leftNum = 0;
-    for (let i = 0, len = partList.length; i < len; i++) {
-      let data = getKeyValueDataList(this.data, key, partList[i]);
+    let total = this.getToTalBar(yAxisChild);
+    for (let i = 0, len = list.length; i < len; i++) {
+      let data = getKeyValueDataList(this.data[index], key, list[i]);
       let height = i * this.yAxisHeight + this.topAxisHeight;
-      for (let j = 0, len = yAxis.length; j < len; j++) {
-        let keyLen = yAxis[j].key.length;
+      for (let j = 0, len = yAxisChild.length; j < len; j++) {
+        let keyLen = yAxisChild[j].key.length;
         if (j === 0) leftNum = keyLen;
         for (let k = 0; k < keyLen; k++) {
-          let valData = getKeyDataList(data, yAxis[j].key[k]);
+          let valData = getKeyDataList(data, yAxisChild[j].key[k]);
           let num = j === 0 ? j + k : leftNum + k;
           this.drawShape(valData, this.leftScaleY, this.yAxisHeight, height, num, total);
+          this.drawLabel(valData, this.leftScaleY, this.yAxisHeight, this.topAxisHeight, num, total, index);
         }
       }
     }
-  };
+  }
 
-  drawBar () {
-    if (!this.config.yAxis) return;
-    let yAxis = this.config.yAxis;
-    let len = yAxis.length;
-    let total = this.getToTalBar(yAxis);
+  drawCombinedCanvas (list, index, yAxisChild, dataIndex) {
+    let height = index * this.yAxisHeight + this.topAxisHeight;
+    let len = yAxisChild.length;
+    let total = this.getToTalBar(yAxisChild);
     let leftNum = 0;
+    let data = this.data[dataIndex];
     for (let i = 0; i < len; i++) {
-      let key = yAxis[i].key;
+      let key = yAxisChild[i].key;
       let keyLen = key.length;
+      let scaleY = yAxisChild[i].position === 'left' ? this.leftScaleY : this.rightScaleY;
       if (i === 0) leftNum = keyLen;
       for (let j = 0; j < keyLen; j++) {
-        let data = getKeyDataList(this.data, yAxis[i].key[j]);
+        let list = getKeyDataList(data, yAxisChild[i].key[j]);
         let num = i === 0 ? i + j : leftNum + j;
-        this.drawShape(data, this.leftScaleY, this.shapeHeight, this.topAxisHeight, num, total);
+        this.drawShape(list, scaleY, this.yAxisHeight, height, num, total);
+        this.drawLabel(list, scaleY, this.yAxisHeight, this.topAxisHeight, num, total, index);
+      };
+    }
+  }
+
+  drawBar (yAxisChild, index) {
+    let len = yAxisChild.length;
+    let total = this.getToTalBar(yAxisChild);
+    let leftNum = 0;
+    let data = this.data[index];
+    for (let i = 0; i < len; i++) {
+      let key = yAxisChild[i].key;
+      let keyLen = key.length;
+      let scaleY = yAxisChild[i].position === 'left' ? this.leftScaleY : this.rightScaleY;
+      if (i === 0) leftNum = keyLen;
+      for (let j = 0; j < keyLen; j++) {
+        let list = getKeyDataList(data, yAxisChild[i].key[j]);
+        let num = i === 0 ? i + j : leftNum + j;
+        this.drawShape(list, scaleY, this.yAxisHeight, this.topAxisHeight, num, total);
+        this.drawLabel(list, scaleY, this.yAxisHeight, this.topAxisHeight, num, total, index);
       };
     };
   }
 
-  drawShape (data, scaleY, height, yAxisY, num, total) {
+  drawLabel (data, scaleY, height, topAxisHeight, num, total, index) {
+    return '';
+    let labelContainer = this.middle.append('g');
+    let label = labelContainer.selectAll(`label_${num}`).data(data);
+    let bandwidth = this.scaleX.bandwidth();
+    let barWidth = bandwidth / (total * 2);
+    label.enter()
+      .append('text')
+      .attr('text-anchor', 'middle')
+      .attr('class', 'label')
+      .attr('x', (d, index) => {
+        return (index * bandwidth) + (num * (barWidth + 1)) + barWidth * (total / 2) + barWidth / 2;
+      })
+      .attr('y', d => scaleY(d) + height * index)
+      .text(d => d);
+  };
+
+  drawShape (data, scaleY, height, topAxisHeight, num, total) {
     let barContainer = this.middle.append('g')
-      .attr('width', this.shapeWidth)
-      .attr('height', height)
-      .attr('transform', `translate(0,${yAxisY})`);
+      .attr('transform', `translate(0,${topAxisHeight})`);
     let bar = barContainer.selectAll(`bar_${num}`).data(data);
     let bandwidth = this.scaleX.bandwidth();
     let barWidth = bandwidth / (total * 2);
@@ -75,7 +106,7 @@ export default class Bar extends Base {
       .attr('width', barWidth)
       .attr('height', 0)
       .attr('fill', (d, index) => {
-        return this.colorList[index];
+        return defaultConfig.colorSet.category[index];
       })
       .attr('opacity', 1)
       .transition().duration(600)
@@ -91,5 +122,8 @@ export default class Bar extends Base {
       }
     }
     return index;
+  };
+
+  render () {
   }
 };

@@ -144,6 +144,7 @@ const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxis
   let lienLen = uniqueData.length - 1;
   yGridGroup.append('line')
     .attr('x1', (d, index) => {
+      console.log(50 * xIndex);
       return 50 * xIndex;
     })
     .attr('y1', (d, index) => {

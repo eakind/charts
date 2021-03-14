@@ -1,5 +1,4 @@
-import { getMaxValue, getKeyDataList } from '../components/data';
-
+import { getMaxValue } from './data';
 const getTextLegend = (text, fontSize) => {
   let textLen = String(text).length;
   return (textLen * fontSize) / 2 + fontSize;
@@ -116,7 +115,7 @@ let getTextWidth = function (str, font) {
   return width;
 };
 
-let fontSizeLineHeightPair = {
+const fontSizeLineHeightPair = {
   8: 12,
   9: 12,
   10: 12,
@@ -170,7 +169,20 @@ const setUnitHeight = (height, text, data, axisKey, isUnit, index) => {
       }
     }
   }
-  return isUnit ? num * height * index : (height * start) + (num * height - getTxtWidth(text, 14)) / 2;
+  console.log(start);
+  return num * height * index - (getTxtWidth(text, 14) / 2);
+  // return isUnit ? num * height * index : (height * start) + (num * height - getTxtWidth(text, 14)) / 2;
+};
+
+const setPartHeight = (d, data, perKey, key) => {
+  let arr = data.filter(item => item[key[0]] === d);
+  let len = arr.length;
+  let perArr = [];
+  for (let i = 0; i < len; i++) {
+    perArr.push(arr[i][perKey[0]]);
+  }
+  perArr = [...new Set(perArr)];
+  return perArr.length;
 };
 
 const setTextPos = (width, text, data, axisKey) => {
@@ -239,29 +251,68 @@ const getTxtWidth = (text, font) => {
   return width;
 };
 
-const getTopAxisHeight = (xAxis) => {
-  if (xAxis.length === 0) return 16;
-  else return (xAxis.length) * 32 + 16;
+const getTxtHeight = (text, font) => {
+  let textDom = document.createElement('span');
+  textDom.innerText = text;
+  textDom.style.fontSize = font + 'px';
+  textDom.style.position = 'fixed';
+  document.body.appendChild(textDom);
+  let height = textDom.clientHeight;
+  document.body.removeChild(textDom);
+  return height;
 };
 
-const setAsideWidth = (yAxis, data, yAxisPart) => {
+const getTopAxisHeight = (xAxisPart) => {
+  if (!xAxisPart || xAxisPart.length === 0) return 16;
+  else return (xAxisPart.length) * 32 + 16;
+};
+
+const setAsideWidth = (yAxis, maxValue, yAxisPart) => {
   if (!yAxis) return 16;
-  let maxValue = getMaxValue(data, yAxis.key);
-  let txtLen = getTxtWidth(String(maxValue), 14) + 24;
-  let titleLen = getTxtWidth('哈', 16);
-  if (!yAxisPart) return txtLen + titleLen;
-  return yAxisPart.length * 50 + txtLen + titleLen;
+  let txtLen = getTxtWidth(String(Math.floor(maxValue)), 14) + 12;
+  let titleLen = getTxtWidth('哈', 20);
+  let width = txtLen + titleLen;
+  if (!yAxisPart) {
+    return {
+      axisWidth: width,
+      titleWidth: width
+    };
+  } else {
+    return {
+      axisWidth: yAxisPart.length * 50 + width,
+      titleWidth: width
+    };
+  };
 };
 
-const setBottomLabelHeight = (xAxis, data) => {
-  let xData = getKeyDataList(data, xAxis.key);
-  let longest = xData.reduce((a, b) => a.length > b.length ? a : b);
-  let txtLen = getTxtWidth(longest) + 16;
-  let rotate = xAxis.label.rotate;
+const setBottomLabelHeight = (xAxis, xData) => {
+  let label = xAxis.label;
+  let longest = xData.reduce((a, b) => String(a).length > String(b).length ? a : b);
+  let height = getTxtHeight(String(longest), label.style.fontSize);
+  let width = getTxtWidth(String(longest), label.style.fontSize);
+  let rotate = label.rotate;
   if (rotate !== 0) {
-    return txtLen;
+    return width;
   }
-  return 42;
+  return height;
+};
+
+const getMaxValueWidth = (yAxis, data, yAxisPart, position) => {
+  let maxTitleWidthArr = [];
+  let axisWidthArr = [];
+  for (let i = 0; i < yAxis.length; i++) {
+    let axisList = yAxis[i].filter(item => item.position === position);
+    if (axisList.length) {
+      let maxValue = getMaxValue(data[i], axisList[0].key);
+      let { axisWidth, titleWidth } = setAsideWidth(axisList[0], Math.floor(maxValue), yAxisPart);
+      maxTitleWidthArr.push(titleWidth);
+      axisWidthArr.push(axisWidth);
+    }
+  };
+  let obj = {};
+  obj[`${position}TitleWidth`] = Math.max(...maxTitleWidthArr);
+  obj[`${position}AxisWidth`] = Math.max(...axisWidthArr);
+  return obj;
 };
 
 export {
@@ -276,7 +327,8 @@ export {
   getTxtLen,
   getTxtWidth,
   getTopAxisHeight,
-  setAsideWidth,
   setBottomLabelHeight,
-  setUnitHeight
+  setUnitHeight,
+  setPartHeight,
+  getMaxValueWidth
 };

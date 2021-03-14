@@ -56,7 +56,7 @@ class Geometry {
     let tooltipWrap;
     let style = `
     position:absolute;
-    z-index:3;
+    z-index:7;
     transition:left 0.4s cubic-bezier(0.23, 1, 0.32, 1) 0s, top 0.4s cubic-bezier(0.23, 1, 0.32, 1) 0s;
     padding:8px 12px;
     color:${fontColor};
@@ -89,7 +89,7 @@ class Geometry {
       let { clientWidth: tempWidth, clientHeight: tempHeight } = document.body;
       let translateX = 0;
       let left = event.x + 20;
-      let top = event.y + 20;
+      let top = event.pageY + 20;
 
       if (top + list.length * 30 > tempHeight) {
         top = top - list.length > 0 ? top - list.length * 30 : 0;
@@ -276,6 +276,8 @@ class Geometry {
     colorList.push(obj);
     return colorList;
   }
+
+  getDomain () {}
 }
 
 export default Geometry;

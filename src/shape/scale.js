@@ -6,12 +6,16 @@ const scaleLinear = (maxValue, height) => {
   return scale;
 };
 
-const scaleBand = (data, barWidth) => {
-  let scale = d3.scaleBand()
-    .domain(data.map((d, index) => {
+const scaleBand = (data, barWidth, unique) => {
+  let scale = d3.scaleBand();
+  if (unique) {
+    scale.domain(data);
+  } else {
+    scale.domain(data.map((d, index) => {
       return `${d}|~|${index}`;
-    }))
-    .range([0, barWidth]);
+    }));
+  }
+  scale.range([0, barWidth]);
   return scale;
 };
 

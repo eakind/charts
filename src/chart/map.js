@@ -6,6 +6,8 @@ export default class map {
     this.scene = null;
     this.clickLabelLayer = null;
     this.markerLayer = null;
+    this.zoomLayer = null;
+    this.pointLayer = null;
   };
 
   render () {
@@ -28,8 +30,14 @@ export default class map {
     //     minZoom: 3
     //   })
     // });
+    var mapDiv = document.querySelector('#' + this.config.id);
+    mapDiv.innerHTML = '';
+    if (this.scene) {
+      this.scene.destroy();
+    }
+    this.resetData();
     this.scene = new L7.Scene({
-      id: 'mc_map',
+      id: this.config.id,
       map: new L7.GaodeMap({
         pitch: 0,
         style: 'light',
@@ -43,11 +51,13 @@ export default class map {
     this.scene.on('loaded', (ev) => {
       this.fitBoundsMap();
       this.addMapSymbols();
+      if (this.isMobile()) {
+        this.addZoomCtrl();
+      }
       setTimeout(() => {
         this.addMapLabels();
       }, 100);
       this.scene.on('zoomend', () => {
-        console.log('zoomed', this.markerLayer && this.markerLayer.markers);
         if (this.markerLayer) {
           this.markerLayer.markers.forEach(item => {
             item.remove();
@@ -84,7 +94,7 @@ export default class map {
       return item.key;
     });
     // let mapZoom = scene.getZoom();
-    const pointLayer = new L7.PointLayer({
+    this.pointLayer = new L7.PointLayer({
       name: 'symbol'
     })
       .source(this.data, {
@@ -105,37 +115,35 @@ export default class map {
         strokeWidth: 0
       });
     if (this.config.colorFeature && this.config.colorFeature.feature) {
-      pointLayer.color(this.config.colorFeature.feature, ['#7AC9F5', '#2A5783']);
+      this.pointLayer.color(this.config.colorFeature.feature, ['#7AC9F5', '#2A5783']);
     } else {
-      pointLayer.color('#4284F5');
+      this.pointLayer.color('#4284F5');
     }
-    this.scene.addLayer(pointLayer);
-    pointLayer.on('click', (ev) => {
+    this.scene.addLayer(this.pointLayer);
+    this.pointLayer.on('click', (ev) => {
       if (this.scene.getLayerByName('clickLabelLayer')) {
         this.scene.removeLayer(this.clickLabelLayer);
       }
-      console.log('ev', ev);
-      pointLayer.setSelect(ev.featureId);
-      pointLayer.style({
+      this.pointLayer.setSelect(ev.featureId);
+      this.pointLayer.style({
         opacity: 0.2
       });
       this.addClickLabel(ev, this.scene);
     });
-    pointLayer.on('unclick', (ev) => {
+    this.pointLayer.on('unclick', (ev) => {
       if (this.scene.getLayerByName('clickLabelLayer')) {
         this.scene.removeLayer(this.clickLabelLayer);
       }
-      console.log('out', this.scene.getLayers());
-      pointLayer.color(this.config.colorFeature.feature, ['#7AC9F5', '#2A5783']);
-      pointLayer.style({
+      this.pointLayer.color(this.config.colorFeature.feature, ['#7AC9F5', '#2A5783']);
+      this.pointLayer.style({
         opacity: 1
       });
-      pointLayer.setSelect(1000000);
+      this.pointLayer.setSelect(1000000);
     });
     let popupLayer = new L7.Popup({
       closeButton: false
     });
-    pointLayer.on('mousemove', (ev) => {
+    this.pointLayer.on('mousemove', (ev) => {
       // if (!config.tooltip_show) return;
       if (this.config.tooltipList.length === 0) return;
       let tooltipData = ev.feature;
@@ -146,7 +154,7 @@ export default class map {
         }
       };
       // var html = $$.formatTooltipText(obj);
-      let htmlContent;
+      let htmlContent = '';
       for (const key in obj) {
         htmlContent = htmlContent + `<div>${key}: ${obj[key]}</div>`;
       };
@@ -155,12 +163,15 @@ export default class map {
         .setHTML(html);
       this.scene.addPopup(popupLayer);
     });
-    pointLayer.on('mouseout', (ev) => {
+    this.pointLayer.on('mouseout', (ev) => {
       popupLayer.remove();
     });
   };
 
   addMapLabels () {
+    if (this.markerLayer) {
+      this.markerLayer = null;
+    }
     let labeleFeatures = this.config.labelFeature.map(item => {
       return item.feature;
     });
@@ -223,6 +234,21 @@ export default class map {
     this.scene.addMarkerLayer(this.markerLayer);
   };
 
+  addZoomCtrl () {
+    this.zoomLayer = new L7.Zoom({
+      position: 'topright'
+    });
+    this.scene.addControl(this.zoomLayer);
+  };
+
+  resetData () {
+    this.scene = null;
+    this.clickLabelLayer = null;
+    this.markerLayer = null;
+    this.zoomLayer = null;
+    this.pointLayer = null;
+  };
+
   getSize (n) {
     const minRadius = this.config.point.size;
     const maxRadius = minRadius * 8;
@@ -255,6 +281,14 @@ export default class map {
     // }
   };
 
+  isMobile () {
+    if ((navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // 增加一个图层，用来显示点击某个数据时高亮，而其他数据不显示
   addClickLabel (ev, scene) {
     this.clickLabelLayer = new L7.PointLayer({
@@ -279,7 +313,7 @@ export default class map {
         strokeWidth: 0
       });
     this.scene.addLayer(this.clickLabelLayer);
-  }
+  };
 
 /**
   getColorList() {

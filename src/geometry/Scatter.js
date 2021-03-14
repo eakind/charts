@@ -18,6 +18,10 @@ class Scatter extends GeometryWithAxis {
     this.addCircleColorScale();
   }
 
+  getDomain () {
+    return this.yScale.domain();
+  }
+
   addCircleColorScale () {
     let { feature } = this.config.sizeFeature;
     if (!feature) {
@@ -110,8 +114,7 @@ class Scatter extends GeometryWithAxis {
               radius = this.colorScale(d[sizeFeature.feature]);
             }
             let formatVal = dataProcess(d[l.key], format);
-            let labelX =
-              this.xScale(d[xKey]) - yTitleWidth - yLabelWidth + 8; // +radius
+            let labelX = this.xScale(d[xKey]) - yTitleWidth - yLabelWidth + 8; // +radius
 
             let labelY =
               this.yScale(d[yKey]) + (idx - notShowCount) * text.lineHeight;

@@ -28,6 +28,15 @@ let getTextWidth = function (text, font) {
   var metrics = context.measureText(text);
   return metrics.width;
 };
+const isDefined = v => typeof v !== 'undefined';
+
+let isMobile = function () {
+  if ((navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
 export {
   isArray,
@@ -39,5 +48,7 @@ export {
   isUndefined,
   notEmpty,
   hasKey,
-  getTextWidth
+  getTextWidth,
+  isDefined,
+  isMobile
 };

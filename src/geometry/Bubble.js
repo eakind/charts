@@ -50,7 +50,11 @@ class Bubble extends Geometry {
               formatVal: dataProcess(d[l.key], format)
             };
           })
-          .filter((f) => getTextWidth(f.formatVal, f.text.fontSize + 'px') * dpr < d.radius * 2 * 0.7);
+          .filter(
+            (f) =>
+              getTextWidth(f.formatVal, f.text.fontSize + 'px') * dpr <
+              d.radius * 2 * 0.7
+          );
         let totalHeight = tempList.reduce((a, b) => {
           return a + b.text.lineHeight;
         }, 0);
@@ -92,13 +96,18 @@ class Bubble extends Geometry {
         let colorVal = colorFeature.feature;
         let val = colorFeature.type === 'ordinal' ? d.data[colorVal] : d.value;
         let color = this.getItemColor(idx, val);
-        if (colorFeature.feature) {
-          colorList.push({
-            val: d.data[colorFeature.feature],
-            color
-          });
-        }
 
+        if (colorFeature.feature) {
+          let match = colorList.find(
+            (i) => i.val === d.data[colorFeature.feature]
+          );
+
+          !match &&
+            colorList.push({
+              val: d.data[colorFeature.feature],
+              color
+            });
+        }
         return {
           x: d.x,
           y: d.y,
@@ -115,7 +124,12 @@ class Bubble extends Geometry {
     this.geometry = this.svg
       .append('g')
       .attr('class', 'bubble-wrap')
-      .attr('transform', 'translate(0,0)')
+      .attr(
+        'transform',
+        `translate(${(width - width * size) / 2},${
+          (height - height * size) / 2
+        })`
+      )
       .selectAll('bubble-circle')
       .data(nodes)
       .enter()

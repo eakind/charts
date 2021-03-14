@@ -46,6 +46,10 @@
   overflow: hidden;
 }
 
+.ag-center-mobile-cols-viewport {
+  overflow: auto;
+}
+
 
 .ag-theme-balham .ag-cell {
   border: none;

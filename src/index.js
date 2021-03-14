@@ -5,6 +5,7 @@ import Bar from './chart/bar.js';
 import Line from './chart/line.js';
 import barLine from './chart/barLine.js';
 import barRotated from './chart/barRotated.js';
+import Table from './chart/table.js';
 
 let drawClasses = {
   bubble: Bubble,
@@ -13,7 +14,8 @@ let drawClasses = {
   bar: Bar,
   line: Line,
   barLine: barLine,
-  barRotated: barRotated
+  barRotated: barRotated,
+  table: Table
 };
 
 let GeometryDrawingProcess = function ({ config, data, chartType }) {
@@ -27,6 +29,9 @@ let GeometryDrawingProcess = function ({ config, data, chartType }) {
     },
     getColorList: () => {
       return instance.getColorList();
+    },
+    getDomain: () => {
+      return instance.getDomain();
     }
   };
 };
