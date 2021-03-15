@@ -8,8 +8,14 @@ export default class Line extends Base {
     this.config = config;
     this.colorList = config.colorList;
     this.init();
-    this.drawLine();
   };
+
+  drawCanvas () {
+    console.log('这个是画线形图');
+  };
+
+  render () {
+  }
 
   drawLine () {
     // d3提供的symbols，如果用户没有提供默认为圆点

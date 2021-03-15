@@ -11,6 +11,13 @@ export default class Bar extends Base {
     // this.drawBar();
   };
 
+  drawCanvas () {
+    console.log('这个是画条形图');
+  }
+
+  render () {
+  }
+
   drawBar () {
     if (!this.config.yAxis) return;
     let yAxis = this.config.yAxis;

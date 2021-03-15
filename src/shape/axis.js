@@ -132,7 +132,7 @@ const setAxisLabel = (scalePanel, option, width, textTip, position, yIndex, isLa
     })
     .text((d, index) => {
       if (position === 'bottom') {
-        let txt = d.split('|~|')[0];
+        let txt = String(d).split('|~|')[0];
         let len = getTxtWidth(txt, labelStyle.fontSize);
         if (len < width) {
           return txt;

@@ -310,8 +310,8 @@ const getMaxValueWidth = (yAxis, data, yAxisPart, position) => {
     }
   };
   let obj = {};
-  obj[`${position}TitleWidth`] = Math.max(...maxTitleWidthArr);
-  obj[`${position}AxisWidth`] = Math.max(...axisWidthArr);
+  obj[`${position}TitleWidth`] = maxTitleWidthArr.length ? Math.max(...maxTitleWidthArr) : 0;
+  obj[`${position}AxisWidth`] = axisWidthArr.length ? Math.max(...axisWidthArr) : 0;
   return obj;
 };
 
