@@ -28,17 +28,33 @@ const setUniqueForKey = (perKey, key, data) => {
   let len = data.length;
   let arr = [];
   let uniqueValue = '';
+  let uniqueObj = {};
   for (let i = 0; i < len; i++) {
     if (uniqueValue !== data[i][perKey]) {
-      arr.push(data[i][key]);
       uniqueValue = data[i][perKey];
+      uniqueObj[uniqueValue] = [data[i][key]];
     } else {
-      if (!arr.includes(data[i][key])) {
-        arr.push(data[i][key]);
+      if (uniqueObj[uniqueValue]) {
+        uniqueObj[uniqueValue].push(data[i][key]);
       }
     }
   }
+  for (let key in uniqueObj) {
+    arr.push(...new Set(uniqueObj[key]));
+  }
   return arr;
+};
+
+const getNum = (d, index, list) => {
+  let total = 0;
+  for (let i = index; i < list.length; i++) {
+    if (list[i] === d) {
+      total++;
+    } else {
+      return total;
+    }
+  }
+  return total;
 };
 
 const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, title, perKey, perList, key) => {
@@ -61,8 +77,8 @@ const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, t
       return `translate(${translateX}, -32)`;
     });
   // 添加文本
-  let perValue = '';
-  let perIndex = '';
+  // let perValue = '';
+  let perIndex = 0;
   let xGridGroup = textGroup.selectAll('top-axis-text')
     .data(uniqueData)
     .enter();
@@ -72,29 +88,30 @@ const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, t
       let start = xAxisList.indexOf(d);
       let gap = bandwidth * num;
       let startGap = bandwidth * start;
-      let txtGap = getTxtWidth(d, 14) / 2;
-      let translateX = startGap + gap / 2 - txtGap;
+      let translateX = startGap + gap / 2;
       if (perKey) {
-        if (perValue === d) {
-          perIndex++;
-        } else {
-          perValue = d;
-          perIndex = 1;
-        }
-        let total = uniqueData.filter(item => item === d).length;
-        gap = gap / total;
-        translateX = startGap + gap / 2 + gap * (perIndex - 1) - txtGap;
+        let gapNum = getNum(d, perIndex, xAxisList);
+        translateX = perIndex * bandwidth + (gapNum * bandwidth / 2);
+        perIndex = perIndex + gapNum;
       }
       return `translate(${translateX}, ${-12}) rotate(${0})`;
     })
+    .attr('text-anchor', 'middle')
     .attr('font-size', 14)
     .text(d => d);
   // 添加线
+  let startIndex = 0;
+  let endIndex = 0;
   xGridGroup.append('line')
     .attr('x1', (d) => {
       let num = xAxisList.filter(item => item === d).length;
       let start = xAxisList.indexOf(d);
       let width = (num + start) * bandwidth;
+      if (perKey) {
+        let gapNum = getNum(d, startIndex, xAxisList);
+        width = startIndex * bandwidth + (gapNum * bandwidth);
+        startIndex = startIndex + gapNum;
+      }
       return width;
     })
     .attr('y1', -30)
@@ -102,11 +119,16 @@ const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, t
       let num = xAxisList.filter(item => item === d).length;
       let start = xAxisList.indexOf(d);
       let width = (num + start) * bandwidth;
+      if (perKey) {
+        let gapNum = getNum(d, endIndex, xAxisList);
+        width = endIndex * bandwidth + (gapNum * bandwidth);
+        endIndex = endIndex + gapNum;
+      }
       return width;
     })
     .attr('y2', height)
     .attr('opacity', (d, index) => {
-      return lineLen === index ? 0 : 1;
+      return lineLen === index ? 1 : 1;
     })
     .attr('stroke-width', 1)
     .attr('stroke', '#c2c9d1');
@@ -147,16 +169,24 @@ const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxis
       return 50 * xIndex;
     })
     .attr('y1', (d, index) => {
-      let perIndex = setPartHeight(d, data, perKey, key);
-      let height = (lineStartNum + perIndex) * yAxisHeight;
-      lineStartNum = lineStartNum + perIndex;
+      let isUnit = i === 0;
+      let height = (index + 1) * yAxisHeight;
+      if (!isUnit) {
+        let perIndex = setPartHeight(d, data, perKey, key);
+        height = (lineStartNum + perIndex / 2) * yAxisHeight;
+        lineStartNum = lineStartNum + perIndex;
+      }
       return height;
     })
     .attr('x2', width)
     .attr('y2', (d, index) => {
-      let perIndex = setPartHeight(d, data, perKey, key);
-      let height = (lineEndNum + perIndex) * yAxisHeight;
-      lineEndNum = lineEndNum + perIndex;
+      let isUnit = i === 0;
+      let height = (index + 1) * yAxisHeight;
+      if (!isUnit) {
+        let perIndex = setPartHeight(d, data, perKey, key);
+        height = (lineEndNum + perIndex / 2) * yAxisHeight;
+        lineEndNum = lineEndNum + perIndex;
+      }
       return height;
     })
     .attr('opacity', (d, index) => {

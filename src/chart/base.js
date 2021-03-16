@@ -27,12 +27,13 @@ export default class Base {
 
   setBaseContainer () {
     /* 判断是否自适应宽高，设置画图空间 */
-    const { id, autoFit, fitWidth, fitHeight, width, height } = this.config;
+    const { id } = this.config;
     let dom = document.querySelector(`#${id}`);
+    dom.innerHTML = '';
     let domWidth = dom.clientWidth;
     let domHeight = dom.clientHeight;
-    this.width = fitWidth || autoFit ? domWidth : width;
-    this.height = fitHeight || autoFit ? domHeight : height;
+    this.width = domWidth;
+    this.height = domHeight;
     dom.style.width = `${this.width}px`;
     dom.style.height = `${this.height}px`;
   }
@@ -106,6 +107,7 @@ export default class Base {
   }
 
   initCombinedYAxisConfig (yAxis) {
+    let { fitModel } = this.config;
     let { leftAxisWidth, leftTitleWidth } = getMaxValueWidth(yAxis, this.data, this.config.yAxisPart, 'left');
     /* 左边坐标轴宽度 */
     this.leftAxisWidth = leftAxisWidth;
@@ -117,7 +119,21 @@ export default class Base {
     /* 画布内容高度 */
     this.shapeHeight = this.canvasHeight - (this.bottomAxisHeight + this.topAxisHeight);
     /* 画布内容的宽度 */
+    // let width = this.xAxisList.length * 200;
     this.shapeWidth = this.width - (this.leftAxisWidth + this.rightAxisWidth);
+    console.log(fitModel);
+    // let minHeight = 600;
+    // let minWidth = 600;
+    // switch (fitModel) {
+    //   case 'standard':
+    //     if (this.shapeWidth < minWidth) {
+    //       this.shapeWidth = minWidth;
+    //     }
+    //     if (this.shapeHeight < minHeight) {
+    //       this.shapeHeight = minHeight;
+    //     }
+    //     break;
+    // }
     /* Y坐标轴的高度 */
     this.yAxisHeight = this.shapeHeight;
   };
@@ -141,7 +157,9 @@ export default class Base {
     let xAxis = this.config.xAxis;
     if (!xAxis || !xAxis.length) return;
     let xAxisObj = xAxis[0];
-    this.scaleX = scaleBand(this.xAxisList, this.shapeWidth, true);
+    let xAxisPart = this.config.xAxisPart || [];
+    let isFlag = !xAxisPart.length;
+    this.scaleX = scaleBand(this.xAxisList, this.shapeWidth, isFlag);
     // 中间容器， x的刻度， 画布宽度， 画布高度， x轴的配置信息， 顶部X轴的高度, 标签的高度， x轴的值
     initXAxis(this.middle, this.scaleX, this.shapeWidth, this.shapeHeight, xAxisObj, this.topAxisHeight, this.bottomAxisHeight, this.xAxisList);
   };

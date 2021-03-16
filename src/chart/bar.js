@@ -25,7 +25,7 @@ export default class Bar extends Base {
         let keyLen = yAxisChild[j].key.length;
         if (j === 0) leftNum = keyLen;
         for (let k = 0; k < keyLen; k++) {
-          let valData = getKeyDataList(data, yAxisChild[j].key[k]);
+          let valData = getKeyDataList(data, yAxisChild[j].key[k], true);
           let num = j === 0 ? j + k : leftNum + k;
           this.drawShape(valData, this.leftScaleY, this.yAxisHeight, height, num, total);
           this.drawLabel(valData, this.leftScaleY, this.yAxisHeight, this.topAxisHeight, num, total, index);
@@ -46,7 +46,7 @@ export default class Bar extends Base {
       let scaleY = yAxisChild[i].position === 'left' ? this.leftScaleY : this.rightScaleY;
       if (i === 0) leftNum = keyLen;
       for (let j = 0; j < keyLen; j++) {
-        let list = getKeyDataList(data, yAxisChild[i].key[j]);
+        let list = getKeyDataList(data, yAxisChild[i].key[j], true);
         let num = i === 0 ? i + j : leftNum + j;
         this.drawShape(list, scaleY, this.yAxisHeight, height, num, total);
         this.drawLabel(list, scaleY, this.yAxisHeight, this.topAxisHeight, num, total, index);
@@ -65,7 +65,7 @@ export default class Bar extends Base {
       let scaleY = yAxisChild[i].position === 'left' ? this.leftScaleY : this.rightScaleY;
       if (i === 0) leftNum = keyLen;
       for (let j = 0; j < keyLen; j++) {
-        let list = getKeyDataList(data, yAxisChild[i].key[j]);
+        let list = getKeyDataList(data, yAxisChild[i].key[j], true);
         let num = i === 0 ? i + j : leftNum + j;
         this.drawShape(list, scaleY, this.yAxisHeight, this.topAxisHeight, num, total);
         this.drawLabel(list, scaleY, this.yAxisHeight, this.topAxisHeight, num, total, index);

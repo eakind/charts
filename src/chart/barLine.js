@@ -8,7 +8,10 @@ export default class Bar extends Base {
     this.config = config;
     this.colorList = config.colorList;
     this.init();
-    this.drawBarLine();
+  };
+
+  drawCanvas () {
+    console.log('这个是画组合图');
   };
 
   drawBarLine () {
@@ -92,5 +95,8 @@ export default class Bar extends Base {
         return `translate(${x}, ${y})`;
       })
       .attr('fill', '#4284f5');
+  }
+
+  render () {
   }
 };
