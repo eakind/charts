@@ -79,7 +79,17 @@ class Scatter extends GeometryWithAxis {
       ) {
         return i;
       }
-
+      let tempHeight = lineHeight;
+      let dpr = this.config.dpr || 1;
+      if (dpr !== 1) {
+        tempHeight = (dpr * lineHeight * 2) / 3;
+      }
+      if (
+        y + tempHeight >=
+        this.config.height - this.labelHeight - this.titleHeight
+      ) {
+        return i;
+      }
       return null;
     });
     return !!match;
@@ -219,7 +229,7 @@ class Scatter extends GeometryWithAxis {
     this.geometry
       .append('circle')
       .attr('cx', (d) => {
-        return this.xScale(d[xKey]) - yTitleWidth - yLabelWidth - 6 - 2;
+        return this.xScale(d[xKey]) - yTitleWidth - yLabelWidth;
       })
       .attr('cy', (d) => {
         return this.yScale(d[yKey]);

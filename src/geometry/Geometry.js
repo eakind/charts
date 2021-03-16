@@ -133,10 +133,12 @@ class Geometry {
             flex: 1,
             justifyContent: 'space-between'
           });
+          // <span >${prop}:</span> <span>${retVal}</span>
+
           listItem += `<li class="dc-tooltip-list-item" style="margin-bottom:4px;display:flex;align-items: center;">
             <span style="${curStyleObj}">
-            <span >${prop}:</span>
-            <span>${retVal}</span>
+            ${prop}:${retVal}
+           
             </span>
             </li>`;
         }

@@ -1,8 +1,4 @@
-const newLocal = 'linear';
 const config = {
-  // autoFit: true,
-  // fitWidth: false,
-  // fitHeight: false,
   fitModel: 'standard',
   width: 600,
   height: 600,
@@ -10,7 +6,7 @@ const config = {
   isCombined: false,
   // xAxisPart: [{
   //   position: 'top',
-  //   key: 'Sex',
+  //   key: 'Embarked',
   //   line: {
   //     style: {
   //       lineWidth: 1,
@@ -50,7 +46,7 @@ const config = {
   //   }
   // }, {
   //   position: 'top',
-  //   key: 'Embarked',
+  //   key: 'Sex',
   //   line: {
   //     style: {
   //       lineWidth: 1,
@@ -89,7 +85,7 @@ const config = {
   //   }
   // }, {
   //   position: 'top',
-  //   key: '市',
+  //   key: 'Cabin',
   //   line: {
   //     style: {
   //       lineWidth: 1,
@@ -129,7 +125,7 @@ const config = {
   // }],
   xAxis: [{
     position: 'bottom',
-    key: 'Name',
+    key: 'Sex',
     line: {
       style: {
         lineWidth: 1,
@@ -148,7 +144,7 @@ const config = {
       rotate: 0
     },
     title: {
-      value: 'Name',
+      value: 'Sex',
       style: {
         fontColor: 'blue',
         fontSize: 16,
@@ -168,7 +164,7 @@ const config = {
   }],
   yAxisPart: [{
     position: 'left-part',
-    key: ['Sex'],
+    key: ['Name'],
     line: {
       style: {
         lineWidth: 1,
@@ -187,70 +183,70 @@ const config = {
       },
       rotate: 0
     }
-  // }, {
-  //   position: 'left-part',
-  //   key: ['Embarked'],
-  //   line: {
-  //     style: {
-  //       lineWidth: 1,
-  //       fontColor: '#c2c9d1',
-  //       opacity: 1,
-  //       lineDash: [0, 0]
-  //     }
-  //   },
-  //   label: {
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontStyle: 'normal',
-  //       fontSize: 14,
-  //       fontWeight: 'normal',
-  //       opacity: 1
-  //     },
-  //     rotate: 0
-  //   }
-  // }, {
-  //   position: 'left-part',
-  //   key: ['区域'],
-  //   line: {
-  //     style: {
-  //       lineWidth: 1,
-  //       fontColor: '#c2c9d1',
-  //       opacity: 1,
-  //       lineDash: [0, 0]
-  //     }
-  //   },
-  //   label: {
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontStyle: 'normal',
-  //       fontSize: 14,
-  //       fontWeight: 'normal',
-  //       opacity: 1
-  //     },
-  //     rotate: 0,
-  //     formatter: (text, item, index) => {
-  //       return text;
-  //     }
-  //   },
-  //   title: {
-  //     value: '区域',
-  //     style: {
-  //       fontColor: 'blue',
-  //       fontSize: 16,
-  //       fontWeight: 'normal',
-  //       fontStyle: 'normal'
-  //     }
-  //   },
-  //   grid: {
-  //     line: {
-  //       style: {
-  //         fontColor: '#c2c9d1',
-  //         opacity: 0,
-  //         lineDash: [0, 0], // [3,3]
-  //         lineWidth: 1
-  //       }
-  //     }
-  //   }
+  }, {
+    position: 'left-part',
+    key: ['Embarked'],
+    line: {
+      style: {
+        lineWidth: 1,
+        fontColor: '#c2c9d1',
+        opacity: 1,
+        lineDash: [0, 0]
+      }
+    },
+    label: {
+      style: {
+        fontColor: 'blue',
+        fontStyle: 'normal',
+        fontSize: 14,
+        fontWeight: 'normal',
+        opacity: 1
+      },
+      rotate: 0
+    }
+  }, {
+    position: 'left-part',
+    key: ['Cabin'],
+    line: {
+      style: {
+        lineWidth: 1,
+        fontColor: '#c2c9d1',
+        opacity: 1,
+        lineDash: [0, 0]
+      }
+    },
+    label: {
+      style: {
+        fontColor: 'blue',
+        fontStyle: 'normal',
+        fontSize: 14,
+        fontWeight: 'normal',
+        opacity: 1
+      },
+      rotate: 0,
+      formatter: (text, item, index) => {
+        return text;
+      }
+    },
+    title: {
+      value: 'Cabin',
+      style: {
+        fontColor: 'blue',
+        fontSize: 16,
+        fontWeight: 'normal',
+        fontStyle: 'normal'
+      }
+    },
+    grid: {
+      line: {
+        style: {
+          fontColor: '#c2c9d1',
+          opacity: 0,
+          lineDash: [0, 0], // [3,3]
+          lineWidth: 1
+        }
+      }
+    }
   }],
   yAxis: [[{
     position: 'left',
@@ -428,7 +424,7 @@ const config = {
   //       }
   //     }
   //   }
-  }]],
+  }]]
   // labelsList: [
   //   {
   //     type: 'linear',
@@ -574,9 +570,10 @@ const config = {
   //   { type: 'linear', feature: 'median(客户ID)' },
   //   { type: 'ordinal', feature: '区域' }
   // ],
-  colorFeature: [
-    { feature: 'median(客户ID)', type: 'linear', stacked: false },
-  ]
+  // colorFeature: [
+  //   { feature: '', type: 'ordinal', key: 'sum(PassengerId)' },
+  //   { feature: '', type: 'linear', key: 'sum(PassengerId)' }
+  // ]
 };
 
 // const data = [[
@@ -622,27 +619,27 @@ const config = {
 //   { Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'male', 'sum(PassengerId)': 747 },
 //   { Embarked: 'C', Name: 'Abelson, Mr. Samuel', Sex: 'null', 'sum(PassengerId)': 309 },
 //   { Embarked: 'C', Name: 'Abbing, Mr. Anthony', Sex: 'null', 'sum(PassengerId)': 846 },
-//   { Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'null', 'sum(PassengerId)': 747 },
+//   { Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'null', 'sum(PassengerId)': 747 }
 // ]];
 
-const data = [[
-  { Embarked: 'C', Name: 'Abbing, Mr. Anthony', Sex: 'female', 'sum(PassengerId)': 3 },
-  { Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'female', 'sum(PassengerId)': 3 },
-  { Embarked: 'C', Name: 'Abbing, Mr. Anthony', Sex: 'male', 'sum(PassengerId)': 2 },
-  { Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'male', 'sum(PassengerId)': 2 },
-  { Embarked: 'C', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'female', 'sum(PassengerId)': 2 },
-  { Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'female', 'sum(PassengerId)': 2 },
-  { Embarked: 'C', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'male', 'sum(PassengerId)': 6 },
-  { Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'male', 'sum(PassengerId)': 6 },
-  { Embarked: 'C', Name: 'Abelson, Mr. Samuel', Sex: 'female', 'sum(PassengerId)': 5 },
-  { Embarked: 'S', Name: 'Abelson, Mr. Samuel', Sex: 'female', 'sum(PassengerId)': 5 },
-  { Embarked: 'C', Name: 'Abelson, Mr. Samuel', Sex: 'male', 'sum(PassengerId)': 1 },
-  { Embarked: 'S', Name: 'Abelson, Mr. Samuel', Sex: 'male', 'sum(PassengerId)': 1 },
-  { Embarked: 'C', Name: 'Abbott, Mrs. Stanton', Sex: 'female', 'sum(PassengerId)': 8 },
-  { Embarked: 'S', Name: 'Abbott, Mrs. Stanton', Sex: 'female', 'sum(PassengerId)': 8 },
-  { Embarked: 'C', Name: 'Abbott, Mrs. Stanton', Sex: 'male', 'sum(PassengerId)': 6 },
-  { Embarked: 'S', Name: 'Abbott, Mrs. Stanton', Sex: 'male', 'sum(PassengerId)': 6 },
-]]
+// const data = [[
+//   { Embarked: 'C', Name: 'Abbing, Mr. Anthony', Sex: 'female', 'sum(PassengerId)': 3 },
+//   { Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'female', 'sum(PassengerId)': 3 },
+//   { Embarked: 'C', Name: 'Abbing, Mr. Anthony', Sex: 'male', 'sum(PassengerId)': 2 },
+//   { Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'male', 'sum(PassengerId)': 2 },
+//   { Embarked: 'C', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'female', 'sum(PassengerId)': 2 },
+//   { Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'female', 'sum(PassengerId)': 2 },
+//   { Embarked: 'C', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'male', 'sum(PassengerId)': 6 },
+//   { Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'male', 'sum(PassengerId)': 6 },
+//   { Embarked: 'C', Name: 'Abelson, Mr. Samuel', Sex: 'female', 'sum(PassengerId)': 5 },
+//   { Embarked: 'S', Name: 'Abelson, Mr. Samuel', Sex: 'female', 'sum(PassengerId)': 5 },
+//   { Embarked: 'C', Name: 'Abelson, Mr. Samuel', Sex: 'male', 'sum(PassengerId)': 1 },
+//   { Embarked: 'S', Name: 'Abelson, Mr. Samuel', Sex: 'male', 'sum(PassengerId)': 1 },
+//   { Embarked: 'C', Name: 'Abbott, Mrs. Stanton', Sex: 'female', 'sum(PassengerId)': 8 },
+//   { Embarked: 'S', Name: 'Abbott, Mrs. Stanton', Sex: 'female', 'sum(PassengerId)': 8 },
+//   { Embarked: 'C', Name: 'Abbott, Mrs. Stanton', Sex: 'male', 'sum(PassengerId)': 6 },
+//   { Embarked: 'S', Name: 'Abbott, Mrs. Stanton', Sex: 'male', 'sum(PassengerId)': 6 },
+// ]];
 
 // const data = [[
 //   { Name: 'Abbing, Mr. Anthony', Sex: 'female', 'sum(PassengerId)': 3 },
@@ -650,6 +647,45 @@ const data = [[
 //   { Name: 'Abbott, Mr. Rossmore Edward', Sex: 'female', 'sum(PassengerId)': 3 },
 //   { Name: 'Abbott, Mr. Rossmore Edward', Sex: 'female', 'sum(PassengerId)': 3 },
 // ]]
+
+// const data = [[
+//   { Cabin: 'null', Embarked: 'C', Name: 'Abelson, Mrs. Samuel (Hannah Wizosky)', Sex: 'female', 'sum(PassengerId)': 875 },
+//   { Cabin: 'null', Embarked: 'C', Name: 'Abelson, Mr. Samuel', Sex: 'male', 'sum(PassengerId)': 309 },
+//   { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mrs. Stanton (Rosa Hunt)', Sex: 'female', 'sum(PassengerId)': 280 },
+//   { Cabin: 'null', Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'male', 'sum(PassengerId)': 846 },
+//   { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'male', 'sum(PassengerId)': 747 }
+// ]];
+
+// const data = [
+//   [
+//     { Cabin: 'null', Embarked: 'C', Name: 'Abelson, Mrs. Samuel (Hannah Wizosky)', Sex: 'female', 'sum(PassengerId)': 875 },
+//     { Cabin: 'null', Embarked: 'C', Name: 'Abelson, Mr. Samuel', Sex: 'male', 'sum(PassengerId)': 309 },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mrs. Stanton (Rosa Hunt)', Sex: 'female', 'sum(PassengerId)': 280 },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'male', 'sum(PassengerId)': 846 },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'male', 'sum(PassengerId)': 747 }
+//   ]];
+
+// const data = [
+//   [
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'female', 'sum(PassengerId)': NaN },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'female', 'sum(PassengerId)': NaN },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mrs. Stanton (Rosa Hunt)', Sex: 'female', 'sum(PassengerId)': 280.0 },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'male', 'sum(PassengerId)': 846.0 },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'male', 'sum(PassengerId)': 747.0 },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mrs. Stanton (Rosa Hunt)', Sex: 'male', 'sum(PassengerId)': NaN }
+//   ]
+// ];
+
+const data = [
+  [
+    { Cabin: 'null', Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'female', 'sum(PassengerId)': NaN },
+    { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'female', 'sum(PassengerId)': NaN },
+    { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mrs. Stanton (Rosa Hunt)', Sex: 'female', 'sum(PassengerId)': 280.0 },
+    { Cabin: 'null', Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'male', 'sum(PassengerId)': 846.0 },
+    { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'male', 'sum(PassengerId)': 747.0 },
+    { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mrs. Stanton (Rosa Hunt)', Sex: 'male', 'sum(PassengerId)': NaN }
+  ]
+];
 
 let test = chart.GeometryDrawingProcess({ data, config, chartType: 'bar' });
 test.draw();

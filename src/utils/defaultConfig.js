@@ -42,7 +42,7 @@ export default {
     unit: '',
     prefix: '',
     suffix: '',
-    zone: 'CN',
+    zone: '',
     useThousandMark: true
   },
   defaultLineStyle: {

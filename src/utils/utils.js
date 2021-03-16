@@ -6,7 +6,10 @@ const getTextLegend = (text, fontSize) => {
 
 let dataProcess = function (val, format) {
   if (!val) {
-    return;
+    return val;
+  }
+  if (typeof format.selectFormat === 'undefined') {
+    return val;
   }
   let ret = val;
   if (format.decimal) {
@@ -19,7 +22,7 @@ let dataProcess = function (val, format) {
     }
   }
 
-  ret = unitProcess(ret, format.unit);
+  ret = unitProcess(ret, format.unit, format.useThousandMark);
 
   ret = displayFormatProcess(ret, format.format, format.zone);
   ret = prefSuffixProcess(ret, format.prefix, format.suffix, format.isPercent);
@@ -33,17 +36,19 @@ let unitProcess = function (val, unit, micrometerFlag) {
     'G 十亿': 1000000000,
     'T 千亿': 100000000000
   };
-  if (!unit) {
-    return val;
+  let ret = val;
+  if (unit) {
+    ret = val / unitPare[unit];
   }
-  let ret = val / unitPare[unit];
-  return micrometerProcess(ret, micrometerFlag) + unit;
+  // let ret = val / unitPare[unit];
+  let curRes = micrometerProcess(ret, micrometerFlag);
+  return unit ? curRes + unit : curRes;
 };
 
 let displayFormatProcess = function (val, format, zone) {
-  if (!format) {
-    return val;
-  }
+  // if (!format) {
+  //   return val;
+  // }
   if (format === 'percent') {
     return val * 100 + '%';
   }
@@ -55,7 +60,7 @@ let displayFormatProcess = function (val, format, zone) {
     EUR: '€',
     GBP: '£'
   };
-  return formatPare[zone] + val;
+  return formatPare[zone] ? formatPare[zone] + val : val;
 };
 
 let prefSuffixProcess = function (val, prefix, suffix, isPercent) {
@@ -73,13 +78,17 @@ let micrometerProcess = function (val, flag) {
     return val;
   }
   let ret = '';
-  for (let i = 0; i < val.length; i++) {
-    ret += val[i];
-    if (i % 3 === 2) {
-      ret += ',';
+  let list = [];
+  let curStr = val.toString().split('.');
+  for (let i = curStr[0].length - 1; i >= 0; i--) {
+    list.push(curStr[0][i]);
+    if (curStr[0].length - 1 - i % 3 === 2) {
+      ret = ',' + list.reverse().join('') + ret;
+      list = [];
     }
   }
-  return parseFloat(ret);
+  ret = list.reverse().join('') + ret;
+  return curStr.length > 1 ? ret + '.' + curStr[1] : ret;
 };
 
 let styleProcess = function (styleObj) {

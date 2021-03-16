@@ -172,9 +172,10 @@ export default class map {
     if (this.markerLayer) {
       this.markerLayer = null;
     }
-    let labeleFeatures = this.config.labelFeature.map(item => {
-      return item.feature;
-    });
+    // let labeleFeatures = this.config.labelFeature.map(item => {
+    //   return item.feature;
+    // });
+    let labeleFeatures = this.config.labelFeature;
     if (isEmpty(labeleFeatures)) return;
     this.markerLayer = new L7.MarkerLayer();
     let getMapService = this.scene.getMapService();

@@ -87,7 +87,7 @@ const setAxisYTitle = (axisPanel, titleOption, position, width, titleWidth, topA
       if (position === 'right') {
         translateX = width - 12;
       }
-      return `translate(${translateX}, ${topAxisHeight - 6 + (height * index)})`;
+      return `translate(${translateX}, ${topAxisHeight + 6 + (height * index)})`;
     })
     .append('text')
     .attr('text-anchor', 'start')

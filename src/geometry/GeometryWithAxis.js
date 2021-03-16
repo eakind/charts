@@ -14,7 +14,7 @@ class GeometryWithAxis extends Geometry {
     this.fontSizeLineHeightPair = JSON.parse(
       JSON.stringify(fontSizeLineHeightPair)
     );
-    if (this.dpr !== 1) {
+    if (this.dpr && this.dpr !== 1) {
       this.initFontSizeLineHeight();
     }
   }
@@ -35,7 +35,11 @@ class GeometryWithAxis extends Geometry {
   xScaleConfig () {
     this.xScale = d3
       .scaleLinear()
-      .domain(this.getMinMaxData(this.config.xAxis.title.value)); // 待修改
+      .domain(
+        this.getMinMaxData(
+          this.config.xAxis.title.feature || this.config.xAxis.title.value
+        )
+      ); // 待修改
     this.xScale.nice();
   }
 
@@ -51,7 +55,7 @@ class GeometryWithAxis extends Geometry {
 
     this.xScale
       .range([
-        yTitleWidth + yLabelWidth + (6 + 4) * (this.config.dpr || 1),
+        yTitleWidth + yLabelWidth, // + (6 + 4) * (this.config.dpr || 1),
         this.config.width - xLabelWidth
       ])
       .nice();
@@ -88,16 +92,20 @@ class GeometryWithAxis extends Geometry {
         tick_counts: tickCounts
       }
     } = this.config;
-    let originalRange = this.getMinMaxData(this.config.yAxis.title.value);
-    if (scale === 1 || select === 0) {
+    let originalRange = this.getMinMaxData(
+      this.config.yAxis.title.feature || this.config.yAxis.title.value
+    );
+    if (scale === 1 && select === 0) {
       this.yScale = d3.scaleLinear().domain(originalRange); // 待修改
       return;
     }
     if (select === 3) {
       this.yScale = d3
         .scaleLinear()
-        .domain(typeof tickRange[0] !== 'undefined' ? tickRange : originalRange)
-        .ticks(tickCounts);
+        .domain(
+          typeof tickRange[0] !== 'undefined' ? tickRange : originalRange
+        );
+      this.yScale.ticks(tickCounts);
       return;
     }
     if (select === 1) {
@@ -107,10 +115,12 @@ class GeometryWithAxis extends Geometry {
         typeof tickRange[0] !== 'undefined' ? tickRange[1] : originalRange[1];
       if (scale < 1) {
         let newMin = max - (max - min) / scale;
-        this.yScale = d3.scaleLinear().domain([newMin, max]).nice();
+        this.yScale = d3.scaleLinear().domain([newMin, max]);
+        this.yScale.nice();
       } else {
         let newMax = scale * (max - min) + min;
-        this.yScale = d3.scaleLinear().domain([min, newMax]).nice();
+        this.yScale = d3.scaleLinear().domain([min, newMax]);
+        this.yScale.nice();
       }
     }
   }
@@ -140,34 +150,40 @@ class GeometryWithAxis extends Geometry {
       label: { style: labelStyle = defaultText }
     } = this.config.yAxis;
 
-    let yTitleWidth = getTextWidth(value, style.fontSize + 'px');
+    let yTitleWidth =
+      getTextWidth(value, style.fontSize * this.dpr + 'px') *
+      (this.config.dpr * 0.52 || 1);
     let yTicks = this.yScale.ticks();
     let yMaxLabel = yTicks[yTicks.length - 1];
     let yLabelWidth =
-      getTextWidth(yMaxLabel, labelStyle.fontSize + 'px') *
+      getTextWidth(yMaxLabel, labelStyle.fontSize * this.dpr + 'px') *
       (this.config.dpr || 1);
 
     let xTicks = this.xScale.ticks();
     let xMaxLabel = xTicks[xTicks.length - 1];
 
     let xLabelWidth =
-      getTextWidth(xMaxLabel, labelStyle.fontSize + 'px') *
+      getTextWidth(xMaxLabel, labelStyle.fontSize * this.dpr + 'px') *
       (this.config.dpr || 1);
 
     if (hasUnit) {
-      yLabelWidth = getTextWidth(
-        d3.format('~s')(yMaxLabel),
-        labelStyle.fontSize + 'px'
-      );
-      xLabelWidth = getTextWidth(
-        d3.format('~s')(xMaxLabel),
-        labelStyle.fontSize + 'px'
-      );
+      yLabelWidth =
+        getTextWidth(
+          d3.format('~s')(yMaxLabel),
+          labelStyle.fontSize * this.dpr + 'px'
+        ) * (this.config.dpr || 1);
+      xLabelWidth =
+        getTextWidth(
+          d3.format('~s')(xMaxLabel),
+          labelStyle.fontSize * this.dpr + 'px'
+        ) * (this.config.dpr || 1);
     }
     let { label, title } = this.config.xAxis;
 
-    let labelHeight = this.fontSizeLineHeightPair[label.style.fontSize];
-    let titleHeight = this.fontSizeLineHeightPair[title.style.fontSize];
+    let labelHeight =
+      this.fontSizeLineHeightPair[label.style.fontSize] * this.dpr;
+    let titleHeight =
+      this.fontSizeLineHeightPair[title.style.fontSize] * this.dpr;
     if (labelStyle.rotate === -45) {
     } else if (labelStyle.rotate === 45) {
       labelHeight += yLabelWidth / 2;
@@ -204,8 +220,10 @@ class GeometryWithAxis extends Geometry {
     } = this.config;
     let ticks = this.xScale.ticks();
     let width =
-      getTextWidth(ticks[ticks.length - 1], labelStyle.fontSize + 'px') *
-      (this.config.dpr || 1);
+      getTextWidth(
+        ticks[ticks.length - 1],
+        labelStyle.fontSize * this.dpr + 'px'
+      ) * (this.config.dpr || 1);
     let len = parseInt(Math.round(ticks.length / (this.config.width / width)));
     len = len ? len + 1 : 1;
     let xAxis = d3.axisBottom(this.xScale).tickFormat((d, idx) => {
@@ -270,7 +288,7 @@ class GeometryWithAxis extends Geometry {
       .attr('transform', transformValue)
       .attr('stroke', 'none')
       .attr('fill', labelStyle.fontColor)
-      .attr('font-size', labelStyle.fontSize)
+      .attr('font-size', labelStyle.fontSize * this.dpr)
       .attr('font-weight', labelStyle.fontWeight)
       .attr('font-style', labelStyle.fontStyle);
 
@@ -302,8 +320,10 @@ class GeometryWithAxis extends Geometry {
     if (select !== 3) {
       let ticks = this.yScale.ticks();
       let height =
-        getTextWidth(ticks[ticks.length - 1], labelStyle.fontSize + 'px') *
-        (this.config.dpr || 1);
+        getTextWidth(
+          ticks[ticks.length - 1],
+          labelStyle.fontSize * this.dpr + 'px'
+        ) * (this.config.dpr || 1);
       if (labelStyle.rotate === 0) {
         height = 48;
       } else if (labelStyle.rotate === 45 || labelStyle.rotate === -45) {
@@ -325,7 +345,9 @@ class GeometryWithAxis extends Geometry {
         }
       });
     } else {
-      yAxis = d3.axisLeft(this.yScale);
+      yAxis = d3.axisLeft(this.yScale).tickFormat((d, idx) => {
+        return d3.format('~s')(d);
+      });
     }
 
     // let yAxis = d3.axisLeft(this.yScale).tickFormat((d) => {
@@ -341,7 +363,7 @@ class GeometryWithAxis extends Geometry {
       .attr(
         'transform',
         `translate(${
-          yLabelWidth + yTitleWidth + (6 + 4) * (this.config.dpr || 1)
+          yLabelWidth + yTitleWidth // + (6 + 4) * (this.config.dpr || 1)
         },0)`
       );
 
@@ -357,7 +379,8 @@ class GeometryWithAxis extends Geometry {
     if (!showTitle) {
       return;
     }
-    let xTitleWidth = getTextWidth(value, style.fontSize + 'px') * this.dpr;
+    let xTitleWidth =
+      getTextWidth(value, style.fontSize * this.dpr + 'px') * this.dpr;
 
     this.xAxisG
       .append('text')
@@ -371,7 +394,7 @@ class GeometryWithAxis extends Geometry {
       )
       .attr('stroke', 'none')
       .attr('fill', style.fontColor)
-      .attr('font-size', style.fontSize)
+      .attr('font-size', style.fontSize * this.dpr)
       .attr('font-weight', style.fontWeight)
       .attr('font-style', style.fontStyle)
       .attr('text-decoration', style.textDecoration)
@@ -386,7 +409,8 @@ class GeometryWithAxis extends Geometry {
     if (!showTitle) {
       return;
     }
-    let curHeight = this.fontSizeLineHeightPair[style.fontSize] * value.length;
+    let curHeight =
+      this.fontSizeLineHeightPair[style.fontSize] * this.dpr * value.length;
     //
     this.yAxisG
       .append('text')
@@ -394,13 +418,13 @@ class GeometryWithAxis extends Geometry {
       .attr(
         'transform',
         `translate(${
-          -yTitleWidth / 2 - yLabelWidth - (6 + 8) * (this.config.dpr * 2 / 3 || 1)
+          -yTitleWidth / 2 - yLabelWidth // - (6 + 8) * ((this.config.dpr * 2) / 3 || 1)
         },${curHeight - labelHeight + labelHeight / 2 - titleHeight})`
       )
       .attr('writing-mode', 'tb')
       .attr('stroke', 'none')
       .attr('fill', style.fontColor)
-      .attr('font-size', style.fontSize)
+      .attr('font-size', style.fontSize * this.dpr)
       .attr('font-weight', style.fontWeight)
       .attr('font-style', style.fontStyle)
       .attr('text-decoration', style.textDecoration)

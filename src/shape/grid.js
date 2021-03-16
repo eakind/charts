@@ -1,4 +1,4 @@
-import { getTxtWidth, setPartHeight } from '../utils/utils';
+import { setPartHeight } from '../utils/utils';
 const initYGrid = (middle, width, height, scaleY, topAxisHeight, index) => {
   let axis = d3.axisLeft(scaleY)
     .tickPadding(6)
@@ -22,116 +22,6 @@ const initYGrid = (middle, width, height, scaleY, topAxisHeight, index) => {
     .attr('stroke', '#c2c9d1')
     .attr('opacity', 0)
     .attr('stroke-width', 1);
-};
-
-const setUniqueForKey = (perKey, key, data) => {
-  let len = data.length;
-  let arr = [];
-  let uniqueValue = '';
-  let uniqueObj = {};
-  for (let i = 0; i < len; i++) {
-    if (uniqueValue !== data[i][perKey]) {
-      uniqueValue = data[i][perKey];
-      uniqueObj[uniqueValue] = [data[i][key]];
-    } else {
-      if (uniqueObj[uniqueValue]) {
-        uniqueObj[uniqueValue].push(data[i][key]);
-      }
-    }
-  }
-  for (let key in uniqueObj) {
-    arr.push(...new Set(uniqueObj[key]));
-  }
-  return arr;
-};
-
-const getNum = (d, index, list) => {
-  let total = 0;
-  for (let i = index; i < list.length; i++) {
-    if (list[i] === d) {
-      total++;
-    } else {
-      return total;
-    }
-  }
-  return total;
-};
-
-const initXGrid = (middle, width, height, topAxis, bandwidth, xAxisList, data, title, perKey, perList, key) => {
-  let grid = middle.append('g')
-    .attr('transform', `translate(${0}, ${topAxis})`);
-  let uniqueData = [];
-  if (!perKey) {
-    uniqueData = [...new Set(xAxisList)];
-  } else {
-    uniqueData = setUniqueForKey(perKey, key, data);
-  }
-  let lineLen = uniqueData.length - 1;
-  let textGroup = grid.append('g').attr('class', 'top-axis-text');
-  // 添加title
-  textGroup.append('g').append('text')
-    .text(title)
-    .attr('font-size', 14)
-    .attr('transform', (d) => {
-      let translateX = (width - getTxtWidth(title, 14)) / 2;
-      return `translate(${translateX}, -32)`;
-    });
-  // 添加文本
-  // let perValue = '';
-  let perIndex = 0;
-  let xGridGroup = textGroup.selectAll('top-axis-text')
-    .data(uniqueData)
-    .enter();
-  xGridGroup.append('text')
-    .attr('transform', (d, index) => {
-      let num = xAxisList.filter(item => item === d).length;
-      let start = xAxisList.indexOf(d);
-      let gap = bandwidth * num;
-      let startGap = bandwidth * start;
-      let translateX = startGap + gap / 2;
-      if (perKey) {
-        let gapNum = getNum(d, perIndex, xAxisList);
-        translateX = perIndex * bandwidth + (gapNum * bandwidth / 2);
-        perIndex = perIndex + gapNum;
-      }
-      return `translate(${translateX}, ${-12}) rotate(${0})`;
-    })
-    .attr('text-anchor', 'middle')
-    .attr('font-size', 14)
-    .text(d => d);
-  // 添加线
-  let startIndex = 0;
-  let endIndex = 0;
-  xGridGroup.append('line')
-    .attr('x1', (d) => {
-      let num = xAxisList.filter(item => item === d).length;
-      let start = xAxisList.indexOf(d);
-      let width = (num + start) * bandwidth;
-      if (perKey) {
-        let gapNum = getNum(d, startIndex, xAxisList);
-        width = startIndex * bandwidth + (gapNum * bandwidth);
-        startIndex = startIndex + gapNum;
-      }
-      return width;
-    })
-    .attr('y1', -30)
-    .attr('x2', (d) => {
-      let num = xAxisList.filter(item => item === d).length;
-      let start = xAxisList.indexOf(d);
-      let width = (num + start) * bandwidth;
-      if (perKey) {
-        let gapNum = getNum(d, endIndex, xAxisList);
-        width = endIndex * bandwidth + (gapNum * bandwidth);
-        endIndex = endIndex + gapNum;
-      }
-      return width;
-    })
-    .attr('y2', height)
-    .attr('opacity', (d, index) => {
-      return lineLen === index ? 1 : 1;
-    })
-    .attr('stroke-width', 1)
-    .attr('stroke', '#c2c9d1');
 };
 
 const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxisHeight, perKey, key, data, i) => {
@@ -232,10 +122,160 @@ const initMiddleGrid = (middle, yAxisHeight, uniqueData, width, topAxisHeight) =
     .attr('stroke', '#c2c9d1');
 };
 
+const drawCombinedXGrid = (middle, topAxisHeight, index, width, height) => {
+  let grid = middle.append('g').attr('class', 'line');
+  let y = topAxisHeight + height * index;
+  grid.append('line')
+    .attr('x1', 0)
+    .attr('y1', y)
+    .attr('x2', width)
+    .attr('y2', y)
+    .attr('stroke-width', 1)
+    .attr('stroke', '#c2c9d1');
+};
+
+const createXPartTxt = (group, data, top, xAxisList, bandwidth, shapeHeight) => {
+  let xGridGroup = group.append('g').attr('class', 'top-axis-text').selectAll('top-axis-text')
+    .data(data)
+    .enter();
+  let len = data.length - 1;
+  xGridGroup.append('text')
+    .attr('transform', (d) => {
+      let num = xAxisList.filter(item => item === d).length;
+      let start = xAxisList.indexOf(d);
+      let gap = bandwidth * num;
+      let startGap = bandwidth * start;
+      let translateX = startGap + gap / 2;
+      return `translate(${translateX}, ${top}) rotate(${0})`;
+    })
+    .attr('text-anchor', 'middle')
+    .attr('font-size', 14)
+    .text(d => d);
+  xGridGroup.append('line')
+    .attr('x1', (d) => {
+      let num = xAxisList.filter(item => item === d).length;
+      let start = xAxisList.indexOf(d);
+      let gap = bandwidth * num;
+      let startGap = bandwidth * start;
+      let x = startGap + gap;
+      return x;
+    })
+    .attr('x2', (d) => {
+      let num = xAxisList.filter(item => item === d).length;
+      let start = xAxisList.indexOf(d);
+      let gap = bandwidth * num;
+      let startGap = bandwidth * start;
+      let x = startGap + gap;
+      return x;
+    })
+    .attr('y1', 0)
+    .attr('y2', shapeHeight + top + 30)
+    .attr('opacity', (d, index) => index === len ? 0 : 1)
+    .attr('stroke-width', 1)
+    .attr('stroke', '#c2c9d1');
+};
+
+const createXPartTitle = (width, group, title) => {
+  // 添加title
+  group.append('g').attr('class', 'top-axis-title').append('text')
+    .text(title)
+    .attr('font-size', 14)
+    .attr('text-anchor', 'middle')
+    .attr('transform', (d) => {
+      let translateX = width / 2;
+      return `translate(${translateX}, 0)`;
+    });
+};
+
+const setUniqueForKey = (perKey, key, data) => {
+  let len = data.length;
+  let uniqueValue = '';
+  let uniqueObj = {};
+  for (let i = 0; i < len; i++) {
+    if (uniqueValue !== data[i][perKey]) {
+      uniqueValue = data[i][perKey];
+      uniqueObj[uniqueValue] = [data[i][key]];
+    } else {
+      if (uniqueObj[uniqueValue]) {
+        uniqueObj[uniqueValue].push(data[i][key]);
+      }
+    }
+  }
+  return uniqueObj;
+};
+
+const setUniqueData = (uniqueObj) => {
+  let arr = [];
+  for (let key in uniqueObj) {
+    let temp = uniqueObj[key];
+    for (let i = 0; i < temp.length; i++) {
+      arr.push({
+        perKey: key,
+        value: temp[i]
+      });
+    };
+  }
+  return arr;
+};
+
+const setUniqueNum = (uniqueObj, d, isLast) => {
+  let arr = uniqueObj[d.perKey];
+  if (isLast) {
+    let list = [...new Set(arr)];
+    if (list.length === 1) return 1;
+  }
+  return arr.filter(item => item === d.value).length;
+};
+
+const createXAxisPart = (group, uniqueObj, top, bandwidth, shapeHeight, isLast) => {
+  let uniqueData = setUniqueData(uniqueObj);
+  let partGrid = group.append('g').attr('class', 'top-axis-part').selectAll('top-axis-part')
+    .data(uniqueData)
+    .enter();
+  let startIndex = 0;
+  partGrid.append('text')
+    .attr('transform', (d) => {
+      let y = top;
+      let num = setUniqueNum(uniqueObj, d, isLast);
+      startIndex = startIndex + num;
+      let x = bandwidth * startIndex - (num * bandwidth) / 2;
+      return `translate(${x}, ${y})`;
+    })
+    .attr('text-anchor', 'middle')
+    .attr('font-size', 14)
+    .text(d => d.value);
+
+  let len = uniqueData.length - 1;
+  let lineStart = 0;
+  let lineEnd = 0;
+  partGrid.append('line')
+    .attr('x1', (d) => {
+      let num = setUniqueNum(uniqueObj, d, isLast);
+      lineStart = lineStart + num;
+      return bandwidth * lineStart;
+    })
+    .attr('x2', (d) => {
+      let num = setUniqueNum(uniqueObj, d, isLast);
+      lineEnd = lineEnd + num;
+      return bandwidth * lineEnd;
+    })
+    .attr('y1', top - 20)
+    .attr('y2', shapeHeight + top + 18)
+    .attr('opacity', (d, index) => {
+      return len === index ? 0 : 1;
+    })
+    .attr('stroke-width', 1)
+    .attr('stroke', '#c2c9d1');
+};
+
 export {
   initYGrid,
-  initXGrid,
   initYAxisGrid,
   initMiddleGrid,
-  initYAxisLine
+  initYAxisLine,
+  drawCombinedXGrid,
+  createXPartTxt,
+  createXPartTitle,
+  setUniqueForKey,
+  createXAxisPart
 };
