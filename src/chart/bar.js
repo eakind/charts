@@ -10,12 +10,12 @@ export default class Bar extends Base {
     this.init();
   };
 
-  drawCanvas (list, index, yAxisChild) {
+  drawCanvas (list, index, yAxisChild, uniqueIndex) {
     if (!list) {
       this.drawBar(yAxisChild, index);
       return;
     }
-    let key = this.config.yAxisPart[0].key[0];
+    let key = this.config.yAxisPart[uniqueIndex].key[0];
     let leftNum = 0;
     let total = this.getToTalBar(yAxisChild);
     for (let i = 0, len = list.length; i < len; i++) {

@@ -1,4 +1,4 @@
-import { setPartHeight } from '../utils/utils';
+// import { setPartHeight } from '../utils/utils';
 const initYGrid = (middle, width, height, scaleY, topAxisHeight, index) => {
   let axis = d3.axisLeft(scaleY)
     .tickPadding(6)
@@ -24,25 +24,24 @@ const initYGrid = (middle, width, height, scaleY, topAxisHeight, index) => {
     .attr('stroke-width', 1);
 };
 
-const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxisHeight, perKey, key, data, i) => {
+const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxisHeight) => {
   let grid = leftAxis.append('g')
     .attr('transform', `translate(${0}, ${topAxisHeight})`);
   let lineGroup = grid.append('g').attr('class', 'top-axis-line');
   let yGridGroup = lineGroup.selectAll('top-axis-line')
     .data(uniqueData)
     .enter();
-  // let lineLen = uniqueData.length - 1;
-  let perNum = 0;
+  // let perNum = 0;
   yGridGroup.append('text')
     .attr('transform', (d, index) => {
       let x = xIndex * 45 + 30;
-      let isUnit = i === 0;
+      // let isUnit = i === 0;
       let height = (index + 1) * yAxisHeight - yAxisHeight / 2;
-      if (!isUnit) {
-        let perIndex = setPartHeight(d, data, perKey, key);
-        height = (perNum + perIndex / 2) * yAxisHeight;
-        perNum = perNum + perIndex;
-      }
+      // if (!isUnit) {
+      //   let perIndex = setPartHeight(d, data, perKey, key);
+      //   height = (perNum + perIndex / 2) * yAxisHeight;
+      //   perNum = perNum + perIndex;
+      // }
       return `translate(${x}, ${height})`;
     })
     .attr('font-size', 14)
@@ -51,32 +50,32 @@ const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxis
     .text(d => d);
 
   // 画多Y轴横线
-  let lineStartNum = 0;
-  let lineEndNum = 0;
+  // let lineStartNum = 0;
+  // let lineEndNum = 0;
   let lienLen = uniqueData.length - 1;
   yGridGroup.append('line')
     .attr('x1', (d, index) => {
       return 50 * xIndex;
     })
     .attr('y1', (d, index) => {
-      let isUnit = i === 0;
+      // let isUnit = i === 0;
       let height = (index + 1) * yAxisHeight;
-      if (!isUnit) {
-        let perIndex = setPartHeight(d, data, perKey, key);
-        height = (lineStartNum + perIndex / 2) * yAxisHeight;
-        lineStartNum = lineStartNum + perIndex;
-      }
+      // if (!isUnit) {
+      //   let perIndex = setPartHeight(d, data, perKey, key);
+      //   height = (lineStartNum + perIndex / 2) * yAxisHeight;
+      //   lineStartNum = lineStartNum + perIndex;
+      // }
       return height;
     })
     .attr('x2', width)
     .attr('y2', (d, index) => {
-      let isUnit = i === 0;
+      // let isUnit = i === 0;
       let height = (index + 1) * yAxisHeight;
-      if (!isUnit) {
-        let perIndex = setPartHeight(d, data, perKey, key);
-        height = (lineEndNum + perIndex / 2) * yAxisHeight;
-        lineEndNum = lineEndNum + perIndex;
-      }
+      // if (!isUnit) {
+      //   let perIndex = setPartHeight(d, data, perKey, key);
+      //   height = (lineEndNum + perIndex / 2) * yAxisHeight;
+      //   lineEndNum = lineEndNum + perIndex;
+      // }
       return height;
     })
     .attr('opacity', (d, index) => {

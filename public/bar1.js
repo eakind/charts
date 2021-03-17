@@ -184,29 +184,29 @@ const config = {
       rotate: 0
     }
   }, {
+  //   position: 'left-part',
+  //   key: ['Embarked'],
+  //   line: {
+  //     style: {
+  //       lineWidth: 1,
+  //       fontColor: '#c2c9d1',
+  //       opacity: 1,
+  //       lineDash: [0, 0]
+  //     }
+  //   },
+  //   label: {
+  //     style: {
+  //       fontColor: 'blue',
+  //       fontStyle: 'normal',
+  //       fontSize: 14,
+  //       fontWeight: 'normal',
+  //       opacity: 1
+  //     },
+  //     rotate: 0
+  //   }
+  // }, {
     position: 'left-part',
-    key: ['Embarked'],
-    line: {
-      style: {
-        lineWidth: 1,
-        fontColor: '#c2c9d1',
-        opacity: 1,
-        lineDash: [0, 0]
-      }
-    },
-    label: {
-      style: {
-        fontColor: 'blue',
-        fontStyle: 'normal',
-        fontSize: 14,
-        fontWeight: 'normal',
-        opacity: 1
-      },
-      rotate: 0
-    }
-  }, {
-    position: 'left-part',
-    key: ['Cabin'],
+    key: ['Ticket'],
     line: {
       style: {
         lineWidth: 1,
@@ -676,16 +676,48 @@ const config = {
 //   ]
 // ];
 
+// const data = [
+//   [
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'female', 'sum(PassengerId)': NaN },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'female', 'sum(PassengerId)': NaN },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mrs. Stanton (Rosa Hunt)', Sex: 'female', 'sum(PassengerId)': 280.0 },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'male', 'sum(PassengerId)': 846.0 },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'male', 'sum(PassengerId)': 747.0 },
+//     { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mrs. Stanton (Rosa Hunt)', Sex: 'male', 'sum(PassengerId)': NaN }
+//   ]
+// ];
+
+// const data = [
+//   [
+//     {"Cabin":"null","Name":"Abbing, Mr. Anthony","Sex":"female","sum(PassengerId)":NaN},
+//     {"Cabin":"null","Name":"Abbott, Mr. Rossmore Edward","Sex":"female","sum(PassengerId)":NaN},
+//     {"Cabin":"null","Name":"Abbott, Mrs. Stanton (Rosa Hunt)","Sex":"female","sum(PassengerId)":280.0},
+//     {"Cabin":"null","Name":"Abbing, Mr. Anthony","Sex":"male","sum(PassengerId)":846.0},
+//     {"Cabin":"null","Name":"Abbott, Mr. Rossmore Edward","Sex":"male","sum(PassengerId)":747.0},
+//     {"Cabin":"null","Name":"Abbott, Mrs. Stanton (Rosa Hunt)","Sex":"male","sum(PassengerId)":NaN}
+//   ]
+// ]
+
 const data = [
   [
-    { Cabin: 'null', Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'female', 'sum(PassengerId)': NaN },
-    { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'female', 'sum(PassengerId)': NaN },
-    { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mrs. Stanton (Rosa Hunt)', Sex: 'female', 'sum(PassengerId)': 280.0 },
-    { Cabin: 'null', Embarked: 'S', Name: 'Abbing, Mr. Anthony', Sex: 'male', 'sum(PassengerId)': 846.0 },
-    { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mr. Rossmore Edward', Sex: 'male', 'sum(PassengerId)': 747.0 },
-    { Cabin: 'null', Embarked: 'S', Name: 'Abbott, Mrs. Stanton (Rosa Hunt)', Sex: 'male', 'sum(PassengerId)': NaN }
+    {"Name":"Abbott, Mr. Rossmore Edward","Sex":"female","Ticket":"C.A. 2673","sum(PassengerId)":NaN},
+    {"Name":"Abbott, Mrs. Stanton (Rosa Hunt)","Sex":"female","Ticket":"C.A. 2673","sum(PassengerId)":280.0},
+    {"Name":"Abbing, Mr. Anthony","Sex":"female","Ticket":"C.A. 5547","sum(PassengerId)":NaN},
+    {"Name":"Abbott, Mr. Rossmore Edward","Sex":"male","Ticket":"C.A. 2673","sum(PassengerId)":747.0},
+    {"Name":"Abbott, Mrs. Stanton (Rosa Hunt)","Sex":"male","Ticket":"C.A. 2673","sum(PassengerId)":NaN},
+    {"Name":"Abbing, Mr. Anthony","Sex":"male","Ticket":"C.A. 5547","sum(PassengerId)":846.0}
   ]
-];
+]
+
+// [
+//   {"Embarked":"S","Name":"Abbing, Mr. Anthony","Sex":"female","sum(PassengerId)":NaN},
+//   {"Embarked":"S","Name":"Abbott, Mr. Rossmore Edward","Sex":"female","sum(PassengerId)":NaN},
+//   {"Embarked":"S","Name":"Abbott, Mrs. Stanton (Rosa Hunt)","Sex":"female","sum(PassengerId)":280.0},
+//   {"Embarked":"S","Name":"Abbing, Mr. Anthony","Sex":"male","sum(PassengerId)":846.0},
+//   {"Embarked":"S","Name":"Abbott, Mr. Rossmore Edward","Sex":"male","sum(PassengerId)":747.0},
+//   {"Embarked":"S","Name":"Abbott, Mrs. Stanton (Rosa Hunt)","Sex":"male","sum(PassengerId)":NaN}
+// ]
+
 
 let test = chart.GeometryDrawingProcess({ data, config, chartType: 'bar' });
 test.draw();
