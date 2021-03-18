@@ -1,6 +1,6 @@
 import Base from './base';
-import { getKeyDataList, getMaxValue } from '../utils/data';
-import { scaleLinear } from '../shape/scale.js';
+import { getKeyDataList, getMaxValue } from './base/dataUtils';
+import { scaleLinear } from './base/scale';
 export default class Line extends Base {
   constructor (data, config) {
     super(data, config);

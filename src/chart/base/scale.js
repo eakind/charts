@@ -1,3 +1,4 @@
+// 返回线性刻度值
 const scaleLinear = (maxValue, height) => {
   let scale = d3.scaleLinear()
     .domain([0, maxValue * 1.1])
@@ -6,6 +7,7 @@ const scaleLinear = (maxValue, height) => {
   return scale;
 };
 
+// 返回分类刻度值
 const scaleBand = (data, barWidth, unique) => {
   let scale = d3.scaleBand();
   if (unique) {

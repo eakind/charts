@@ -1,5 +1,5 @@
 /* eslint-disable no-unreachable */
-import { getKeyDataList, getKeyValueDataList } from '../utils/data';
+import { getKeyDataList, getKeyValueDataList } from './base/dataUtils';
 import defaultConfig from '../utils/defaultConfig';
 import Base from './base';
 export default class Bar extends Base {

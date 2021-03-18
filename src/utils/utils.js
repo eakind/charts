@@ -1,4 +1,4 @@
-import { getMaxValue } from './data';
+import { getMaxValue } from '../chart/base/dataUtils';
 const getTextLegend = (text, fontSize) => {
   let textLen = String(text).length;
   return (textLen * fontSize) / 2 + fontSize;

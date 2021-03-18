@@ -1,5 +1,5 @@
-import { getKeyDataList, getMaxValue } from '../utils/data';
-import { scaleLinear } from '../shape/scale.js';
+import { getKeyDataList, getMaxValue } from './base/dataUtils';
+import { scaleLinear } from './base/scale.js';
 import Base from './base';
 export default class Bar extends Base {
   constructor (data, config) {
