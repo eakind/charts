@@ -53,11 +53,17 @@ let mapConfig = {
     }
   ],
   sizeFeature: { feature: 'sum(销售金额)' },
+<<<<<<< HEAD
   labelFeature: [
     { type: 'linear', feature: '省份' },
     { type: 'linear', feature: 'sum(销售金额)' }
   ],
   colorFeature: { feature: 'sum(销售金额)', type: 'linear', stacked: false },
+=======
+  labelFeature: ["sum(销售金额)", "省份"],
+  // colorFeature: { feature: 'sum(销售金额)', type: 'linear', stacked: false },
+  colorFeature: {},
+>>>>>>> 079551b48ad950c0515af91cfde4c2a55cb52f56
   column: {
     aggressions: ['latitude']
   },

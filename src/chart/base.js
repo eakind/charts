@@ -1,9 +1,11 @@
 // import { initTip } from '../components/textTip';
 import { scaleLinear, scaleBand } from '../shape/scale.js';
 import { initYAxis, initXAxis } from '../shape/axis';
-import { initYGrid, initYAxisGrid, initMiddleGrid, initYAxisLine, setUniqueForKey } from '../shape/grid';
+import { initYGrid, initYAxisGrid, initYAxisLine, drawCombinedXGrid, setUniqueForKey, initMiddleGrid } from '../shape/grid';
 import { getMaxValue, getKeyDataList } from '../utils/data';
 import { getTopAxisHeight, setBottomLabelHeight, getMaxValueWidth } from '../utils/utils.js';
+import { createFirstYPart, createLastYPart } from '../shape/yAixsPart';
+import { createXAxisPart, createXPartTitle, createMiddleXAxisPart } from '../shape/xAxisPart';
 export default class Base {
   init () {
     // 初始化X轴的空间
@@ -58,9 +60,9 @@ export default class Base {
       // 创建底部X轴
       this.createBottomXAxis();
       // 创建顶部X轴
-      this.createXPart();
+      this.initXAxisPart();
       // 创建Y轴并画图
-      this.createYPart(yAxis[i], i);
+      this.createYAxisPart(yAxis[i], i);
     };
   }
 
@@ -71,7 +73,7 @@ export default class Base {
     this.initCanvasContainer(0);
     this.createBottomXAxis();
     // 创建顶部X轴
-    this.createXPart();
+    this.initXAxisPart();
     this.createCombinedYPart(yAxis);
   }
 
@@ -107,7 +109,7 @@ export default class Base {
   }
 
   initCombinedYAxisConfig (yAxis) {
-    let { fitModel } = this.config;
+    // let { fitModel } = this.config;
     let { leftAxisWidth, leftTitleWidth } = getMaxValueWidth(yAxis, this.data, this.config.yAxisPart, 'left');
     /* 左边坐标轴宽度 */
     this.leftAxisWidth = leftAxisWidth;
@@ -121,19 +123,6 @@ export default class Base {
     /* 画布内容的宽度 */
     // let width = this.xAxisList.length * 200;
     this.shapeWidth = this.width - (this.leftAxisWidth + this.rightAxisWidth);
-    console.log(fitModel);
-    // let minHeight = 600;
-    // let minWidth = 600;
-    // switch (fitModel) {
-    //   case 'standard':
-    //     if (this.shapeWidth < minWidth) {
-    //       this.shapeWidth = minWidth;
-    //     }
-    //     if (this.shapeHeight < minHeight) {
-    //       this.shapeHeight = minHeight;
-    //     }
-    //     break;
-    // }
     /* Y坐标轴的高度 */
     this.yAxisHeight = this.shapeHeight;
   };
@@ -164,28 +153,31 @@ export default class Base {
     initXAxis(this.middle, this.scaleX, this.shapeWidth, this.shapeHeight, xAxisObj, this.topAxisHeight, this.bottomAxisHeight, this.xAxisList);
   };
 
-  createXPart () {
-    // let partList = this.config.xAxisPart;
-    // if (!partList || !partList.length) return;
-    // let len = partList.length;
-    // let topAxisIndex = 0;
-    // let perKey = null;
-    // let perList = [];
-    // for (let i = 0; i < len; i++) {
-    //   let xAxisList = getKeyDataList(this.data[0], partList[i].key);
-    //   let topAxis = topAxisIndex * 30 + 52;
-    //   let title = partList[i].title.value;
-    //   let key = partList[i].key;
-    //   let height = this.shapeHeight + 30 * (i + len - 1);
-    //   initXGrid(this.middle, this.shapeWidth, height, topAxis, this.scaleX.bandwidth(), xAxisList, this.data[0], title, perKey, perList, key);
-    //   perKey = partList[0].key;
-    //   perList = xAxisList;
-    //   topAxisIndex++;
-    // }
-  }
+  initXAxisPart () {
+    let partList = this.config.xAxisPart;
+    if (!partList || !partList.length) return;
+    let len = partList.length;
+    let group = this.middle.append('g').attr('transform', `translate(${0}, ${20})`);
+    let title = partList[0].title.value;
+    let bandwidth = this.scaleX.bandwidth();
+    createXPartTitle(this.shapeWidth, group, title);
+    let xAxisList = getKeyDataList(this.data[0], partList[0].key);
+    let uniqueList = [...new Set(xAxisList)];
+    let uniqueObj = setUniqueForKey(partList[0].key, partList[0].key, this.data[0]);
+    createXAxisPart(group, uniqueList, 25, bandwidth, this.canvasHeight, uniqueObj);
+    for (let i = 1; i < len; i++) {
+      let uniqueObj = setUniqueForKey(partList[i - 1].key, partList[i].key, this.data[0]);
+      let top = (i + 1) * 25;
+      let perLen = 0;
+      for (let key in uniqueObj) {
+        createMiddleXAxisPart(group, uniqueObj[key], top, bandwidth, this.canvasHeight, key, uniqueObj, perLen);
+        perLen = perLen + uniqueObj[key].length;
+      }
+    }
+  };
 
-  createYAxis (list, yAxisChild) {
-    for (let i = 0, len = list.length; i < len; i++) {
+  createYAxis (len, yAxisChild) {
+    for (let i = 0; i < len; i++) {
       for (let j = 0; j < yAxisChild.length; j++) {
         let position = yAxisChild[j].position;
         let yAxisMax = position === 'left' ? this.leftMaxValue : this.rightMaxValue; // getMaxValue(this.data, yAxis[j].key);
@@ -201,55 +193,71 @@ export default class Base {
     };
   }
 
-  getMaxUnique (yAxisPart, data) {
-    let uniquePartList = [];
-    let uniqueIndex = 0;
-    let yAxisPartList = [];
-    for (let i = 0; i < yAxisPart.length; i++) {
-      let list = getKeyDataList(data, yAxisPart[i].key);
-      let arr = [...new Set(list)];
-      if (uniquePartList.length < arr.length) {
-        uniqueIndex = i;
-        uniquePartList = JSON.parse(JSON.stringify(arr));
-        yAxisPartList = JSON.parse(JSON.stringify(list));
-      }
-    }
-    return { uniquePartList, uniqueIndex, yAxisPartList };
-  }
-
-  createYPart (yAxisChild, index) {
+  createYAxisPart (yAxisChild, index) {
     let yAxisPart = this.config.yAxisPart;
     if (!yAxisPart || !yAxisPart.length) {
-      this.createYAxis([''], yAxisChild);
+      this.createYAxis(1, yAxisChild);
       this.drawCanvas(null, index, yAxisChild, 0);
     } else {
       let data = this.data[index];
       let partLen = yAxisPart.length;
-      let { uniquePartList, uniqueIndex, yAxisPartList } = this.getMaxUnique(yAxisPart, data);
-      this.yAxisHeight = this.shapeHeight / uniquePartList.length;
-      this.createYAxis(uniquePartList, yAxisChild);
-      initMiddleGrid(this.middle, this.yAxisHeight, uniquePartList, this.shapeWidth, this.topAxisHeight);
-      this.drawCanvas(uniquePartList, index, yAxisChild, uniqueIndex);
-      let total = partLen - uniqueIndex - 1;
-      let key = yAxisPart[uniqueIndex].key;
-      initYAxisGrid(this.leftAxis, this.yAxisHeight, uniquePartList, this.leftAxisWidth, total, this.topAxisHeight, yAxisPartList);
-      for (let i = 0; i < partLen; i++) {
-        if (i !== uniqueIndex) {
-          let partObj = setUniqueForKey(key, yAxisPart[i].key, data);
-          let partList = [];
-          for (let key in partObj) {
-            partList.push(...new Set(partObj[key]));
-          }
-          let unique = JSON.parse(JSON.stringify(partList));
-          if (i > uniqueIndex) {
-            unique = [...new Set(partList)];
-          }
-          initYAxisGrid(this.leftAxis, this.yAxisHeight, unique, this.leftAxisWidth, (partLen - i - 1), this.topAxisHeight, partList);
-        }
-        initYAxisLine(this.leftAxis, this.topAxisHeight, this.shapeHeight, i);
+      this.initYAxisPart(yAxisPart, partLen, data, yAxisChild, index);
+    }
+  }
+
+  initYAxisPart (yAxisPart, len, data, yAxisChild, index) {
+    let yAxisPartList = getKeyDataList(data, yAxisPart[0].key);
+    if (len < 2) {
+      let uniqueList = [...new Set(yAxisPartList)];
+      let uniqueLen = uniqueList.length;
+      this.yAxisHeight = this.shapeHeight / uniqueLen;
+      this.createYAxis(uniqueLen, yAxisChild);
+      this.drawCanvas(uniqueList, index, yAxisChild, 0);
+      initMiddleGrid(this.middle, this.yAxisHeight, uniqueList, this.shapeWidth, this.topAxisHeight);
+      createFirstYPart(this.leftAxis, uniqueList, this.yAxisHeight, this.leftAxisWidth, this.topAxisHeight, len);
+    } else {
+      let yAxisLen = yAxisPartList.length / this.xAxisList.length;
+      this.yAxisHeight = this.shapeHeight / yAxisLen;
+      this.createYAxis(yAxisLen, yAxisChild);
+      for (let i = 0; i < len; i++) {
+
       }
-    };
-  };
+
+      // let partMap = setUniqueForKey(yAxisPart[0].key, yAxisPart[len - 1].key, data);
+      // let yAxisArr = [];
+      // let uniqueList = [];
+      // for (let key in partMap) {
+      //   uniqueList.push(key);
+      //   yAxisArr.push(...[...new Set(partMap[key])]);
+      // }
+      // let yAxisLen = yAxisArr.length;
+      // this.yAxisHeight = this.shapeHeight / yAxisLen;
+      // this.createYAxis(yAxisLen, yAxisChild);
+      // this.drawCanvas(yAxisArr, index, yAxisChild, len - 1);
+      // initMiddleGrid(this.middle, this.yAxisHeight, yAxisArr, this.shapeWidth, this.topAxisHeight);
+      // createFirstYPart(this.leftAxis, yAxisArr, this.yAxisHeight, this.leftAxisWidth, this.topAxisHeight, len);
+      // createLastYPart(this.leftAxis, uniqueList, this.yAxisHeight, this.leftAxisWidth, this.topAxisHeight, partMap, 0);
+      // initYAxisLine(this.leftAxis, this.topAxisHeight, this.shapeHeight, len - 1);
+      // this.createMiddlePart(yAxisPart, len, data, uniqueList.length);
+    }
+  }
+
+  createMiddlePart (yAxisPart, len, data, uniqueLen) {
+    for (let i = 1; i < (len - 1); i++) {
+      let partMap = setUniqueForKey(yAxisPart[i].key, yAxisPart[len - 1].key, data);
+      let uniqueList = [];
+      for (let key in partMap) {
+        uniqueList.push(key);
+      };
+      if (uniqueList.length === 1 && uniqueList.length < uniqueLen) {
+        for (let i = 0; i < uniqueLen - 1; i++) {
+          uniqueList.push(uniqueList[0]);
+        }
+      }
+      createLastYPart(this.leftAxis, uniqueList, this.yAxisHeight, this.leftAxisWidth, this.topAxisHeight, partMap, i);
+      initYAxisLine(this.leftAxis, this.topAxisHeight, this.shapeHeight, i);
+    }
+  }
 
   createCombinedYPart (yAxis) {
     let yAxisPart = this.config.yAxisPart;
@@ -279,7 +287,7 @@ export default class Base {
       }
       initYAxisGrid(this.leftAxis, this.yAxisHeight * len, uniquePartList, this.leftAxisWidth, (partLen - i - 1), this.topAxisHeight, yAxisPart[0].key, yAxisPart[i].key, data, i, yAxisPartList);
     }
-  }
+  };
 
   createCombinedYAxisYPart (uniquePartList, yAxisChild, index, len) {
     for (let i = 0; i < uniquePartList.length; i++) {
@@ -287,10 +295,10 @@ export default class Base {
       this.drawCombinedYAxis(yAxisChild, sum);
       this.drawCombinedCanvas(null, sum, yAxisChild, index);
       if (sum !== 0) {
-        this.drawCombinedXGrid(this.middle, this.topAxisHeight, sum, this.shapeWidth, this.yAxisHeight);
+        drawCombinedXGrid(this.middle, this.topAxisHeight, sum, this.shapeWidth, this.yAxisHeight);
       }
     }
-  }
+  };
 
   createCombinedYAxis (yAxis) {
     let len = yAxis.length;
@@ -300,7 +308,7 @@ export default class Base {
       this.drawCombinedYAxis(yAxis[i], i);
       this.drawCombinedCanvas(null, i, yAxis[i], i);
       if (i !== 0) {
-        this.drawCombinedXGrid(this.middle, this.topAxisHeight, i, this.shapeWidth, this.yAxisHeight);
+        drawCombinedXGrid(this.middle, this.topAxisHeight, i, this.shapeWidth, this.yAxisHeight);
       }
     }
   };
@@ -318,17 +326,5 @@ export default class Base {
       }
       initYAxis(this[`${position}Axis`], scaleY, yAxisChild[i], this.tipTpl, this.yAxisHeight, this.topAxisHeight, this[`${position}AxisWidth`], this[`${position}TitleWidth`], index);
     }
-  }
-
-  drawCombinedXGrid (middle, topAxisHeight, index, width, height) {
-    let grid = middle.append('g').attr('class', 'line');
-    let y = topAxisHeight + height * index;
-    grid.append('line')
-      .attr('x1', 0)
-      .attr('y1', y)
-      .attr('x2', width)
-      .attr('y2', y)
-      .attr('stroke-width', 1)
-      .attr('stroke', '#c2c9d1');
   }
 };

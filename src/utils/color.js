@@ -16,7 +16,7 @@ let getItemColor = function (
           return colorSet.category[0];
         }
         if (colorList && colorList.length > 0) {
-          let match = colorList.find(i => i.val === curVal);
+          let match = colorList.find((i) => i.val === curVal);
           if (match) {
             return match.color;
           }
@@ -28,9 +28,12 @@ let getItemColor = function (
         return colorList[index];
       },
       getLinearItemColor: function () {
-        colorList = colorList && colorList.length > 0 ? colorList : colorSet.numeric;
-        let startColor = d3.rgb(colorList[0]);
-        let endColor = d3.rgb(colorList[1]);
+        let tempColorList = colorSet.numeric;
+        if (colorList && colorList.length > 0) {
+          tempColorList = colorList.map((i) => i.color || i);
+        }
+        let startColor = d3.rgb(tempColorList[0]);
+        let endColor = d3.rgb(tempColorList[1]);
         let compute = d3.interpolate(startColor, endColor);
         return compute((curVal - minVal) / (maxVal - minVal));
       }

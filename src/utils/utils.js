@@ -11,8 +11,11 @@ let dataProcess = function (val, format) {
   if (typeof format.selectFormat === 'undefined') {
     return val;
   }
+  if (!Number(val)) {
+    return;
+  }
   let ret = val;
-  if (format.decimal) {
+  if (format.decimal || format.decimal === 0) {
     if (format.isPercent) {
       ret = ret * 100;
     }
@@ -21,10 +24,20 @@ let dataProcess = function (val, format) {
       ret = ret + '%';
     }
   }
+  let negative = -1;
+  if (ret < 0) {
+    if (format.negative === '(1234)') {
+      negative = 0;
+    } else if (format.negative === '1234-') {
+      negative = 1;
+    } else {
+      negative = 2;
+    }
+  }
 
   ret = unitProcess(ret, format.unit, format.useThousandMark);
 
-  ret = displayFormatProcess(ret, format.format, format.zone);
+  ret = displayFormatProcess(ret, format.format, format.zone, negative);
   ret = prefSuffixProcess(ret, format.prefix, format.suffix, format.isPercent);
   return ret;
 };
@@ -45,7 +58,7 @@ let unitProcess = function (val, unit, micrometerFlag) {
   return unit ? curRes + unit : curRes;
 };
 
-let displayFormatProcess = function (val, format, zone) {
+let displayFormatProcess = function (val, format, zone, negative) {
   // if (!format) {
   //   return val;
   // }
@@ -60,6 +73,14 @@ let displayFormatProcess = function (val, format, zone) {
     EUR: '€',
     GBP: '£'
   };
+  if (negative === -1) {
+    return formatPare[zone] ? formatPare[zone] + val : val;
+  }
+  if (negative === 0) {
+    val = '(' + val.substring(1) + ')';
+  } else if (negative === 1) {
+    val = val.substring(1) + '-';
+  }
   return formatPare[zone] ? formatPare[zone] + val : val;
 };
 
@@ -82,22 +103,25 @@ let micrometerProcess = function (val, flag) {
   let curStr = val.toString().split('.');
   for (let i = curStr[0].length - 1; i >= 0; i--) {
     list.push(curStr[0][i]);
-    if (curStr[0].length - 1 - i % 3 === 2) {
+    if ((curStr[0].length - 1 - i) % 3 === 2) {
       ret = ',' + list.reverse().join('') + ret;
       list = [];
     }
+  }
+  if (ret) {
+    ret = list.length === 0 ? ret.substr(1) : ret;
   }
   ret = list.reverse().join('') + ret;
   return curStr.length > 1 ? ret + '.' + curStr[1] : ret;
 };
 
 let styleProcess = function (styleObj) {
-  return ` textAlign: ${styleObj.align};
+  return ` text-align: ${styleObj.align || 'left'};
   color:  ${styleObj.fontColor};
-  fontSize:  ${styleObj.fontSize + 'px'};
-  fontStyle:  ${styleObj.fontStyle};
-  lineHeight:  ${styleObj.lineHeight + 'px'};
-  letterSpacing:  ${styleObj.letterSpacing + 'px'}`;
+  font-size:  ${styleObj.fontSize + 'px'};
+  font-style:  ${styleObj.fontStyle};
+  line-height:  ${styleObj.lineHeight + 'px'};
+  letter-spacing:  ${styleObj.letterSpacing + 'px'}`;
 };
 
 let toScientificNotation = function (val) {

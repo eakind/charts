@@ -1,6 +1,6 @@
 /* eslint-disable */
 // import Chart from '../Chart.js';
-import { notEmpty, isDefined, isEmpty, isMobile } from '../utils/check.js';
+import { notEmpty, isDefined, isEmpty, isMobile, isNumber } from '../utils/check.js';
 // import CLASS from '../Classes.js';
 import {
   dataProcess
@@ -37,7 +37,15 @@ const init = function (tableData, tableConfig) {
       headBorderWidth = config.table.outter.width,
       outerBorderColor = config.table.outter.color,
       innerBorderColor = config.table.inner.color,
-      tableTitle = config.table.title;
+      tableTitle = config.table.title,
+      labelList = config.label.format,
+      labels = config.data.labeled;
+
+  if(isEmpty(labels)) {
+    const x_aggressions = config.data.column.aggressions
+    const y_aggressions = config.data.row.aggressions
+    labels = notEmpty(x_aggressions) ? x_aggressions : notEmpty(y_aggressions) ? y_aggressions : []
+  }
 
   // let {
   //   table_padding_left,
@@ -590,12 +598,28 @@ const init = function (tableData, tableConfig) {
         .replace(/\s+/g, '')
         .replace(/\./, '');
       obj[columnProp] = {};
-      obj[columnProp].value =
-        i[agg] || i[agg] === 0
-          ? match
-            ? match.formatLabel(i[agg])
-            : i[agg]
-          : '';
+      // obj[columnProp].value =
+      //   i[agg] || i[agg] === 0
+      //     ? match
+      //       ? match.formatLabel(i[agg])
+      //       : i[agg]
+      //     : '';
+      let curFormat;
+      if (agg) {
+        let aggIndex = labels.indexOf(agg);
+        labelList.forEach(l => {
+          if(!l || !l.list) return
+          let temp = l.list[aggIndex]
+          if(temp) {
+            if(temp.format) {
+              curFormat = temp.format
+            }
+          } else {
+            //l.list[label_index] = format
+          }
+        })
+      }
+      obj[columnProp].value = i[agg] || i[agg] === 0 ? formatNumberFunction(i[agg], curFormat) : '';
       if (colorFeature) {
         obj[columnProp].labelValue = i[colorFeature];
       } else {
@@ -773,27 +797,16 @@ const init = function (tableData, tableConfig) {
                 if (rowIdx % total !== 0) {
                   obj[rowCat].grpSpan = true;
                 }
-                // columnAggression.map((agg) => {
-                //   obj.columnStyle = returnColumnStyle(agg);
-                //   let match = formatList.find((i) => i.label_name === agg);
-                //   row.values.forEach((i) => {
-                //     let key = i['MC-HIDDEN-KEY'];
-                //     let propArr = key.split(CLASS.join_factor);
-                //     if (i.hasOwnProperty(agg)) {
-                //       Object.assign(obj, returnValue(i, agg, match));
-                //     }
-                //   });
-                // });
-              });
-              columnAggression.map((agg) => {
-                obj.columnStyle = returnColumnStyle(agg);
-                let match = formatList.find((i) => i.label_name === agg);
-                row.values.forEach((i) => {
-                  let key = i['MC-HIDDEN-KEY'];
-                  let propArr = key.split('MC-SEPERATE-WORD');
-                  if (i.hasOwnProperty(agg)) {
-                    Object.assign(obj, returnValue(i, agg, match));
-                  }
+                columnAggression.map((agg) => {
+                  obj.columnStyle = returnColumnStyle(agg);
+                  let match = formatList.find((i) => i.label_name === agg);
+                  row.values.forEach((i) => {
+                    // let key = i['MC-HIDDEN-KEY'];
+                    // let propArr = key.split(CLASS.join_factor);
+                    if (i.hasOwnProperty(agg)) {
+                      Object.assign(obj, returnValue(i, agg, match));
+                    }
+                  });
                 });
               });
               resData.push(obj);
@@ -851,7 +864,9 @@ const init = function (tableData, tableConfig) {
                   //     Object.assign(obj, returnValue(i, agg, match));
                   //   }
                   // }
-                  Object.assign(obj, returnValue(i, agg, match));
+                  if (i.hasOwnProperty(agg)) {
+                    Object.assign(obj, returnValue(i, agg, match));
+                  }
                 });
                 resData.push(obj);
               });
@@ -1154,7 +1169,7 @@ const init = function (tableData, tableConfig) {
               borderTopShow: titleShow ? '0' : '1' // 无
             },
             tooltipComponentParams: {
-              context: {dataProcess: dataProcess},
+              context: {dataProcess: dataProcess, formatNumberFunction: formatNumberFunction},
             },
             cellRenderer: (params) => {
               var eDiv = document.createElement('span');
@@ -1271,7 +1286,7 @@ const init = function (tableData, tableConfig) {
           headerTooltip: titleMatch ? titleMatch.title : titleKey,
           children: resColumn,
           tooltipComponentParams: {
-            context: {dataProcess: dataProcess},
+            context: {dataProcess: dataProcess, formatNumberFunction: formatNumberFunction},
           },
           headerGroupComponent: createHeaderGroupComponent(),
           headerGroupComponentParams: {
@@ -1339,6 +1354,115 @@ const init = function (tableData, tableConfig) {
         return d[propertyName];
       };
     }
+
+    function formatNumberFunction(label, format) {
+      let prefixes = {
+        y: 1e-24,
+        z: 1e-21,
+        a: 1e-18,
+        f: 1e-15,
+        p: 1e-12,
+        mu: 1e-6,
+        m: 1e-3,
+        none: 1e-0,
+        K: 1e+3,
+        M: 1e+6,
+        G: 1e+9,
+        T: 1e+12,
+        P: 1e+15,
+        E: 1e+18,
+        Z: 1e+21,
+        Y: 1e+24
+      };
+      let new_label = label
+      let original = false, k_mark = true;
+      
+      if(format.decimal < 0) format.decimal = 0
+      if(format.decimal === '') original = true
+    
+      if(isNumber(new_label)) {
+        // if(isNaN(new_label)) return ''
+        let format_decimal = `.${format.decimal}`,
+            format_kMark = format.useThousandMark ? ',' : '';
+        if(format_kMark === '') k_mark = false
+    
+        if(format.selectFormat !== 'percent') {
+          //单位换算
+          Object.keys(prefixes).forEach(p => {
+            // if(p === format.unit) new_label /= prefixes[p]
+            let splitUnit = format.unit ? format.unit.split(' ')[0] : '';
+            if(p === format.unit) {
+              new_label /= prefixes[p]
+            } else if (p === splitUnit) {
+              new_label /= prefixes[splitUnit]
+            }
+          })
+          //小数位数
+          new_label = original ? (k_mark ? d3.format(format_kMark)(new_label) : new_label) : 
+                                 d3.format(`${format_kMark}${format_decimal}f`)(new_label);
+          //负值显示
+          if (format.negative === '(1234)') {
+            format.negative = 0;
+          } else if (format.negative === '1234-') {
+            format.negative = 1;
+          }
+          if(parseFloat(new_label) < 0) {
+            if(format.negative === 0) {
+              new_label = original ? `(${k_mark ? d3.format(format_kMark)(Math.abs(new_label)) : Math.abs(new_label)})` : 
+                                     `(${k_mark ? d3.format(`${format_kMark}${format_decimal}f`)(Math.abs(label)) : d3.format(`${format_kMark}${format_decimal}f`)(Math.abs(new_label))})`
+            } else if(format.negative === 1) {
+              new_label = original ? `${k_mark ? d3.format(format_kMark)(Math.abs(new_label)) : Math.abs(new_label)}-` : 
+                                     `${k_mark ? d3.format(`${format_kMark}${format_decimal}f`)(Math.abs(label)) : d3.format(`${format_kMark}${format_decimal}f`)(Math.abs(new_label))}-`
+            }
+          }
+          
+          new_label += isDefined(format.unit) ? format.unit : ''
+        } else {
+          new_label *= 100
+          //小数位数
+          let num = original ? (k_mark ? d3.format(`${format_kMark}`)(Math.abs(new_label)) : d3.format('')(Math.abs(new_label))) :
+                               d3.format(`${format_kMark}.${format.decimal}f`)(Math.abs(new_label))
+    
+          if(new_label < 0) {
+            if(format.negative === 0) new_label = `(${num})`
+            else if(format.negative === 1) new_label = `${num}-` 
+            else new_label = `-${num}` 
+          } else {
+            new_label = num
+          }
+        }
+    
+        //货币
+        if(format.selectFormat === 'currency') {
+          let areaCode = ['', 'CN', 'JP', 'HK', 'US', 'EUR', 'GBP'];
+          let moneyCode = ['', '¥', '￥', 'HK$', '＄', '€', '£'];
+          let zoneObj = {
+            CN: `¥ 人民币`,
+            JP: `￥ 日元`,
+            HK: `HK$ 港元`,
+            US: `＄ 美元`,
+            EUR: `€ 欧元`,
+            GBP: `£ 英镑`
+          };
+          let format_zone = isDefined(format.zone) ? format.zone : '¥ 人民币';
+          for (let item in zoneObj) {
+            if (format_zone === zoneObj[item]) {
+              format_zone = item;
+            }
+          };
+          let prefix = moneyCode[areaCode.indexOf(format_zone.toUpperCase())] || ''
+          new_label = `${prefix}${new_label}`
+        }
+        //前缀后缀
+        new_label = `${format.prefix}${new_label}${format.suffix}`
+      } else {
+        new_label += ''
+      }
+    
+      if(new_label === 'undefined' || new_label === 'NaN') new_label = '' 
+    
+      return new_label
+    }    
     /////////////////////结束获取grid的column////////////////////////
   };
 

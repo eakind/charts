@@ -129,6 +129,7 @@
 
 .ag-theme-balham .ag-header {
   background-color: inherit;
+  pointer-events: none;
 }
 .ag-overlay-no-rows-center{
   display: none;

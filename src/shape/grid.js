@@ -1,4 +1,4 @@
-// import { setPartHeight } from '../utils/utils';
+import { getKeyDataList } from '../utils/data';
 const initYGrid = (middle, width, height, scaleY, topAxisHeight, index) => {
   let axis = d3.axisLeft(scaleY)
     .tickPadding(6)
@@ -24,24 +24,22 @@ const initYGrid = (middle, width, height, scaleY, topAxisHeight, index) => {
     .attr('stroke-width', 1);
 };
 
-const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxisHeight) => {
+const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxisHeight, list, isLast) => {
   let grid = leftAxis.append('g')
     .attr('transform', `translate(${0}, ${topAxisHeight})`);
   let lineGroup = grid.append('g').attr('class', 'top-axis-line');
   let yGridGroup = lineGroup.selectAll('top-axis-line')
     .data(uniqueData)
     .enter();
-  // let perNum = 0;
   yGridGroup.append('text')
     .attr('transform', (d, index) => {
       let x = xIndex * 45 + 30;
-      // let isUnit = i === 0;
-      let height = (index + 1) * yAxisHeight - yAxisHeight / 2;
-      // if (!isUnit) {
-      //   let perIndex = setPartHeight(d, data, perKey, key);
-      //   height = (perNum + perIndex / 2) * yAxisHeight;
-      //   perNum = perNum + perIndex;
-      // }
+      let gap = list.filter(item => item === d).length;
+      let start = list.indexOf(d, index);
+      if (isLast) {
+        gap = 1;
+      }
+      let height = (start + gap) * yAxisHeight - (gap * yAxisHeight) / 2;
       return `translate(${x}, ${height})`;
     })
     .attr('font-size', 14)
@@ -50,32 +48,22 @@ const initYAxisGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxis
     .text(d => d);
 
   // 画多Y轴横线
-  // let lineStartNum = 0;
-  // let lineEndNum = 0;
   let lienLen = uniqueData.length - 1;
   yGridGroup.append('line')
     .attr('x1', (d, index) => {
       return 50 * xIndex;
     })
-    .attr('y1', (d, index) => {
-      // let isUnit = i === 0;
-      let height = (index + 1) * yAxisHeight;
-      // if (!isUnit) {
-      //   let perIndex = setPartHeight(d, data, perKey, key);
-      //   height = (lineStartNum + perIndex / 2) * yAxisHeight;
-      //   lineStartNum = lineStartNum + perIndex;
-      // }
+    .attr('y1', (d) => {
+      let gap = list.filter(item => item === d).length;
+      let start = list.indexOf(d);
+      let height = (start + gap) * yAxisHeight;
       return height;
     })
     .attr('x2', width)
-    .attr('y2', (d, index) => {
-      // let isUnit = i === 0;
-      let height = (index + 1) * yAxisHeight;
-      // if (!isUnit) {
-      //   let perIndex = setPartHeight(d, data, perKey, key);
-      //   height = (lineEndNum + perIndex / 2) * yAxisHeight;
-      //   lineEndNum = lineEndNum + perIndex;
-      // }
+    .attr('y2', (d) => {
+      let gap = list.filter(item => item === d).length;
+      let start = list.indexOf(d);
+      let height = (start + gap) * yAxisHeight;
       return height;
     })
     .attr('opacity', (d, index) => {
@@ -267,6 +255,22 @@ const createXAxisPart = (group, uniqueObj, top, bandwidth, shapeHeight, isLast) 
     .attr('stroke', '#c2c9d1');
 };
 
+const getMaxUnique = (yAxisPart, data) => {
+  let uniquePartList = [];
+  let uniqueIndex = 0;
+  let yAxisPartList = [];
+  for (let i = 0; i < yAxisPart.length; i++) {
+    let list = getKeyDataList(data, yAxisPart[i].key);
+    let arr = [...new Set(list)];
+    if (uniquePartList.length < arr.length) {
+      uniqueIndex = i;
+      uniquePartList = JSON.parse(JSON.stringify(arr));
+      yAxisPartList = JSON.parse(JSON.stringify(list));
+    }
+  }
+  return { uniquePartList, uniqueIndex, yAxisPartList };
+};
+
 export {
   initYGrid,
   initYAxisGrid,
@@ -276,5 +280,6 @@ export {
   createXPartTxt,
   createXPartTitle,
   setUniqueForKey,
-  createXAxisPart
+  createXAxisPart,
+  getMaxUnique
 };

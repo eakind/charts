@@ -1,4 +1,5 @@
-import { notEmpty, isUndefined, isEmpty } from '../utils/check.js';
+/* eslint-disable */
+import { notEmpty, isUndefined, isEmpty, isNumber, isDefined } from '../utils/check.js';
 export default class map {
   constructor (data, config) {
     this.config = config;
@@ -50,22 +51,51 @@ export default class map {
     });
     this.scene.on('loaded', (ev) => {
       this.fitBoundsMap();
-      this.addMapSymbols();
-      if (this.isMobile()) {
-        this.addZoomCtrl();
-      }
       setTimeout(() => {
-        this.addMapLabels();
-      }, 100);
-      this.scene.on('zoomend', () => {
-        if (this.markerLayer) {
-          this.markerLayer.markers.forEach(item => {
-            item.remove();
-          });
-          this.markerLayer && this.scene.removeMarkerLayer(this.markerLayer);
+        this.addMapSymbols();
+        if (this.isMobile()) {
+          this.addZoomCtrl();
         }
         this.addMapLabels();
-      }); // 缩放停止时触发
+        // setTimeout(() => {
+        //   this.addMapLabels();
+        // }, 100);
+        this.scene.on('zoomend', () => {
+          console.log('zoom');
+          if (this.markerLayer) {
+            this.markerLayer.markers.forEach(item => {
+              item.remove();
+            });
+            this.markerLayer && this.scene.removeMarkerLayer(this.markerLayer);
+          }
+          this.addMapLabels();
+        }); // 缩放停止时触发
+      }, 800);
+      // this.addMapSymbols();
+      // if (this.isMobile()) {
+      //   this.addZoomCtrl();
+      // }
+      // this.addMapLabels();
+      // // setTimeout(() => {
+      // //   this.addMapLabels();
+      // // }, 100);
+      // this.scene.on('zoomend', () => {
+      //   console.log('zoom');
+      //   if (this.markerLayer) {
+      //     this.markerLayer.markers.forEach(item => {
+      //       item.remove();
+      //     });
+      //     this.markerLayer && this.scene.removeMarkerLayer(this.markerLayer);
+      //   }
+      //   this.addMapLabels();
+      // }); // 缩放停止时触发
+
+      // this.scene.on('click', (ev, e) => {
+      //   console.log('click', ev, e);
+      //   ev.originEvent.stopPropagation();
+      //   window.event ? window.event.cancelBubble = true : ev.originEvent.stopPropagation();
+      //   ev.originEvent.preventDefault ? ev.originEvent.preventDefault() : window.event.returnValue = false;
+      // });
     });
   }
 
@@ -134,7 +164,12 @@ export default class map {
       if (this.scene.getLayerByName('clickLabelLayer')) {
         this.scene.removeLayer(this.clickLabelLayer);
       }
-      this.pointLayer.color(this.config.colorFeature.feature, ['#7AC9F5', '#2A5783']);
+      // this.pointLayer.color(this.config.colorFeature.feature, ['#7AC9F5', '#2A5783']);
+      if (this.config.colorFeature && this.config.colorFeature.feature) {
+        this.pointLayer.color(this.config.colorFeature.feature, ['#7AC9F5', '#2A5783']);
+      } else {
+        this.pointLayer.color('#4284F5');
+      }
       this.pointLayer.style({
         opacity: 1
       });
@@ -153,10 +188,21 @@ export default class map {
           obj[key] = tooltipData[key];
         }
       };
+      if (this.config.tooltipFormat) {
+        this.config.tooltipFormat.forEach(item => {
+          if (item.display === 'none' && obj[item.key]) {
+            delete obj[item.key];
+          } else {
+            obj.format = item.format;
+          }
+        })
+      }
       // var html = $$.formatTooltipText(obj);
       let htmlContent = '';
       for (const key in obj) {
-        htmlContent = htmlContent + `<div>${key}: ${obj[key]}</div>`;
+        if (key !== 'format') {
+          htmlContent = htmlContent + `<div>${key}: ${this.formatNumberFunction(obj[key], obj.format)}</div>`;
+        }
       };
       let html = `<div>${htmlContent}</div>`;
       popupLayer.setLnglat([ev.lngLat.lng, ev.lngLat.lat])
@@ -218,9 +264,12 @@ export default class map {
         divDom.className = 'map-label-text';
         divDom.style = 'display: flex; flex-direction: column; font-size: 12px; align-items: center;';
         labeleFeatures.forEach((lf, lid) => {
+          let curLabel = this.config.labelStyle.filter(item => {
+            return item.key = lf;
+          })[0];
           const pDom = document.createElement('span');
           // pDom.textContent = format_list[lid].formatLabel(data[i][lf]);
-          pDom.textContent = data[i][lf];
+          pDom.textContent = this.formatNumberFunction(data[i][lf], curLabel.format);
           divDom.appendChild(pDom);
         });
         const el = document.createElement('label');
@@ -228,7 +277,7 @@ export default class map {
         el.innerHTML = divDom.outerHTML;
         const marker = new L7.Marker({
           element: el
-        }).setLnglat({ lng: data[i].longitude, lat: data[i].latitude - 1 });
+        }).setLnglat({ lng: data[i].longitude, lat: data[i].latitude });
         this.markerLayer.addMarker(marker);
       }
     }
@@ -304,16 +353,141 @@ export default class map {
       })
       .shape('circle')
       .size(this.config.sizeFeature.feature, [1, 20])
-      .color(this.config.colorFeature.feature, value => {
-        if (value === ev.feature[this.config.colorFeature.feature]) {
-          return '#2A5783';
-        }
-      })
+      // .color(this.config.colorFeature.feature, value => {
+      //   if (value === ev.feature[this.config.colorFeature.feature]) {
+      //     return '#2A5783';
+      //   }
+      // })
       .style({
         opacity: 1,
         strokeWidth: 0
       });
+    if (this.config.colorFeature && this.config.colorFeature.feature) {
+      this.clickLabelLayer.color(this.config.colorFeature.feature, value => {
+        console.log('value', value);
+        console.log('ev.fearture', ev.feature);
+        if (value === ev.feature[this.config.colorFeature.feature]) {
+          return '#2A5783';
+        }
+      });
+    } else {
+      // this.clickLabelLayer.color('#4284F5');
+      this.clickLabelLayer.color(this.config.sizeFeature.feature, value => {
+        if (value === ev.feature[this.config.sizeFeature.feature]) {
+          return '#4284F5';
+        }
+      });
+    }
     this.scene.addLayer(this.clickLabelLayer);
+  };
+
+  formatNumberFunction (label, format) {
+    let prefixes = {
+      y: 1e-24,
+      z: 1e-21,
+      a: 1e-18,
+      f: 1e-15,
+      p: 1e-12,
+      mu: 1e-6,
+      m: 1e-3,
+      none: 1e-0,
+      K: 1e+3,
+      M: 1e+6,
+      G: 1e+9,
+      T: 1e+12,
+      P: 1e+15,
+      E: 1e+18,
+      Z: 1e+21,
+      Y: 1e+24
+    };
+    let new_label = label
+    let original = false, k_mark = true;
+    
+    if(format.decimal < 0) format.decimal = 0
+    if(format.decimal === '') original = true
+  
+    if(isNumber(new_label)) {
+      // if(isNaN(new_label)) return ''
+      let format_decimal = `.${format.decimal}`,
+          format_kMark = format.useThousandMark ? ',' : '';
+      if(format_kMark === '') k_mark = false
+  
+      if(format.selectFormat !== 'percent') {
+        //单位换算
+        Object.keys(prefixes).forEach(p => {
+          // if(p === format.unit) new_label /= prefixes[p]
+          let splitUnit = format.unit ? format.unit.split(' ')[0] : '';
+          if(p === format.unit) {
+            new_label /= prefixes[p]
+          } else if (p === splitUnit) {
+            new_label /= prefixes[splitUnit]
+          }
+        })
+        //小数位数
+        new_label = original ? (k_mark ? d3.format(format_kMark)(new_label) : new_label) : 
+                               d3.format(`${format_kMark}${format_decimal}f`)(new_label);
+        //负值显示
+        if (format.negative === '(1234)') {
+          format.negative = 0;
+        } else if (format.negative === '1234-') {
+          format.negative = 1;
+        }
+        if(parseFloat(new_label) < 0) {
+          if(format.negative === 0) {
+            new_label = original ? `(${k_mark ? d3.format(format_kMark)(Math.abs(new_label)) : Math.abs(new_label)})` : 
+                                   `(${k_mark ? d3.format(`${format_kMark}${format_decimal}f`)(Math.abs(label)) : d3.format(`${format_kMark}${format_decimal}f`)(Math.abs(new_label))})`
+          } else if(format.negative === 1) {
+            new_label = original ? `${k_mark ? d3.format(format_kMark)(Math.abs(new_label)) : Math.abs(new_label)}-` : 
+                                   `${k_mark ? d3.format(`${format_kMark}${format_decimal}f`)(Math.abs(label)) : d3.format(`${format_kMark}${format_decimal}f`)(Math.abs(new_label))}-`
+          }
+        }
+        
+        new_label += isDefined(format.unit) ? format.unit : ''
+      } else {
+        new_label *= 100
+        //小数位数
+        let num = original ? (k_mark ? d3.format(`${format_kMark}`)(Math.abs(new_label)) : d3.format('')(Math.abs(new_label))) :
+                             d3.format(`${format_kMark}.${format.decimal}f`)(Math.abs(new_label))
+  
+        if(new_label < 0) {
+          if(format.negative === 0) new_label = `(${num})`
+          else if(format.negative === 1) new_label = `${num}-` 
+          else new_label = `-${num}` 
+        } else {
+          new_label = num
+        }
+      }
+  
+      //货币
+      if(format.selectFormat === 'currency') {
+        let areaCode = ['', 'CN', 'JP', 'HK', 'US', 'EUR', 'GBP'];
+        let moneyCode = ['', '¥', '￥', 'HK$', '＄', '€', '£'];
+        let zoneObj = {
+          CN: `¥ 人民币`,
+          JP: `￥ 日元`,
+          HK: `HK$ 港元`,
+          US: `＄ 美元`,
+          EUR: `€ 欧元`,
+          GBP: `£ 英镑`
+        };
+        let format_zone = isDefined(format.zone) ? format.zone : '¥ 人民币';
+        for (let item in zoneObj) {
+          if (format_zone === zoneObj[item]) {
+            format_zone = item;
+          }
+        };
+        let prefix = moneyCode[areaCode.indexOf(format_zone.toUpperCase())] || ''
+        new_label = `${prefix}${new_label}`
+      }
+      //前缀后缀
+      new_label = `${format.prefix}${new_label}${format.suffix}`
+    } else {
+      new_label += ''
+    }
+  
+    if(new_label === 'undefined' || new_label === 'NaN') new_label = '' 
+  
+    return new_label
   };
 
 /**

@@ -128,18 +128,15 @@ class Geometry {
         if (item.display !== 'none') {
           let curStyleObj = styleProcess(text);
           let retVal = dataProcess(val, format);
-          Object.assign(curStyleObj, {
-            display: 'inline-flex',
-            flex: 1,
-            justifyContent: 'space-between'
-          });
+          // Object.assign(curStyleObj, {
+          //   display: 'inline-flex',
+          //   flex: 1,
+          //   justifyContent: 'space-between'
+          // });
           // <span >${prop}:</span> <span>${retVal}</span>
-
-          listItem += `<li class="dc-tooltip-list-item" style="margin-bottom:4px;display:flex;align-items: center;">
-            <span style="${curStyleObj}">
-            ${prop}:${retVal}
-           
-            </span>
+          // align-items: center; display:flex;
+          listItem += `<li class="dc-tooltip-list-item" style="width:100%;list-style-type:none; margin-bottom:4px;${curStyleObj}">
+          ${prop}:${retVal}
             </li>`;
         }
       });
@@ -155,9 +152,10 @@ class Geometry {
     this.geometry.on(
       eventType,
       function (d) {
+        let opacity = that.config.opacity || 1;
         // 待修改selectAll(`.${that.className}`)
         d3.event.stopPropagation();
-        that.geometry.attr('opacity', that.config.opacity * 0.2);
+        that.geometry.attr('opacity', opacity * 0.2);
         d3.select(this).transition().duration(500).attr('opacity', 1);
         that.config.clkFlag = true;
         typeof that.config.data_click === 'function' &&
@@ -262,7 +260,7 @@ class Geometry {
       minObj.rangeType = 'min';
       minObj.originalVal = minObj.val;
       minObj.val = toScientificNotation(minObj.val);
-      minObj.color = this.getItemColor(0, minObj.val);
+      minObj.color = this.getItemColor(0, minObj.originalVal);
       let maxObj = JSON.parse(JSON.stringify(sortList[0]));
       if (sortList.length > 1) {
         maxObj.originalVal = sortList[sortList.length - 1].val;

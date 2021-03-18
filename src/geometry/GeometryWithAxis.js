@@ -85,12 +85,7 @@ class GeometryWithAxis extends Geometry {
 
   ticksProcess () {
     let {
-      scopeObj: {
-        scale,
-        select,
-        tick_range: tickRange,
-        tick_counts: tickCounts
-      }
+      scopeObj: { scale, select, tickRange, tick_counts: tickCounts }
     } = this.config;
     let originalRange = this.getMinMaxData(
       this.config.yAxis.title.feature || this.config.yAxis.title.value
@@ -109,10 +104,8 @@ class GeometryWithAxis extends Geometry {
       return;
     }
     if (select === 1) {
-      let min =
-        typeof tickRange[0] !== 'undefined' ? tickRange[0] : originalRange[0];
-      let max =
-        typeof tickRange[0] !== 'undefined' ? tickRange[1] : originalRange[1];
+      let min = originalRange[0];
+      let max = originalRange[1];
       if (scale < 1) {
         let newMin = max - (max - min) / scale;
         this.yScale = d3.scaleLinear().domain([newMin, max]);

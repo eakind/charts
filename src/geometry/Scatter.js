@@ -244,7 +244,7 @@ class Scatter extends GeometryWithAxis {
         let feature = colorFeature ? colorFeature.feature : undefined;
         let match = null;
         let curIdx = idx;
-        if (feature && colorFeature.type === 'ordinal') {
+        if (feature) {
           colorList = colorList.map((i) => {
             if (i.val === d[feature]) {
               i.count++;

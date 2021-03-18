@@ -96,11 +96,38 @@ let tableConfig = {
     size: 12,
     color: '#6B6B6B'
   },
+<<<<<<< HEAD
   label: {
     format: [
 
     ],
     text: [
+=======
+  "label":{
+      "format":[
+        {
+            "list": [
+                {
+                    "format": {
+                        "check": false,
+                        "decimal": 2,
+                        "isPercent": false,
+                        "negative": -1,
+                        "prefix": "",
+                        "selectFormat": "percent",
+                        "setFlag": true,
+                        "suffix": "%",
+                        "unit": "",
+                        "useThousandMark": true,
+                        "zone": "CN",
+                    }
+                }
+            ],
+            "name": "0-0" 
+        }
+      ],
+      "text": [
+>>>>>>> 079551b48ad950c0515af91cfde4c2a55cb52f56
 
     ]
   },
