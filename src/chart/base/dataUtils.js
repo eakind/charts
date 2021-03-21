@@ -27,8 +27,30 @@ const getKeyValueDataList = (data, key, value) => {
   return list;
 };
 
+const filterPartData = (yAxisPart, data, key, yPartMap, index) => {
+  let i = 0;
+  let keyArr = [];
+  for (let key in yPartMap) {
+    if (i === index) {
+      keyArr = key.split(',');
+    }
+    i++;
+  }
+  let filterData = JSON.parse(JSON.stringify(data));
+  let len = yAxisPart.length - 1;
+  if (!yPartMap) {
+    filterData = getKeyValueDataList(filterData, yAxisPart[len - i].key[0], key);
+    return filterData;
+  }
+  for (let i = 0; i < keyArr.length; i++) {
+    filterData = getKeyValueDataList(filterData, yAxisPart[len - i].key[0], keyArr[i]);
+  }
+  return filterData;
+};
+
 export {
   getMaxValue,
   getKeyDataList,
-  getKeyValueDataList
+  getKeyValueDataList,
+  filterPartData
 };

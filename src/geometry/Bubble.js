@@ -32,7 +32,7 @@ class Bubble extends Geometry {
         'transform',
         (d) =>
           `translate(0, -${
-            list.reduce((a, b) => a + b.text.lineHeight, 0) / 2
+            list.slice(0, 2).reduce((a, b) => a + b.text.lineHeight, 0) / 2
           })`
       );
     textDom
@@ -53,12 +53,13 @@ class Bubble extends Geometry {
           .filter(
             (f) =>
               getTextWidth(f.formatVal, f.text.fontSize + 'px') * dpr <
-              d.radius * 2 * 0.7
+              d.radius * 2 * 0.8
           );
         let totalHeight = tempList.reduce((a, b) => {
           return a + b.text.lineHeight;
         }, 0);
-        if (totalHeight > d.radius * 2 * 0.7) {
+
+        if (totalHeight > d.radius * 2 * 0.8) {
           tempList = tempList.slice(0, 2);
         }
         return tempList;

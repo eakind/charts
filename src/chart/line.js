@@ -1,81 +1,72 @@
+/* eslint-disable no-unreachable */
+import { filterPartData } from './base/dataUtils';
+// import { getToTalBar } from './base/utils';
+import { drawLineShape } from './shape/lineShape';
 import Base from './base';
-import { getKeyDataList, getMaxValue } from './base/dataUtils';
-import { scaleLinear } from './base/scale';
 export default class Line extends Base {
   constructor (data, config) {
     super(data, config);
     this.data = data;
     this.config = config;
-    this.colorList = config.colorList;
     this.init();
   };
 
-  drawCanvas () {
-    console.log('这个是画线形图');
+  render () {
   };
 
-  render () {
+  drawCanvas (list, index, yAxisChild, yPartMap) {
+    if (!list) {
+      this.drawLine(yAxisChild, index);
+      return;
+    }
+    // let leftNum = 0;
+    // let total = getToTalBar(yAxisChild);
+    let yAxisPart = this.config.yAxisPart;
+    for (let i = 0, len = list.length; i < len; i++) {
+      let data = filterPartData(yAxisPart, this.data[index], list[i], yPartMap, i);
+      let height = i * this.yAxisHeight + this.topAxisHeight;
+      for (let j = 0, len = yAxisChild.length; j < len; j++) {
+        let keyLen = yAxisChild[j].key.length;
+        // if (j === 0) leftNum = keyLen;
+        for (let k = 0; k < keyLen; k++) {
+          // let num = j === 0 ? j + k : leftNum + k;
+          drawLineShape(this.middle, data, this.leftScaleY, this.scaleX.bandwidth(), height, yAxisChild[j].key[k]);
+        }
+      }
+    }
   }
 
-  drawLine () {
-    // d3提供的symbols，如果用户没有提供默认为圆点
-    let symbol = d3.symbolCircle;
-    // let rotated = 0;
-    // const symbols = {
-    //   cross: d3.symbolCross,
-    //   cross45: d3.symbolCross,
-    //   triangle: d3.symbolTriangle,
-    //   triangle180: d3.symbolTriangle,
-    //   square: d3.symbolSquare,
-    //   star: d3.symbolStar,
-    //   diamond: d3.symbolDiamond,
-    //   wye: d3.symbolWye
-    // };
-    // const rotateds = {
-    //   cross45: 45,
-    //   triangle180: 180
-    // };
-    let arc = d3.symbol().type(symbol).size(2 * 25);
-    if (!this.config.yAxis) return;
-    let yAxis = this.config.yAxis;
-    let len = yAxis.length;
+  drawCombinedCanvas (index, yAxisChild, dataIndex) {
+    let height = index * this.yAxisHeight + this.topAxisHeight;
+    let len = yAxisChild.length;
+    // let total = getToTalBar(yAxisChild);
+    // let leftNum = 0;
+    let data = this.data[dataIndex];
     for (let i = 0; i < len; i++) {
-      let key = yAxis[i].key;
-      let yAxisMax = getMaxValue(this.data, yAxis[i].key);
-      for (let j = 0; j < key.length; j++) {
-        let data = getKeyDataList(this.data, yAxis[i].key[j]);
-        let scaleY = scaleLinear(yAxisMax, this.yAxisHeight);
-        let brandWidth = this.scaleX.bandwidth();
-        let valueLine = d3.line()
-          .defined((d) => (d))
-          .x((d, index) => {
-            return brandWidth * index + brandWidth / 2;
-          })
-          .y((d) => {
-            return scaleY(d);
-          });
-        let lineContainer = this.middle.append('g')
-          .attr('transform', `translate(0,${this.topAxisHeight})`);
-        lineContainer.append('path')
-          .attr('d', valueLine(data))
-          .attr('fill', 'none')
-          .attr('stroke-width', 2)
-          .attr('stroke', '#4284f5')
-          .attr('opacity', 1);
+      let key = yAxisChild[i].key;
+      let keyLen = key.length;
+      let scaleY = yAxisChild[i].position === 'left' ? this.leftScaleY : this.rightScaleY;
+      // if (i === 0) leftNum = keyLen;
+      for (let j = 0; j < keyLen; j++) {
+        // let num = i === 0 ? i + j : leftNum + j;
+        drawLineShape(this.middle, data, scaleY, this.scaleX.bandwidth(), height, key[j]);
+      };
+    }
+  }
 
-        let pointer = lineContainer.selectAll('.point-group')
-          .data(data)
-          .enter()
-          .append('g');
-
-        pointer.append('path')
-          .attr('d', arc)
-          .attr('transform', (d, index) => {
-            let x = brandWidth * index + brandWidth / 2;
-            let y = scaleY(d);
-            return `translate(${x}, ${y})`;
-          })
-          .attr('fill', '#4284f5');
+  drawLine (yAxisChild, index) {
+    let len = yAxisChild.length;
+    // let total = getToTalBar(yAxisChild);
+    // let leftNum = 0;
+    let data = this.data[index];
+    for (let i = 0; i < len; i++) {
+      let key = yAxisChild[i].key;
+      let keyLen = key.length;
+      let scaleY = yAxisChild[i].position === 'left' ? this.leftScaleY : this.rightScaleY;
+      // if (i === 0) leftNum = keyLen;
+      for (let j = 0; j < keyLen; j++) {
+        // let num = i === 0 ? i + j : leftNum + j;
+        drawLineShape(this.middle, data, scaleY, this.scaleX.bandwidth(), this.topAxisHeight, yAxisChild[i].key[j]);
       };
     };
   }

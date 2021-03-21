@@ -1,5 +1,8 @@
-import { getKeyDataList, getMaxValue } from './base/dataUtils';
-import { scaleLinear } from './base/scale.js';
+import { filterPartData } from './base/dataUtils';
+import { getToTalBar } from './base/utils';
+import { drawBarShape } from './shape/barShape';
+import { drawLineShape } from './shape/lineShape';
+import { drawLabel } from './shape/label';
 import Base from './base';
 export default class Bar extends Base {
   constructor (data, config) {
@@ -10,92 +13,91 @@ export default class Bar extends Base {
     this.init();
   };
 
-  drawCanvas () {
-    console.log('这个是画组合图');
+  drawCanvas (list, index, yAxisChild, yPartMap) {
+    if (!list) {
+      this.drawBar(yAxisChild, index);
+      return;
+    }
+    let leftNum = 0;
+    let total = getToTalBar(yAxisChild);
+    let yAxisPart = this.config.yAxisPart;
+    let bandwidth = this.scaleX.bandwidth();
+    let labelList = this.config.labelsList;
+    for (let i = 0, len = list.length; i < len; i++) {
+      let data = filterPartData(yAxisPart, this.data[index], list[i], yPartMap, i);
+      let height = i * this.yAxisHeight + this.topAxisHeight;
+      let scaleY = this.leftScaleY;
+      for (let j = 0, len = yAxisChild.length; j < len; j++) {
+        let keyLen = yAxisChild[j].key.length;
+        let types = yAxisChild[i].type;
+        if (j === 0) leftNum = keyLen;
+        for (let k = 0; k < keyLen; k++) {
+          let num = j === 0 ? j + k : leftNum + k;
+          let chartType = types[i];
+          if (chartType === 'bar') {
+            drawBarShape(this.middle, data, scaleY, bandwidth, this.yAxisHeight, height, num, total, yAxisChild[j].key[k]);
+          } else {
+            drawLineShape(this.middle, data, scaleY, bandwidth, this.yAxisHeight, height, yAxisChild[j].key[k]);
+          }
+          drawLabel(this.middle, data, scaleY, bandwidth, num, total, yAxisChild[j].key[k], labelList);
+        }
+      }
+    }
   };
 
-  drawBarLine () {
-    if (!this.config.yAxis) return;
-    let yAxis = this.config.yAxis;
-    let len = yAxis.length;
+  drawBar (yAxisChild, index) {
+    let len = yAxisChild.length;
+    let total = getToTalBar(yAxisChild);
+    let leftNum = 0;
+    let data = this.data[index];
+    let height = this.topAxisHeight;
+    let bandwidth = this.scaleX.bandwidth();
+    let labelList = this.config.labelsList;
     for (let i = 0; i < len; i++) {
-      let keys = yAxis[i].key;
-      let types = yAxis[i].type;
-      let yAxisMax = getMaxValue(this.data, yAxis[i].key);
-      for (let j = 0; j < keys.length; j++) {
-        let data = getKeyDataList(this.data, yAxis[i].key[j]);
-        let scaleY = scaleLinear(yAxisMax, this.yAxisHeight);
+      let key = yAxisChild[i].key;
+      let keyLen = key.length;
+      let types = yAxisChild[i].type;
+      let scaleY = yAxisChild[i].position === 'left' ? this.leftScaleY : this.rightScaleY;
+      if (i === 0) leftNum = keyLen;
+      for (let j = 0; j < keyLen; j++) {
+        let num = i === 0 ? i + j : leftNum + j;
         let chartType = types[i];
         if (chartType === 'bar') {
-          this.drawBar(data, scaleY, i, j);
+          drawBarShape(this.middle, data, scaleY, bandwidth, this.yAxisHeight, height, num, total, yAxisChild[i].key[j]);
         } else {
-          this.drawLine(data, scaleY);
+          drawLineShape(this.middle, data, scaleY, bandwidth, this.yAxisHeight, height, yAxisChild[i].key[j]);
         }
+        drawLabel(this.middle, data, scaleY, bandwidth, num, total, yAxisChild[i].key[j], labelList);
       };
     };
-  }
+  };
 
-  drawBar (data, scaleY, i, j) {
-    let barContainer = this.middle.append('g')
-      .attr('width', this.shapeWidth)
-      .attr('height', this.shapeHeight)
-      .attr('transform', `translate(0,${this.topAxisHeight})`);
-    let bar = barContainer.selectAll('.bar').data(data);
-    let druaction = this.scaleX.bandwidth();
-    bar.enter()
-      .append('rect')
-      .attr('class', 'bar')
-      .attr('x', (d, index) => {
-        return (index * druaction) + ((i + j) * druaction / 4) + (druaction / 6);
-      })
-      .attr('y', scaleY)
-      .attr('width', druaction * 0.2)
-      .attr('height', 0)
-      .attr('fill', (d, index) => {
-        return this.colorList[index];
-      })
-      .attr('opacity', 1)
-      .transition().duration(600)
-      .attr('height', (d) => (this.shapeHeight - scaleY(d)))
-      .attr('y', (d) => scaleY(d));
-  }
-
-  drawLine (data, scaleY) {
-    // d3提供的symbols，如果用户没有提供默认为圆点
-    let symbol = d3.symbolCircle;
-    let arc = d3.symbol().type(symbol).size(2 * 25);
-    let brandWidth = this.scaleX.bandwidth();
-    let valueLine = d3.line()
-      .defined((d) => (d))
-      .x((d, index) => {
-        return brandWidth * index + brandWidth / 2;
-      })
-      .y((d) => {
-        return scaleY(d);
-      });
-    let lineContainer = this.middle.append('g')
-      .attr('transform', `translate(0,${this.topAxisHeight})`);
-    lineContainer.append('path')
-      .attr('d', valueLine(data))
-      .attr('fill', 'none')
-      .attr('stroke-width', 2)
-      .attr('stroke', '#4284f5')
-      .attr('opacity', 1);
-
-    let pointer = lineContainer.selectAll('.point-group')
-      .data(data)
-      .enter()
-      .append('g');
-
-    pointer.append('path')
-      .attr('d', arc)
-      .attr('transform', (d, index) => {
-        let x = brandWidth * index + brandWidth / 2;
-        let y = scaleY(d);
-        return `translate(${x}, ${y})`;
-      })
-      .attr('fill', '#4284f5');
-  }
+  drawCombinedCanvas (index, yAxisChild, dataIndex) {
+    let height = index * this.yAxisHeight + this.topAxisHeight;
+    let len = yAxisChild.length;
+    let total = getToTalBar(yAxisChild);
+    let leftNum = 0;
+    let data = this.data[dataIndex];
+    let bandwidth = this.scaleX.bandwidth();
+    let labelList = this.config.labelsList;
+    for (let i = 0; i < len; i++) {
+      let key = yAxisChild[i].key;
+      let keyLen = key.length;
+      let types = yAxisChild[i].type;
+      let scaleY = yAxisChild[i].position === 'left' ? this.leftScaleY : this.rightScaleY;
+      if (i === 0) leftNum = keyLen;
+      for (let j = 0; j < keyLen; j++) {
+        let num = i === 0 ? i + j : leftNum + j;
+        let chartType = types[i];
+        if (chartType === 'bar') {
+          drawBarShape(this.middle, data, scaleY, bandwidth, this.yAxisHeight, height, num, total, yAxisChild[i].key[j]);
+        } else {
+          drawLineShape(this.middle, data, scaleY, bandwidth, this.yAxisHeight, height, yAxisChild[i].key[j]);
+        }
+        drawLabel(this.middle, data, scaleY, bandwidth, num, total, yAxisChild[i].key[j], labelList);
+      };
+    }
+  };
 
   render () {
   }

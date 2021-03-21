@@ -89,50 +89,100 @@ const createLastYPart = (leftAxis, uniqueList, yAxisHeight, leftAxisWidth, topAx
     .attr('stroke', '#c2c9d1');
 };
 
-const createMiddleYPart = (leftAxis, yAxisHeight, leftAxisWidth, topAxisHeight, partObj, key, perLen, parentIndex) => {
-  let data = [...new Set(partObj[key])];
+// const createMiddleYPart = (leftAxis, yAxisHeight, leftAxisWidth, topAxisHeight, partObj, key, perLen, parentIndex, xAxisLen) => {
+//   let data = [...new Set(partObj[key])];
+//   let grid = leftAxis.append('g')
+//     .attr('transform', `translate(${0}, ${topAxisHeight})`);
+//   let lineGroup = grid.append('g').attr('class', 'top-axis-line');
+//   let yGridGroup = lineGroup.selectAll('top-axis-line')
+//     .data(data)
+//     .enter();
+//   let textIndex = 0;
+//   yGridGroup.append('text')
+//     .attr('transform', (d) => {
+//       let len = partObj[key].length / xAxisLen; // [...new Set(partObj[key])].filter(item => item === d).length;
+//       let unitHeight = yAxisHeight * len;
+//       textIndex = textIndex + len;
+//       console.log(perLen);
+//       let height = yAxisHeight * textIndex + yAxisHeight * perLen - unitHeight / 2;
+//       return `translate(${parentIndex * 50 + 25}, ${height})`;
+//     })
+//     .attr('font-size', 14)
+//     .attr('text-anchor', 'middle')
+//     .style('writing-mode', 'tb')
+//     .text(d => d);
+
+//   let len = data.length - 1;
+//   let startIndex = 0;
+//   let endIndex = 0;
+//   yGridGroup.append('line')
+//     .attr('x1', (d) => {
+//       return 50 * parentIndex;
+//     })
+//     .attr('y1', (d) => {
+//       let len = partObj[key].length / xAxisLen; // [...new Set(partObj[key])].filter(item => item === d).length;
+//       startIndex = startIndex + len;
+//       let height = yAxisHeight * startIndex + yAxisHeight * perLen;
+//       return height;
+//     })
+//     .attr('x2', leftAxisWidth)
+//     .attr('y2', (d) => {
+//       let len = partObj[key].length / xAxisLen; // [...new Set(partObj[key])].filter(item => item === d).length;
+//       endIndex = endIndex + len;
+//       let height = yAxisHeight * endIndex + yAxisHeight * perLen;
+//       return height;
+//     })
+//     .attr('opacity', (d, index) => {
+//       let opacity = len === index ? 1 : 1;
+//       console.log(parentIndex);
+//       return opacity;
+//     })
+//     .attr('stroke-width', 1)
+//     .attr('stroke', '#c2c9d1');
+// };
+
+const createMiddleYPart = (leftAxis, yAxisHeight, leftAxisWidth, topAxisHeight, uniqueList, i) => {
   let grid = leftAxis.append('g')
     .attr('transform', `translate(${0}, ${topAxisHeight})`);
   let lineGroup = grid.append('g').attr('class', 'top-axis-line');
   let yGridGroup = lineGroup.selectAll('top-axis-line')
-    .data(data)
+    .data(uniqueList)
     .enter();
   let textIndex = 0;
   yGridGroup.append('text')
     .attr('transform', (d) => {
-      let len = [...new Set(partObj[key])].filter(item => item === d).length;
-      let unitHeight = yAxisHeight * len;
+      let len = d.len;
       textIndex = textIndex + len;
-      let height = yAxisHeight * textIndex + yAxisHeight * perLen - unitHeight / 2;
-      return `translate(${parentIndex * 50 + 25}, ${height})`;
+      let height = yAxisHeight * textIndex - yAxisHeight * len / 2;
+      return `translate(${i * 50 + 25}, ${height})`;
     })
     .attr('font-size', 14)
     .attr('text-anchor', 'middle')
     .style('writing-mode', 'tb')
-    .text(d => d);
+    .text(d => d.name);
 
-  let len = data.length - 1;
+  let len = uniqueList.length - 1;
   let startIndex = 0;
   let endIndex = 0;
   yGridGroup.append('line')
     .attr('x1', (d) => {
-      return 50 * parentIndex;
+      return 50 * i;
     })
     .attr('y1', (d) => {
-      let len = [...new Set(partObj[key])].filter(item => item === d).length;
+      let len = d.len;
       startIndex = startIndex + len;
-      let height = yAxisHeight * startIndex + yAxisHeight * perLen;
+      let height = yAxisHeight * startIndex;
       return height;
     })
     .attr('x2', leftAxisWidth)
     .attr('y2', (d) => {
-      let len = [...new Set(partObj[key])].filter(item => item === d).length;
+      let len = d.len;
       endIndex = endIndex + len;
-      let height = yAxisHeight * endIndex + yAxisHeight * perLen;
+      let height = yAxisHeight * endIndex;
       return height;
     })
     .attr('opacity', (d, index) => {
-      let opacity = len === index ? 0 : 1;
+      let opacity = len === index ? 1 : 1;
       return opacity;
     })
     .attr('stroke-width', 1)

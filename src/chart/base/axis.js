@@ -147,7 +147,7 @@ const setAxisXTitleStyle = (axisPanel, option, width, bottomAxisHeight) => {
   axisPanel.append('g')
     .append('text')
     .attr('text-anchor', 'end')
-    .attr('transform', `translate(${width},${bottomAxisHeight - 10 || 40})`)
+    .attr('transform', `translate(${width - 10},${bottomAxisHeight - 25 || 40})`)
     .attr('fill', titleStyle.fontColor)
     .attr('font-size', titleStyle.fontSize)
     .text(option.value)

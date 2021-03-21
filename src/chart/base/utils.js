@@ -15,36 +15,57 @@ const setUniqueForKey = (perKey, key, data) => {
   return uniqueObj;
 };
 
-const setPerKeyForKey = (perKey, key, data, judge) => {
+const setPerKeyForKey = (perKey, key, data, xAxisPart, partLen) => {
   let len = data.length;
   let uniqueValue = '';
   let uniqueObj = {};
-  let uniqueKey = '';
   let perUniqueKey = '';
+  let perKeyArr = perKeyValue(xAxisPart, partLen);
   for (let i = 0; i < len; i++) {
+    perUniqueKey = getPerUniqueKey(perKeyArr, data[i]);
     if (uniqueValue !== data[i][perKey]) {
       uniqueValue = data[i][perKey];
-      uniqueKey = `${uniqueValue}|^~^|${i}`;
-      uniqueObj[uniqueKey] = [data[i][key]];
-      if (judge) {
-        perUniqueKey = data[i][judge];
-      }
+      uniqueObj[perUniqueKey] = [data[i][key]];
     } else {
-      if (uniqueObj[uniqueKey]) {
-        if (judge === '' || perUniqueKey === data[i][judge]) {
-          uniqueObj[uniqueKey].push(data[i][key]);
-        } else {
-          uniqueValue = data[i][perKey];
-          uniqueKey = `${uniqueValue}|^~^|${i}`;
-          uniqueObj[uniqueKey] = [data[i][key]];
-        }
+      if (uniqueObj[perUniqueKey]) {
+        uniqueObj[perUniqueKey].push(data[i][key]);
+      } else {
+        uniqueValue = data[i][perKey];
+        uniqueObj[perUniqueKey] = [data[i][key]];
       }
     }
   }
   return uniqueObj;
 };
 
+const getPerUniqueKey = (perKeyArr, dataObj) => {
+  let perUniqueKey = [];
+  for (let i = 0; i < perKeyArr.length; i++) {
+    perUniqueKey.push(dataObj[perKeyArr[i]]);
+  }
+  return perUniqueKey.join(',');
+};
+
+const perKeyValue = (xAxisPart, parLen) => {
+  let perKeyArr = [];
+  for (let i = parLen; i >= 0; i--) {
+    perKeyArr.push(xAxisPart[i].key);
+  }
+  return perKeyArr;
+};
+
+const getToTalBar = (yAxis) => {
+  let index = 0;
+  for (let i = 0; i < yAxis.length; i++) {
+    for (let j = 0; j < yAxis[i].key.length; j++) {
+      index++;
+    }
+  }
+  return index;
+};
+
 export {
   setUniqueForKey,
-  setPerKeyForKey
+  setPerKeyForKey,
+  getToTalBar
 };
