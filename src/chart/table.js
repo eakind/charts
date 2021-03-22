@@ -604,7 +604,16 @@ const init = function (tableData, tableConfig) {
       //       ? match.formatLabel(i[agg])
       //       : i[agg]
       //     : '';
-      let curFormat;
+      let curFormat = {
+        selectFormat: 'digit',
+        decimal: '',
+        negative: '-1',
+        unit: '',
+        prefix: '',
+        suffix: '',
+        zone: 'CN',
+        useThousandMark: true
+      };
       if (agg) {
         let aggIndex = labels.indexOf(agg);
         labelList.forEach(l => {

@@ -58,7 +58,9 @@ const getToTalBar = (yAxis) => {
   let index = 0;
   for (let i = 0; i < yAxis.length; i++) {
     for (let j = 0; j < yAxis[i].key.length; j++) {
-      index++;
+      if (yAxis[i].type[j] === 'bar') {
+        index++;
+      }
     }
   }
   return index;

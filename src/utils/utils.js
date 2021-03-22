@@ -12,18 +12,10 @@ let dataProcess = function (val, format) {
     return val;
   }
   if (!Number(val)) {
-    return;
+    return val;
   }
   let ret = val;
-  if (format.decimal || format.decimal === 0) {
-    if (format.isPercent) {
-      ret = ret * 100;
-    }
-    ret = ret.toFixed(format.decimal);
-    if (format.isPercent) {
-      ret = ret + '%';
-    }
-  }
+
   let negative = -1;
   if (ret < 0) {
     if (format.negative === '(1234)') {
@@ -35,14 +27,14 @@ let dataProcess = function (val, format) {
     }
   }
 
-  ret = unitProcess(ret, format.unit, format.useThousandMark);
+  ret = unitProcess(ret, format.unit, format.useThousandMark, format);
 
-  ret = displayFormatProcess(ret, format.format, format.zone, negative);
+  ret = displayFormatProcess(ret, format.selectFormat, format.zone, negative);
   ret = prefSuffixProcess(ret, format.prefix, format.suffix, format.isPercent);
   return ret;
 };
 
-let unitProcess = function (val, unit, micrometerFlag) {
+let unitProcess = function (val, unit, micrometerFlag, format) {
   let unitPare = {
     'K 千': 1000,
     'M 百万': 1000000,
@@ -53,6 +45,16 @@ let unitProcess = function (val, unit, micrometerFlag) {
   if (unit) {
     ret = val / unitPare[unit];
   }
+  if (format.decimal || format.decimal === 0) {
+    if (format.isPercent || format.selectFormat === 'percent') {
+      ret = ret * 100;
+    }
+    ret = ret.toFixed(format.decimal);
+    if (format.isPercent) {
+      ret = ret + '%';
+    }
+  }
+
   // let ret = val / unitPare[unit];
   let curRes = micrometerProcess(ret, micrometerFlag);
   return unit ? curRes + unit : curRes;
@@ -62,8 +64,13 @@ let displayFormatProcess = function (val, format, zone, negative) {
   // if (!format) {
   //   return val;
   // }
-  if (format === 'percent') {
-    return val * 100 + '%';
+  if (negative === 0) {
+    val = '(' + val.substring(1) + ')';
+  } else if (negative === 1) {
+    val = val.substring(1) + '-';
+  }
+  if (format === 'percent' || format === -1) {
+    return val;
   }
   let formatPare = {
     CN: '￥',
@@ -76,11 +83,7 @@ let displayFormatProcess = function (val, format, zone, negative) {
   if (negative === -1) {
     return formatPare[zone] ? formatPare[zone] + val : val;
   }
-  if (negative === 0) {
-    val = '(' + val.substring(1) + ')';
-  } else if (negative === 1) {
-    val = val.substring(1) + '-';
-  }
+
   return formatPare[zone] ? formatPare[zone] + val : val;
 };
 
@@ -90,6 +93,12 @@ let prefSuffixProcess = function (val, prefix, suffix, isPercent) {
   }
   if (suffix && !isPercent) {
     val = val + suffix;
+  } else if (isPercent) {
+    if (suffix && suffix.indexOf('%') === 0) {
+      val = val + suffix.substr(1);
+    } else if (suffix && suffix.indexOf('%') !== 0) {
+      val = val.substr(0, val.length - 1) + suffix;
+    }
   }
   return val;
 };
@@ -132,11 +141,11 @@ let toScientificNotation = function (val) {
   if (ret.length <= 4) {
     return ret;
   } else if (ret.length <= 6) {
-    return (ret / 1000).toFixed(2) + 'k';
+    return (ret / 1000).toFixed(2) + 'K';
   } else if (ret.length <= 9) {
-    return (ret / 1000000).toFixed(2) + 'm';
+    return (ret / 1000000).toFixed(2) + 'M';
   } else {
-    return (ret / 1000000000).toFixed(2) + 'g';
+    return (ret / 1000000000).toFixed(2) + 'G';
   }
 };
 
@@ -330,13 +339,24 @@ const setBottomLabelHeight = (xAxis, xData) => {
   return height;
 };
 
-const getMaxValueWidth = (yAxis, data, yAxisPart, position) => {
+const combinedData = (list) => {
+  if (!list.length) return [];
+  let dataList = list[0].data;
+  let data = [];
+  for (let i = 0; i < dataList.length; i++) {
+    data.push(...dataList[i]);
+  }
+  return data;
+};
+
+const getMaxValueWidth = (yAxis, yAxisPart, position) => {
   let maxTitleWidthArr = [];
   let axisWidthArr = [];
   for (let i = 0; i < yAxis.length; i++) {
     let axisList = yAxis[i].filter(item => item.position === position);
+    let data = combinedData(axisList);
     if (axisList.length) {
-      let maxValue = getMaxValue(data[i], axisList[0].key);
+      let maxValue = getMaxValue(data, axisList[0].key);
       let { axisWidth, titleWidth } = setAsideWidth(axisList[0], Math.floor(maxValue), yAxisPart);
       maxTitleWidthArr.push(titleWidth);
       axisWidthArr.push(axisWidth);

@@ -1,14 +1,13 @@
 import { getKeyDataList, getMaxValue } from './base/dataUtils';
 import { scaleLinear } from './base/scale.js';
-import Base from './base';
-export default class Bar extends Base {
+import RotatedBase from './rotatedBase';
+export default class Bar extends RotatedBase {
   constructor (data, config) {
     super(data, config);
     this.data = data;
     this.config = config;
     this.colorList = config.colorList;
     this.init();
-    // this.drawBar();
   };
 
   drawCanvas () {

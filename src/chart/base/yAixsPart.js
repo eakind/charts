@@ -157,6 +157,7 @@ const createMiddleYPart = (leftAxis, yAxisHeight, leftAxisWidth, topAxisHeight, 
       return `translate(${i * 50 + 25}, ${height})`;
     })
     .attr('font-size', 14)
+    .attr('fill', 'blue')
     .attr('text-anchor', 'middle')
     .style('writing-mode', 'tb')
     .text(d => d.name);

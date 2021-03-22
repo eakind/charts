@@ -24,7 +24,6 @@ const createYGrid = (middle, width, height, scaleY, topAxisHeight, index) => {
 };
 
 const createYAxisPartHorGrid = (leftAxis, yAxisHeight, uniqueData, width, xIndex, topAxisHeight, list, isLast) => {
-  debugger;
   let grid = leftAxis.append('g')
     .attr('transform', `translate(${0}, ${topAxisHeight})`);
   let lineGroup = grid.append('g').attr('class', 'top-axis-line');

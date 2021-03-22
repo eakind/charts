@@ -168,21 +168,22 @@ const setScaleForAxisY = (axisPanel, axis, position, topAxisHeight, translateX, 
 
 const setAxisYTitleStyle = (axisPanel, titleOption, position, width, titleWidth, topAxisHeight, height, index, yAxisMax) => {
   let titleStyle = titleOption.style;
+  console.log(titleStyle.fontColor);
   axisPanel.append('g')
     .attr('transform', () => {
       let translateX = width - titleWidth + 12;
       if (position === 'right') {
         translateX = width - 12;
       }
-      return `translate(${translateX}, ${topAxisHeight + 6 + (height * index)})`;
+      return `translate(${translateX}, ${topAxisHeight + 2 + (height * index)})`;
     })
     .append('text')
     .attr('text-anchor', 'start')
-    .attr('fill', titleStyle.fontColor) // 标题颜色
     .attr('font-size', titleStyle.fontSize) // 标题大小
+    .attr('fill', titleStyle.fontColor) // 标题颜色
+    .style('writing-mode', 'tb')
     .text(titleOption.value) // 标题名称
-    .attr('title', titleOption.value)
-    .style('writing-mode', 'tb');
+    .attr('title', titleOption.value);
 };
 
 export {

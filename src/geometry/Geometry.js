@@ -12,6 +12,7 @@ class Geometry {
     this.config = config;
     this.container = null;
     this.geometry = null;
+    this.opacity = ((this.config.opacity || 100) / 100).toFixed(2);
   }
 
   /**
@@ -206,6 +207,8 @@ class Geometry {
       }
     }
 
+    let flag = this.config.labelsList.find((i) => i.type === 'ordinal');
+
     return getItemColor(
       index,
       this.config.colorList,
@@ -213,7 +216,9 @@ class Geometry {
       min,
       max,
       curVal,
-      feature
+      feature,
+      flag,
+      this.opacity
     );
   }
 

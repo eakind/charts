@@ -8,6 +8,16 @@ const getMaxValue = (data, keyList) => {
   return Math.max(...mergeList);
 };
 
+const getMaxArrValue = (data, keyList) => {
+  let mergeList = [];
+  for (let i = 0, len = keyList.length; i < len; i++) {
+    for (let j = 0, len = data[i].length; j < len; j++) {
+      mergeList.push(isNaN(data[i][j][keyList[i]]) ? 0 : data[i][j][keyList[i]]);
+    }
+  }
+  return Math.max(...mergeList);
+};
+
 const getKeyDataList = (data, key, isNum) => {
   let list = [];
   for (let i = 0, len = data.length; i < len; i++) {
@@ -52,5 +62,6 @@ export {
   getMaxValue,
   getKeyDataList,
   getKeyValueDataList,
-  filterPartData
+  filterPartData,
+  getMaxArrValue
 };

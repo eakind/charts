@@ -1,4 +1,5 @@
 const drawLabel = (middle, data, scaleY, bandwidth, num, total, key, labelList) => {
+  if (!labelList || !labelList.length) return;
   let list = labelList.filter(item => item.key === key);
   for (let i = 0; i < list.length; i++) {
     let labelContainer = middle.append('g');

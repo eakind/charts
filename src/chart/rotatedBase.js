@@ -31,7 +31,7 @@ export default class Base {
     // 一共有多少个子画布
     this.yAxisLen = yAxis.length;
     // 每个子画布的高度
-    this.canvasHeight = Math.floor(this.height / this.yAxisLen);
+    this.canvasHeight = Math.floor(this.width / this.yAxisLen);
     // 每个子画布轴的高度
     this.shapeHeight = this.canvasHeight - (this.bottomAxisHeight + this.topAxisHeight);
     // 获取Y轴刻度数组
@@ -135,7 +135,6 @@ export default class Base {
   initCanvasContainer (index) {
     // 图表容器
     this.container = d3.select(`#${this.config.id}`).append('div').attr('class', `chart-container-${index}`)
-      .style('display', 'flex')
       .style('position', 'relative')
       .style('box-sizing', 'border-box')
       .style('width', '100%')
@@ -144,22 +143,22 @@ export default class Base {
       .style('display', 'flex')
       .style('flex-direction', 'row-reverse')
       .append('svg')
-      .attr('width', this.leftAxisWidth)
-      .attr('height', this.canvasHeight);
+      .attr('width', this.canvasHeight)
+      .attr('height', this.leftAxisWidth);
     // 中间画图部分
     this.middle = this.container.append('div').attr('class', `middle-${index}`)
       .style('flex', 1)
       .style('width', 0)
       .style('overflow', 'auto hidden')
       .append('svg')
-      .attr('width', this.shapeWidth)
-      .attr('height', this.canvasHeight);
+      .attr('width', this.canvasHeight)
+      .attr('height', this.shapeWidth);
     // 右侧坐标轴容器
     this.rightAxis = this.container.append('div').attr('class', `right-axis-${index}`)
       .style('display', 'flex')
       .append('svg')
-      .attr('width', this.rightAxisWidth)
-      .attr('height', this.canvasHeight);
+      .attr('width', this.canvasHeight)
+      .attr('height', this.rightAxisWidth);
   }
 
   initCombinedYAxisConfig (yAxis) {
@@ -174,7 +173,7 @@ export default class Base {
     this.rightTitleWidth = rightTitleWidth;
     /* 画布内容的宽度 */
     let len = this.xAxisList.length;
-    this.shapeWidth = this.width - (this.leftAxisWidth + this.rightAxisWidth);
+    this.shapeWidth = this.height - (this.leftAxisWidth + this.rightAxisWidth);
     switch (fitModel) {
       case 'standard':
         if (this.shapeWidth / len < 200) {

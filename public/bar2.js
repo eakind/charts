@@ -729,5 +729,6 @@ const data = [
   ]
 ]
 
+
 let test = chart.GeometryDrawingProcess({ data, config, chartType: 'line' });
 test.draw();

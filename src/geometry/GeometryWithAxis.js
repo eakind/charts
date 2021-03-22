@@ -62,10 +62,7 @@ class GeometryWithAxis extends Geometry {
 
     this.yScale
       .range([
-        this.config.height -
-          labelHeight -
-          titleHeight -
-          (6 + 4) * (this.config.dpr || 1),
+        this.config.height - labelHeight - titleHeight - (6 + 4) * this.dpr,
         // -  (this.xLabelWidth * 2) / 3,
         labelHeight // + yLabelWidth / 2
       ]) // 半个字体高度
@@ -139,19 +136,21 @@ class GeometryWithAxis extends Geometry {
   getTransformData () {
     let { hasUnit } = this.config;
     let {
-      title: { style = defaultText, value },
+      title: { style = defaultText },
       label: { style: labelStyle = defaultText }
     } = this.config.yAxis;
 
     let yTitleWidth =
-      getTextWidth(value, style.fontSize * this.dpr + 'px') *
-      (this.config.dpr * 0.52 || 1);
+      getTextWidth('测', style.fontSize * this.dpr + 'px') *
+      (this.dpr > 1 ? this.dpr * 0.52 : 1);
+    yTitleWidth = yTitleWidth * 4;
     let yTicks = this.yScale.ticks();
-    let yMaxLabel = yTicks[yTicks.length - 1];
-    let yLabelWidth =
-      getTextWidth(yMaxLabel, labelStyle.fontSize * this.dpr + 'px') *
-      (this.config.dpr || 1);
 
+    let yMaxLabel = yTicks[yTicks.length - 1];
+
+    let yLabelWidth =
+      getTextWidth(yMaxLabel, labelStyle.fontSize * this.dpr + 'px') * this.dpr;
+    yLabelWidth = this.dpr > 1 ? yLabelWidth : yLabelWidth + 6 + 4;
     let xTicks = this.xScale.ticks();
     let xMaxLabel = xTicks[xTicks.length - 1];
 
@@ -175,6 +174,7 @@ class GeometryWithAxis extends Geometry {
 
     let labelHeight =
       this.fontSizeLineHeightPair[label.style.fontSize] * this.dpr;
+
     let titleHeight =
       this.fontSizeLineHeightPair[title.style.fontSize] * this.dpr;
     if (labelStyle.rotate === -45) {
@@ -307,7 +307,7 @@ class GeometryWithAxis extends Geometry {
       yAxis: {
         label: { style: labelStyle = {} }
       },
-      scopeObj: { select }
+      scopeObj: { select, tick_counts: tickCounts }
     } = this.config;
     let yAxis = null;
     if (select !== 3) {
@@ -338,9 +338,19 @@ class GeometryWithAxis extends Geometry {
         }
       });
     } else {
-      yAxis = d3.axisLeft(this.yScale).tickFormat((d, idx) => {
-        return d3.format('~s')(d);
-      });
+      let tickValues = this.calculateTickValues(
+        tickCounts,
+        this.yScale.domain()
+      );
+      yAxis = d3
+        .axisLeft(this.yScale)
+        .tickValues(tickValues)
+        .tickFormat((d, idx) => {
+          if (hasUnit) {
+            return d3.format('~s')(d);
+          }
+          return d;
+        });
     }
 
     // let yAxis = d3.axisLeft(this.yScale).tickFormat((d) => {
@@ -363,6 +373,17 @@ class GeometryWithAxis extends Geometry {
     this.yAxisG.call(yAxis);
 
     this.setAxisStyle(this.config.yAxis, 'y');
+  }
+
+  calculateTickValues (tickCounts, domain) {
+    if (!tickCounts) return null;
+
+    let tickArray = [];
+    let interval = (domain[1] - domain[0]) / tickCounts;
+    for (let i = 0; i <= tickCounts; i++) {
+      tickArray.push(domain[0] + interval * i);
+    }
+    return tickArray;
   }
 
   xTitleConfig (labelHeight) {
@@ -403,8 +424,10 @@ class GeometryWithAxis extends Geometry {
       return;
     }
     let curHeight =
-      this.fontSizeLineHeightPair[style.fontSize] * this.dpr * value.length;
-    //
+      getTextWidth('测', style.fontSize * this.dpr + 'px') *
+        value.length *
+        1.2 +
+      6;
     this.yAxisG
       .append('text')
       .attr('class', 'y-title')
@@ -412,7 +435,7 @@ class GeometryWithAxis extends Geometry {
         'transform',
         `translate(${
           -yTitleWidth / 2 - yLabelWidth // - (6 + 8) * ((this.config.dpr * 2) / 3 || 1)
-        },${curHeight - labelHeight + labelHeight / 2 - titleHeight})`
+        },${curHeight})` // - labelHeight + labelHeight / 2 - titleHeight
       )
       .attr('writing-mode', 'tb')
       .attr('stroke', 'none')

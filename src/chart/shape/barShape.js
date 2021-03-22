@@ -1,7 +1,11 @@
 import { showTooltip, hideTooltip } from './tooltip';
-const drawBarShape = (middle, data, scaleY, bandwidth, height, topAxisHeight, num, total, key) => {
-  let linear = d3.scaleLinear().domain([249.15331511, 1428.5]).range([0, 1]).clamp(true);
-  let compute = d3.interpolate('#4284F5', '#F59E28');
+const drawBarShape = (middle, data, scaleY, bandwidth, height, topAxisHeight, num, total, key, colorFeature) => {
+  // let linear = d3.scaleLinear().domain([249.15331511, 1428.5]).range([0, 1]).clamp(true);
+  // let compute = d3.interpolate('#4284F5', '#F59E28');
+  if (colorFeature) {
+    drawStackBar(middle, data, scaleY, bandwidth, height, topAxisHeight, num, total, key, colorFeature);
+    return;
+  }
   let barContainer = middle.append('g')
     .attr('transform', `translate(0,${topAxisHeight})`);
   let bar = barContainer.selectAll(`bar_${num}`).data(data);
@@ -16,7 +20,7 @@ const drawBarShape = (middle, data, scaleY, bandwidth, height, topAxisHeight, nu
     .attr('width', barWidth)
     .attr('height', d => scaleY(d[key]))
     .attr('fill', (d) => {
-      return compute(linear(d[key]));
+      return '#4284f5'; // compute(linear(d[key]));
     })
     .attr('opacity', 1)
     .attr('height', (d) => (height - scaleY(d[key])))
@@ -29,33 +33,23 @@ const drawBarShape = (middle, data, scaleY, bandwidth, height, topAxisHeight, nu
     });
 };
 
-const drawStackBar = (data, scaleY, height, topAxisHeight, num, total, key) => {
+const drawStackBar = (middle, data, scaleY, bandwidth, height, topAxisHeight, num, total, key) => {
   let colorStack = {
     null: '#4284f5',
     个人护理: '#03B98C',
     彩妆: '#F85742',
     护肤品: '#FACC14'
   };
+  // let colorArr = [];
   let keyCode = '产品主类';
-  let arr = ['内蒙古', '河北省', '贵州省'];
-  let temp = [];
-  for (let i = 0; i < arr.length; i++) {
-    let list = JSON.parse(JSON.stringify(data.filter(item => item['省份'] === arr[i])));
-    for (let j = 0; j < list.length; j++) {
-      let obj = list[j];
-      obj[0] = list[j - 1] ? list[j - 1][1] : 0;
-      obj[1] = list[j][key] + obj[0];
-      temp.push(obj);
-    }
-  }
-  let colorArr = ['null', '个人护理', '彩妆', '护肤品'];
+  // for (let i = 0, len = data.length; i < len; i++) {
+  //   colorArr.push(data[i][keyCode]);
+  // }
+  // console.log(colorArr);
+  // debugger;
   let list = [];
-  for (let i = 0; i < colorArr.length; i++) {
-    list.push(temp.filter(item => item['产品主类'] === colorArr[i]));
-  }
-  let bandwidth = this.scaleX.bandwidth();
   let barWidth = bandwidth / (total * 2);
-  let barContainer = this.middle.append('g')
+  let barContainer = middle.append('g')
     .attr('transform', `translate(0,${topAxisHeight})`);
   let groupColor = barContainer.selectAll('group-color')
     .data(list)

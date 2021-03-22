@@ -95,7 +95,7 @@ class Bubble extends Geometry {
       .leaves()
       .map((d, idx) => {
         let colorVal = colorFeature.feature;
-        let val = colorFeature.type === 'ordinal' ? d.data[colorVal] : d.value;
+        let val = d.data[colorVal]; // colorFeature.type === 'ordinal' ? d.data[colorVal] : d.value;
         let color = this.getItemColor(idx, val);
 
         if (colorFeature.feature) {
@@ -143,7 +143,13 @@ class Bubble extends Geometry {
       .attr('cx', 0)
       .attr('cy', 0)
       .attr('r', (d) => d.r)
-      .attr('fill', (d) => d.color);
+      .attr('fill', (d) => d.color)
+      .attr('fill-opacity', (d) => {
+        if (d.color.indexOf('#') > -1) {
+          return this.opacity;
+        }
+        return 1;
+      });
   }
 }
 

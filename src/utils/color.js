@@ -7,7 +7,9 @@ let getItemColor = function (
   minVal,
   maxVal,
   curVal,
-  feature
+  feature,
+  flag,
+  opacity
 ) {
   let colorProcess = (function () {
     return {
@@ -29,12 +31,27 @@ let getItemColor = function (
       },
       getLinearItemColor: function () {
         let tempColorList = colorSet.numeric;
-        if (colorList && colorList.length > 0) {
-          tempColorList = colorList.map((i) => i.color || i);
+        let curColorList = colorList.map((i) => i.color || i);
+        let opacity1 = opacity;
+        let opacity2 = opacity;
+        if (curColorList && curColorList.length > 0) {
+          opacity1 = colorList[0].opacity ? (colorList[0].opacity / 100).toFixed(2) : opacity;
+          opacity2 = colorList[1].opacity ? (colorList[1].opacity / 100).toFixed(2) : opacity; ;
+          if (!(curColorList[0] === curColorList[1] && flag)) {
+            tempColorList = curColorList;
+          }
         }
         let startColor = d3.rgb(tempColorList[0]);
         let endColor = d3.rgb(tempColorList[1]);
+        startColor.opacity = opacity1;
+        endColor.opacity = opacity2;
         let compute = d3.interpolate(startColor, endColor);
+        if (maxVal === minVal) {
+          return tempColorList[0];
+        }
+        if (!flag) {
+          return tempColorList[0];
+        }
         return compute((curVal - minVal) / (maxVal - minVal));
       }
     };

@@ -1,5 +1,5 @@
 import { hideTooltip, showTooltip } from './tooltip';
-const drawLineShape = (middle, data, scaleY, bandwidth, height, topAxisHeight, key) => {
+const drawLineShape = (middle, data, scaleY, bandwidth, height, topAxisHeight, key, colorFeature) => {
   let symbol = d3.symbolCircle;
   let rotated = 0;
   const symbols = {
